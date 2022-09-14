@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouscousEngine", "CouscousEngine\CouscousEngine.csproj", "{8E67C7EC-47F0-48D8-9364-8D693D81C2D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{683B3473-9119-4A9D-B02A-AFF00C9D7D00}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E67C7EC-47F0-48D8-9364-8D693D81C2D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E67C7EC-47F0-48D8-9364-8D693D81C2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E67C7EC-47F0-48D8-9364-8D693D81C2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E67C7EC-47F0-48D8-9364-8D693D81C2D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{683B3473-9119-4A9D-B02A-AFF00C9D7D00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{683B3473-9119-4A9D-B02A-AFF00C9D7D00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{683B3473-9119-4A9D-B02A-AFF00C9D7D00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{683B3473-9119-4A9D-B02A-AFF00C9D7D00}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
