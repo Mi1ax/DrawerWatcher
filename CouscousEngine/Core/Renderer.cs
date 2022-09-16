@@ -1,4 +1,5 @@
-﻿using Raylib_CsLo;
+﻿using System.Numerics;
+using CouscousEngine.Utils;
 using RL = Raylib_CsLo.Raylib;
 
 namespace CouscousEngine.Core;
@@ -7,13 +8,13 @@ public static class Renderer
 {
     public static void BeginDrawing() => RL.BeginDrawing();
     public static void EndDrawing() => RL.EndDrawing();
-    
-    // TODO: Color
-    public static void ClearBackground(float red, float green, float blue, float alpha = 1f) 
-        => RL.ClearBackground(new Color(
-            (int)(red * 255), 
-            (int)(green * 255), 
-            (int)(blue * 255), 
-            (int)(alpha * 255))
-        );
+
+    public static void ClearBackground(Color color)
+        => RL.ClearBackground(color.ToRayColor());
+
+    public static void DrawCircle(Vector2 position, float radius, Color color)
+        => RL.DrawCircleV(position, radius, color.ToRayColor());
+
+    public static void DrawFPS(int x = 15, int y = 15)
+        => RL.DrawFPS(x, y);
 }

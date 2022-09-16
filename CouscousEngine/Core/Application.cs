@@ -26,12 +26,6 @@ public abstract class Application : IDisposable
         while (Window.IsRunning())
         {
             Update();
-            BeginDrawing();
-            {
-                ClearBackground(BLACK);
-            }
-            EndDrawing();
-            
             Draw();
         }
     }
