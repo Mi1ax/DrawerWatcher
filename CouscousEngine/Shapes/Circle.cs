@@ -2,6 +2,8 @@
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
 
+using rl = Raylib_CsLo.Raylib;
+
 namespace CouscousEngine.Shapes;
 
 public class Circle : IShape
@@ -29,5 +31,15 @@ public class Circle : IShape
     public float GetRadius() => Radius;
     public Vector2 GetPosition() => Position;
     public Color GetColor() => _color;
+    public Color SetColor(Color color) => _color = color;
+
+    public bool CheckCollision(Vector2 point)
+        => rl.CheckCollisionPointCircle(point, Position, Radius);
+
+    public bool CheckCollision(IShape anotherShape)
+    {
+        throw new NotImplementedException();
+    }
+
     public object Clone() => MemberwiseClone();
 }
