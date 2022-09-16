@@ -1,16 +1,24 @@
-﻿using static Raylib_CsLo.Raylib;
+﻿using CouscousEngine.Utils;
+using static Raylib_CsLo.Raylib;
 
 namespace CouscousEngine.Core;
 
 public abstract class Application : IDisposable
 {
+    private static Application? _instance;
+
+    public static Application Instance =>
+        _instance ?? throw new NullReferenceException("Application is null");
+    
     protected readonly Window Window;
 
     protected Application(
         string title, 
-        uint width = 1280, 
-        uint height = 720
-    ) {
+        int width = 1280, 
+        int height = 720
+    )
+    {
+        _instance = this;
         Window = new Window(new WindowData(
             title, 
             width, 
@@ -20,6 +28,8 @@ public abstract class Application : IDisposable
 
     protected abstract void Update();
     protected abstract void Draw();
+
+    public Size GetSize() => new (Window.Width, Window.Height);
     
     public void Run()
     {

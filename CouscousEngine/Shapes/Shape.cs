@@ -5,8 +5,14 @@ namespace CouscousEngine.Shapes;
 
 public abstract class Shape : ICloneable
 {
-    protected Vector2 Position;
-    protected Color Color;
+    public Vector2 Position;
+    public Color Color;
+    
+    protected Shape()
+    {
+        Position = Vector2.Zero;
+        Color = Color.WHITE;
+    }
     
     protected Shape(Vector2 position, Color color)
     {

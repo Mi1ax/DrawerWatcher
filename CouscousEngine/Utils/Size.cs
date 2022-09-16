@@ -4,6 +4,8 @@ namespace CouscousEngine.Utils;
 
 public struct Size
 {
+    public static readonly Size ZERO = new(0, 0);
+    
     public float Width { get; set; }
     public float Height { get; set; }
 

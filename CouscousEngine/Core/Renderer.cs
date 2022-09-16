@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using rl = Raylib_CsLo.Raylib;
 using _rl = Raylib_CsLo;
@@ -36,9 +37,16 @@ public static class Renderer
 
     public static void DrawCircle(Vector2 position, float radius, Color color)
         => rl.DrawCircleV(position, radius, color);
+    
+    // TODO: Add thickness
+    public static void DrawCircleLines(Vector2 position, float radius, float thickness, Color color)
+        => rl.DrawCircleLines((int)position.X, (int)position.Y, radius, color);
 
     public static void DrawRectangle(Size size, Vector2 position, Color color)
         => rl.DrawRectangleV(position, size, color);
+    
+    public static void DrawRectangleLines(Rectangle rectangle, float thickness, Color color)
+        => rl.DrawRectangleLinesEx(rectangle, thickness, color);
     
     public static void DrawFPS(int x = 15, int y = 15)
         => rl.DrawFPS(x, y);
