@@ -131,11 +131,20 @@ public enum MouseButton
 
 public static class Input
 {
+    #region Keyboard
+    
     public static bool IsKeyDown(KeyboardKey key) => rl.IsKeyDown((int) key);
     public static bool IsKeyPressed(KeyboardKey key) => rl.IsKeyPressed((int) key);
 
+    #endregion
+    
+    #region Mouse
+    
     public static Vector2 GetMousePosition() => rl.GetMousePosition();
+    public static float GetMouseWheelMovement() => rl.GetMouseWheelMove();
     
     public static bool IsMouseButtonDown(MouseButton mouseButton) => rl.IsMouseButtonDown((int) mouseButton);
     public static bool IsMouseButtonPressed(MouseButton mouseButton) => rl.IsMouseButtonPressed((int) mouseButton);
+
+    #endregion
 }

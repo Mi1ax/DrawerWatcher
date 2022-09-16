@@ -33,7 +33,8 @@ public class Window : IDisposable
     public uint Width => _data.Width;
     public uint Height => _data.Height;
 
-    public bool IsRunning() => !rl.WindowShouldClose();
+    public static bool IsRunning() => !rl.WindowShouldClose();
+    public static void SetTargetFPS(int fps) => rl.SetTargetFPS(fps);
     
     public void Dispose()
     {

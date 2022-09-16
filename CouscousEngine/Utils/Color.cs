@@ -3,6 +3,7 @@
 public struct Color
 {
     public static readonly Color BLACK = new(0, 0, 0);
+    public static readonly Color WHITE = new(255, 255, 255);
     
     public byte R;
     public byte G;
