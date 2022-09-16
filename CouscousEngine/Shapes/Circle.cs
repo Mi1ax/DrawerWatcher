@@ -6,40 +6,31 @@ using rl = Raylib_CsLo.Raylib;
 
 namespace CouscousEngine.Shapes;
 
-public class Circle : IShape
+public class Circle : Shape
 {
-    private Color _color;
     public float Radius { get; set; }
-    public Vector2 Position { get; set; }
 
     public Circle(
         Vector2 position, 
         float radius, 
         Color color
-        )
+        ) : base(position, color)
     {
-        _color = color;
-        Position = position;
         Radius = radius;
     }
     
-    public void Draw()
+    public override void Draw()
     {
-        Renderer.DrawCircle(Position, Radius, _color);
+        Renderer.DrawCircle(Position, Radius, Color);
     }
 
     public float GetRadius() => Radius;
-    public Vector2 GetPosition() => Position;
-    public Color GetColor() => _color;
-    public Color SetColor(Color color) => _color = color;
 
-    public bool CheckCollision(Vector2 point)
+    public override bool CheckCollision(Vector2 point)
         => rl.CheckCollisionPointCircle(point, Position, Radius);
 
-    public bool CheckCollision(IShape anotherShape)
+    public override bool CheckCollision(Shape anotherShape)
     {
         throw new NotImplementedException();
     }
-
-    public object Clone() => MemberwiseClone();
 }

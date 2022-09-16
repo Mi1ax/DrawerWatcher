@@ -19,5 +19,6 @@ public struct Color
         A = a;
     }
     
-    public Raylib_CsLo.Color ToRayColor() => new(R, G, B, A);
+    public static implicit operator Raylib_CsLo.Color(Color color) 
+        => new(color.R, color.G, color.B, color.A);
 }
