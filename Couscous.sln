@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiptideNetworking", "Riptide\RiptideNetworking.csproj", "{0A9EC212-C351-43BD-A0BC-1A2B4305DAB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drawer-Watcher", "Drawer-Watcher\Drawer-Watcher.csproj", "{6DFA1CB7-1861-41BB-BEC3-9FEC4F496039}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{0A9EC212-C351-43BD-A0BC-1A2B4305DAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A9EC212-C351-43BD-A0BC-1A2B4305DAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A9EC212-C351-43BD-A0BC-1A2B4305DAB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DFA1CB7-1861-41BB-BEC3-9FEC4F496039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DFA1CB7-1861-41BB-BEC3-9FEC4F496039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DFA1CB7-1861-41BB-BEC3-9FEC4F496039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DFA1CB7-1861-41BB-BEC3-9FEC4F496039}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

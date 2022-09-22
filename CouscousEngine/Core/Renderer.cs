@@ -13,8 +13,8 @@ public static class Renderer
 
     #region RenderTexture
 
-    public static _rl.RenderTexture LoadRenderTexture(uint width, uint height) 
-        => rl.LoadRenderTexture((int)width, (int)height);
+    public static _rl.RenderTexture LoadRenderTexture(int width, int height) 
+        => rl.LoadRenderTexture(width, height);
 
     public static void UnloadRenderTexture(_rl.RenderTexture renderTexture)
         => rl.UnloadRenderTexture(renderTexture);
