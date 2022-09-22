@@ -1,4 +1,5 @@
-﻿using CouscousEngine.Utils;
+﻿using CouscousEngine.Networking;
+using CouscousEngine.Utils;
 using static Raylib_CsLo.Raylib;
 
 namespace CouscousEngine.Core;
@@ -43,6 +44,7 @@ public abstract class Application : IDisposable
     public void Dispose()
     {
         Window.Dispose();
+        ClientManager.Client?.Disconnect();
         GC.SuppressFinalize(this);
     }
 }

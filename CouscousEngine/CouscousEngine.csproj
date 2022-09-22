@@ -10,4 +10,8 @@
       <PackageReference Include="Raylib-CsLo" Version="4.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Riptide\RiptideNetworking.csproj" />
+    </ItemGroup>
+
 </Project>
