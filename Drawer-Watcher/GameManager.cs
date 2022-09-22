@@ -17,12 +17,21 @@ public static class ConnectionInfo
 
 public enum MessageID : ushort
 {
-    SendPainting = 1
+    SendPainting = 1,
+    SendPosition,
+    DrawerChanged,
 }
 
-public struct GameData
+public struct GameData : IDisposable
 {
     public static readonly Color ClearColor = Color.BLACK;
+
+    public static readonly RenderTexture Painting = Renderer.LoadRenderTexture(
+        (int)Application.Instance.GetSize().Width,
+        (int)Application.Instance.GetSize().Height);
+
+
+    public void Dispose() => Renderer.UnloadRenderTexture(Painting);
 }
 
 public static class GameManager
@@ -31,9 +40,9 @@ public static class GameManager
 
     public static bool IsConnectedToServer => _isHost || ClientManager.Client!.IsConnected;
 
-    private static RenderTexture _painting;
+    //private static RenderTexture _painting;
     
-    public static void DrawPainting() => Renderer.DrawTexture(_painting, Vector2.Zero, Color.WHITE);
+    public static void DrawPainting() => Renderer.DrawTexture(GameData.Painting, Vector2.Zero, Color.WHITE);
     
     #region Server
     
@@ -69,25 +78,6 @@ public static class GameManager
     {
         ServerManager.Stop();
     }
-
-    [MessageHandler((ushort) MessageID.SendPainting)]
-    private static void HandleDrawing(ushort fromClientId, Message message)
-    {
-        Renderer.BeginTextureMode(_painting);
-        Renderer.DrawCircle(message.GetVector2(), 16f, message.GetColor());
-        Renderer.EndTextureMode();
-        
-        // Send Data to another players
-        ServerManager.Server.SendToAll(message, fromClientId);
-    }
-    
-    [MessageHandler((ushort) MessageID.SendPainting)]
-    private static void HandleDrawing(Message message)
-    {
-        Renderer.BeginTextureMode(_painting);
-        Renderer.DrawCircle(message.GetVector2(), 16f, message.GetColor());
-        Renderer.EndTextureMode();
-    }
     
     #endregion
 
@@ -97,7 +87,6 @@ public static class GameManager
     
     public static void Initialize()
     {
-        _painting = Renderer.LoadRenderTexture((int)Application.Instance.GetSize().Width, (int)Application.Instance.GetSize().Height);
         ClientManager.Initialize((_, e) =>
         {
             Players.Remove(e.Id);

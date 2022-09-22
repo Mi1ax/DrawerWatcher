@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using CouscousEngine.Utils;
@@ -14,6 +15,8 @@ internal class Sandbox : Application
     private readonly Rectangle _clientButton;
     private readonly Rectangle _serverButton;
 
+    private readonly Rectangle _checkboxPlayers;
+    
     public Sandbox() 
         : base("Sandbox")
     {
@@ -24,6 +27,10 @@ internal class Sandbox : Application
         _serverButton = new Rectangle(
             new Size(125, 25),
             new Vector2(Window.Width / 2f - 125 / 2f, 185), Color.WHITE);
+
+        _checkboxPlayers = new Rectangle(
+            new Size(25, 25), 
+            new Vector2(Window.Width - 125, 45), Color.WHITE);
         
         GameManager.Initialize();
     }
@@ -40,11 +47,13 @@ internal class Sandbox : Application
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);
         {
+            GameManager.DrawPainting();
+
             if (!GameManager.IsConnectedToServer)
             {
                 if (_gui.GuiButton(_clientButton, "Connect"))
                 {
-                    var test = GameManager.Connect();
+                    GameManager.Connect();
                 }
 
                 if (_gui.GuiButton(_serverButton, "Create Game"))
@@ -54,9 +63,11 @@ internal class Sandbox : Application
                 }
             }
 
-            if (GameManager.IsConnectedToServer)
+            if (GameManager.IsConnectedToServer && GameManager.Players.Count != 0)
             {
-                _rl.Raylib.DrawText($"Client [{ClientManager.Client!.Id}]", 15, Window.Height - 78f, 24f, Color.GREEN);
+                _rl.Raylib.DrawText($"Client [{ClientManager.Client!.Id}]; " +
+                                    $"Drawer [{GameManager.Players[ClientManager.Client.Id].IsDrawer}]", 
+                    15, Window.Height - 78f, 24f, Color.GREEN);
 
                 foreach (var player in GameManager.Players.Values)
                     player.Update();
@@ -64,10 +75,20 @@ internal class Sandbox : Application
             if (GameManager.IsHost)
             {
                 _rl.Raylib.DrawText($"Host [{GameManager.Players.Count}]", 15, Window.Height - 48f, 24f, Color.RED);
+
+                foreach (var (id, player) in GameManager.Players)
+                {
+                    var copy = _checkboxPlayers.Clone() as Rectangle;
+                    copy!.Position.Y = _checkboxPlayers.Position.Y + _checkboxPlayers.Size.Height * id + 10;
+                    
+                    if (!_gui.GuiCheckBox(copy, "Drawer", player.IsDrawer)) continue;
+                    foreach (var otherPlayers in GameManager.Players.Values)
+                        otherPlayers.IsDrawer = false;
+
+                    GameManager.Players[id].IsDrawer = true;
+                }
             }
             
-            GameManager.DrawPainting();
-
             Renderer.DrawFPS();
         }
         Renderer.EndDrawing();
