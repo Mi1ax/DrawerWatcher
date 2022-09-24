@@ -25,7 +25,7 @@ public class Rectangle : Shape
         Size = size;
     }
 
-    public override void Draw()
+    public override void Update()
     {
         Renderer.DrawRectangle(Size, Position, Color);
     }

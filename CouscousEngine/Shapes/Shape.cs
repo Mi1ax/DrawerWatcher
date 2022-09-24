@@ -20,7 +20,7 @@ public abstract class Shape : ICloneable
         Color = color;
     }
     
-    public abstract void Draw();
+    public abstract void Update();
 
     public Vector2 GetPosition() => Position;
     public Color GetColor() => Color;

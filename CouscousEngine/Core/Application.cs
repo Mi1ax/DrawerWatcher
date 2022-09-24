@@ -1,6 +1,6 @@
-﻿using CouscousEngine.Networking;
+﻿using CouscousEngine.CCGui;
+using CouscousEngine.Networking;
 using CouscousEngine.Utils;
-using static Raylib_CsLo.Raylib;
 
 namespace CouscousEngine.Core;
 
@@ -25,20 +25,17 @@ public abstract class Application : IDisposable
             width, 
             height)
         );
+        rlImGui.Setup();
     }
 
     protected abstract void Update();
-    protected abstract void Draw();
 
     public Size GetSize() => new (Window.Width, Window.Height);
     
     public void Run()
     {
         while (Window.IsRunning())
-        {
             Update();
-            Draw();
-        }
     }
 
     public void Dispose()

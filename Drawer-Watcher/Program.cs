@@ -29,11 +29,6 @@ internal class Sandbox : Application
     
     protected override void Update()
     {
-        
-    }
-
-    protected override void Draw()
-    {
         GameManager.Update();
         
         Renderer.BeginDrawing();
