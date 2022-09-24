@@ -9,9 +9,6 @@
 # Mac files/folders
 .DS_Store
 
-# Sandbox project
-Sandbox/
-
 # User-specific files
 *.rsuser
 *.suo
