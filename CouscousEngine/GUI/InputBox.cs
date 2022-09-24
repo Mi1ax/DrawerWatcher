@@ -2,8 +2,6 @@ using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
 using Raylib_CsLo;
-using _gui = Raylib_CsLo.RayGui;
-using _rl = Raylib_CsLo.Raylib;
 using Color = CouscousEngine.Utils.Color;
 using KeyboardKey = CouscousEngine.Core.KeyboardKey;
 using Rectangle = CouscousEngine.Shapes.Rectangle;

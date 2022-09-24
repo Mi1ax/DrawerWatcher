@@ -10,7 +10,7 @@ public class Rectangle : Shape
 
     public Rectangle()
     {
-        Size = Size.ZERO;
+        Size = Size.Zero;
     }
     
     public Rectangle(Size size, Vector2 position, Color color) 
