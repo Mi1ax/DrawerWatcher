@@ -1,27 +1,32 @@
-using CouscousEngine.Shapes;
-using _gui = Raylib_CsLo.RayGui;
+﻿using System.Numerics;
+using CouscousEngine.Utils;
 
 namespace CouscousEngine.GUI;
 
-public class Button
+public class Button : Visual
 {
     private string _text;
-    private Rectangle _rectangle;
-    private Action _onClick;
 
-    public string Text => _text;
-    public Rectangle Rectangle => _rectangle;
+    private Action? _onClick;
 
-    public Button(string text, Rectangle rectangle, Action onClick)
+    public Button(string text)
     {
         _text = text;
-        _rectangle = rectangle;
+        _onClick = null;
+    }
+    
+    public Button(string text, Size size, Vector2 position, Action onClick) 
+        : base(size, position)
+    {
+        _text = text;
         _onClick = onClick;
     }
 
-    public void Draw()
+    public void SetText(string value) => _text = value;
+
+    public override void Update()
     {
-        if (_gui.GuiButton(_rectangle, _text))
-            _onClick.Invoke();
+        if (_gui.GuiButton(new Raylib_CsLo.Rectangle(Position.X, Position.Y, Size.Width, Size.Height), _text))
+            _onClick?.Invoke();
     }
 }

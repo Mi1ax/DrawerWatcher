@@ -21,7 +21,8 @@ public class MenuScreen : Screen
         
         _buttons[0] = new Button(
             "Join Game",
-            new Rectangle(buttonSize, screenCenter, Color.WHITE), 
+            buttonSize,
+            screenCenter, 
             () =>
             {
                 ScreenManager.NavigateTo(new ConnectionScreen());
@@ -29,7 +30,8 @@ public class MenuScreen : Screen
         
         _buttons[1] = new Button(
             "Create Game",
-            new Rectangle(buttonSize, new Vector2(screenCenter.X, screenCenter.Y - buttonSize.Height - 10), Color.WHITE), 
+            buttonSize,
+            new Vector2(screenCenter.X, screenCenter.Y - buttonSize.Height - 10),
             () =>
             {
                 
@@ -41,7 +43,7 @@ public class MenuScreen : Screen
         if (!GameManager.IsConnectedToServer)
         {
             foreach (var button in _buttons)
-                button.Draw();
+                button.Update();
         }
     }
     
