@@ -6,6 +6,9 @@
 # Rider folder
 .idea/
 
+# Mac files/folders
+.DS_Store
+
 # Sandbox project
 Sandbox/
 

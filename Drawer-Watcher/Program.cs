@@ -3,6 +3,7 @@ using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using CouscousEngine.Utils;
+using Drawer_Watcher.Screens;
 using _rl = Raylib_CsLo;
 using _gui = Raylib_CsLo.RayGui;
 using Color = CouscousEngine.Utils.Color;
@@ -12,26 +13,17 @@ namespace Drawer_Watcher;
 
 internal class Sandbox : Application
 {
-    private readonly Rectangle _clientButton;
-    private readonly Rectangle _serverButton;
-
     private readonly Rectangle _checkboxPlayers;
-    
+
     public Sandbox() 
         : base("Sandbox")
     {
-        _clientButton = new Rectangle(
-            new Size(125, 25),
-            new Vector2(Window.Width / 2f - 125 / 2f, 155), Color.WHITE);
-        
-        _serverButton = new Rectangle(
-            new Size(125, 25),
-            new Vector2(Window.Width / 2f - 125 / 2f, 185), Color.WHITE);
-
         _checkboxPlayers = new Rectangle(
             new Size(25, 25), 
             new Vector2(Window.Width - 125, 45), Color.WHITE);
-        
+
+        ScreenManager.NavigateTo(new ConnectionScreen());
+            
         GameManager.Initialize();
     }
     
@@ -48,22 +40,24 @@ internal class Sandbox : Application
         Renderer.ClearBackground(GameData.ClearColor);
         {
             GameManager.DrawPainting();
+            
+            ScreenManager.Update();
 
             if (!GameManager.IsConnectedToServer)
             {
-                if (_gui.GuiButton(_clientButton, "Connect"))
+                if (false)
                 {
                     GameManager.Connect();
                 }
 
-                if (_gui.GuiButton(_serverButton, "Create Game"))
+                if (false)
                 {
                     GameManager.IsHost = true;
                     GameManager.Connect();
                 }
             }
 
-            if (GameManager.IsConnectedToServer && GameManager.Players.Count != 0)
+            if (GameManager.IsConnectedToServer && GameManager.Players.Count != 0) 
             {
                 _rl.Raylib.DrawText($"Client [{ClientManager.Client!.Id}]; " +
                                     $"Drawer [{GameManager.Players[ClientManager.Client.Id].IsDrawer}]", 
@@ -72,7 +66,7 @@ internal class Sandbox : Application
                 foreach (var player in GameManager.Players.Values)
                     player.Update();
             } 
-            if (GameManager.IsHost)
+            if (GameManager.IsHost) 
             {
                 _rl.Raylib.DrawText($"Host [{GameManager.Players.Count}]", 15, Window.Height - 48f, 24f, Color.RED);
 

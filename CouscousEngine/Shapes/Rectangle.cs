@@ -18,6 +18,12 @@ public class Rectangle : Shape
     {
         Size = size;
     }
+    
+    public Rectangle(Size size, Vector2 position) 
+        : base(position, Color.WHITE)
+    {
+        Size = size;
+    }
 
     public override void Draw()
     {
