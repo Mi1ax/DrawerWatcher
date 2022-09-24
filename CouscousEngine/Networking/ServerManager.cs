@@ -1,6 +1,8 @@
 ﻿using Riptide;
 using Riptide.Experimental.TcpTransport;
+using Riptide.Transports.Udp;
 using Riptide.Utils;
+using System.Data;
 
 namespace CouscousEngine.Networking;
 
@@ -26,6 +28,8 @@ public static class ServerManager
         RiptideLogger.Initialize(Console.WriteLine, true);
 
         _server = new Server();
+        _server.ChangeTransport(new UdpServer(SocketMode.IPv4Only));
+
 
         Server.ClientConnected += onClientConnected;
         Server.ClientDisconnected += onClientDisconnected;

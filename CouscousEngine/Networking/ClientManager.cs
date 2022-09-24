@@ -1,4 +1,5 @@
 ﻿using Riptide;
+using Riptide.Transports.Udp;
 using Riptide.Utils;
 
 namespace CouscousEngine.Networking;
@@ -11,6 +12,7 @@ public static class ClientManager
     {
         RiptideLogger.Initialize(Console.WriteLine, true);
         Client = new Client();
+        Client.ChangeTransport(new UdpClient(SocketMode.IPv4Only));
         Client.ClientDisconnected += onClientDisconnected;
     }
 
