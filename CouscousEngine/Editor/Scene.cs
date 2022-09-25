@@ -32,6 +32,9 @@ public class Scene : UUID
 
     public static void Save(Scene scene, string filename)
     {
+        if (!Directory.Exists("Scenes"))
+            Directory.CreateDirectory("Scenes");
+
         var filepath = "Scenes/" + filename + ".yaml";
 
         var serializer = new SerializerBuilder()
@@ -42,9 +45,12 @@ public class Scene : UUID
 
     public static Scene Load(string filename)
     {
+        if (!Directory.Exists("Scenes"))
+            Directory.CreateDirectory("Scenes");
+        
         var filepath = "Scenes/" + filename + ".yaml";
         
-        if (File.Exists(filepath))
+        if (!File.Exists(filepath))
             return new Scene();
         
         var text = File.ReadAllText(filepath);

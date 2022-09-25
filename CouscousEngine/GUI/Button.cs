@@ -1,11 +1,12 @@
 ﻿using System.Numerics;
+using CouscousEngine.Editor;
 using CouscousEngine.Utils;
 
 namespace CouscousEngine.GUI;
 
 public class Button : Visual
 {
-    public string Text { get; set; }
+    [Inspectable] public string Text { get; set; }
 
     private Action? _onClick;
     

@@ -8,7 +8,7 @@ public abstract class UUID
 
     private readonly string? _uniqueName;
 
-    [YamlIgnore] public string UniqueName
+    public string UniqueName
     {
         get => _uniqueName ?? Guid.ToString();
         init => _uniqueName = value;
