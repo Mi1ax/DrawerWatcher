@@ -1,21 +1,27 @@
 ﻿using System.Numerics;
-using CouscousEngine.CCGui;
+using CouscousEngine.Core;
+using CouscousEngine.Editor;
 using CouscousEngine.Utils;
 
 namespace CouscousEngine.GUI;
 
-public abstract class Visual
+public abstract class Visual : UUID
 {
     [Inspectable] protected Size Size { get; set; }
     [Inspectable] protected Vector2 Position { get; set; }
-
-    protected Visual()
+    
+    protected Visual(string uniqueObjectName) 
+        : base(uniqueObjectName)
     {
-        Size = Size.Zero;
-        Position = Vector2.Zero;
+        Size = new Size(125, 25);
+        var windowSize = Application.Instance.GetSize();
+        Position = new Vector2(
+            windowSize.Width / 2f - Size.Width / 2f, 
+            windowSize.Height / 2f - Size.Height / 2f);
     }
     
-    protected Visual(Size size, Vector2 position)
+    protected Visual(string uniqueObjectName, Size size, Vector2 position)
+        : base(uniqueObjectName)
     {
         Size = size;
         Position = position;
