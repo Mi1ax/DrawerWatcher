@@ -14,6 +14,8 @@ public struct Size
         Width = width;
         Height = height;
     }
-    
+
+    public override string ToString() => $"<{Width}, {Height}>";
+
     public static implicit operator Vector2(Size size) => new(size.Width, size.Height);
 }
