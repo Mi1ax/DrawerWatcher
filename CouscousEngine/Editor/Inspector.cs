@@ -3,7 +3,7 @@ using System.Reflection;
 using CouscousEngine.Utils;
 using ImGuiNET;
 
-namespace CouscousEngine.CCGui;
+namespace CouscousEngine.Editor;
 
 public enum InspectorHint : byte
 {

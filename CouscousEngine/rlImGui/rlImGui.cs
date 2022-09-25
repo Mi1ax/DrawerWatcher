@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using ImGuiNET;
 using Raylib_CsLo;
 
-namespace CouscousEngine.CCGui;
+namespace CouscousEngine.rlImGui;
 
 using static RlGl;
 
@@ -27,16 +27,16 @@ public static class rlImGui
         BeginInitImGui();
 
         if (darkTheme)
-            ImGuiNET.ImGui.StyleColorsDark();
+            ImGui.StyleColorsDark();
         else
-            ImGuiNET.ImGui.StyleColorsLight();
+            ImGui.StyleColorsLight();
 
         EndInitImGui();
     }
 
     public static void BeginInitImGui()
     {
-        ImGuiContext = ImGuiNET.ImGui.CreateContext();
+        ImGuiContext = ImGui.CreateContext();
     }
 
     private static void SetupMouseCursors()
@@ -56,8 +56,8 @@ public static class rlImGui
 
     public static unsafe void ReloadFonts()
     {
-        ImGuiNET.ImGui.SetCurrentContext(ImGuiContext);
-        var io = ImGuiNET.ImGui.GetIO();
+        ImGui.SetCurrentContext(ImGuiContext);
+        var io = ImGui.GetIO();
 
         io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out var width, out var height, out _);
 
@@ -79,11 +79,11 @@ public static class rlImGui
     {
         SetupMouseCursors();
 
-        ImGuiNET.ImGui.SetCurrentContext(ImGuiContext);
-        _ = ImGuiNET.ImGui.GetIO().Fonts;
-        ImGuiNET.ImGui.GetIO().Fonts.AddFontDefault();
+        ImGui.SetCurrentContext(ImGuiContext);
+        _ = ImGui.GetIO().Fonts;
+        ImGui.GetIO().Fonts.AddFontDefault();
 
-        var io = ImGuiNET.ImGui.GetIO();
+        var io = ImGui.GetIO();
         io.KeyMap[(int)ImGuiKey.Tab] = (int)KeyboardKey.KEY_TAB;
         io.KeyMap[(int)ImGuiKey.LeftArrow] = (int)KeyboardKey.KEY_LEFT;
         io.KeyMap[(int)ImGuiKey.RightArrow] = (int)KeyboardKey.KEY_RIGHT;
@@ -110,7 +110,7 @@ public static class rlImGui
 
     private static void NewFrame()
     {
-        var io = ImGuiNET.ImGui.GetIO();
+        var io = ImGui.GetIO();
 
         if (Raylib.IsWindowFullscreen())
         {
@@ -150,7 +150,7 @@ public static class rlImGui
 
         if ((io.ConfigFlags & ImGuiConfigFlags.NoMouseCursorChange) != 0) return;
         
-        var imgui_cursor = ImGuiNET.ImGui.GetMouseCursor();
+        var imgui_cursor = ImGui.GetMouseCursor();
         if (imgui_cursor == CurrentMouseCursor && !io.MouseDrawCursor) return;
         CurrentMouseCursor = imgui_cursor;
         if (io.MouseDrawCursor || imgui_cursor == ImGuiMouseCursor.None)
@@ -172,7 +172,7 @@ public static class rlImGui
 
     private static void FrameEvents()
     {
-        var io = ImGuiNET.ImGui.GetIO();
+        var io = ImGui.GetIO();
 
         if (KeyEnumMap != null)
             foreach (var key in KeyEnumMap)
@@ -190,11 +190,11 @@ public static class rlImGui
 
     public static void Begin()
     {
-        ImGuiNET.ImGui.SetCurrentContext(ImGuiContext);
+        ImGui.SetCurrentContext(ImGuiContext);
 
         NewFrame();
         FrameEvents();
-        ImGuiNET.ImGui.NewFrame();
+        ImGui.NewFrame();
     }
 
     private static void EnableScissor(float x, float y, float width, float height)
@@ -255,7 +255,7 @@ public static class rlImGui
         rlDrawRenderBatchActive();
         rlDisableBackfaceCulling();
 
-        var data = ImGuiNET.ImGui.GetDrawData();
+        var data = ImGui.GetDrawData();
 
         for (var l = 0; l < data.CmdListsCount; l++)
         {
@@ -285,8 +285,8 @@ public static class rlImGui
 
     public static void End()
     {
-        ImGuiNET.ImGui.SetCurrentContext(ImGuiContext);
-        ImGuiNET.ImGui.Render();
+        ImGui.SetCurrentContext(ImGuiContext);
+        ImGui.Render();
         RenderData();
     }
 
@@ -297,17 +297,17 @@ public static class rlImGui
 
     public static void Image(Texture image)
     {
-        ImGuiNET.ImGui.Image(new IntPtr(image.id), new Vector2(image.width, image.height));
+        ImGui.Image(new IntPtr(image.id), new Vector2(image.width, image.height));
     }
 
     public static void ImageSize(Texture image, int width, int height)
     {
-        ImGuiNET.ImGui.Image(new IntPtr(image.id), new Vector2(width, height));
+        ImGui.Image(new IntPtr(image.id), new Vector2(width, height));
     }
 
     public static void ImageSize(Texture image, Vector2 size)
     {
-        ImGuiNET.ImGui.Image(new IntPtr(image.id), size);
+        ImGui.Image(new IntPtr(image.id), size);
     }
 
     public static void ImageRect(Texture image, int destWidth, int destHeight, Rectangle sourceRect)
@@ -337,6 +337,6 @@ public static class rlImGui
             uv1.Y = uv0.Y + sourceRect.height / image.height;
         }
 
-        ImGuiNET.ImGui.Image(new IntPtr(image.id), new Vector2(destWidth, destHeight), uv0, uv1);
+        ImGui.Image(new IntPtr(image.id), new Vector2(destWidth, destHeight), uv0, uv1);
     }
 }
