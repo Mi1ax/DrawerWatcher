@@ -1,5 +1,5 @@
 
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     using System;
     using System.Collections;
@@ -46,7 +46,7 @@ namespace SimpleECS
         /// </summary>
         public Archetype[] GetArchetypes()
         {
-            if (Update(out World_Info world_info))
+            if (Update(out WorldInfo world_info))
             {
                 Archetype[] archetypes = new Archetype[archetype_count];
                 for (int i = 0; i < archetype_count; ++i)
@@ -195,7 +195,7 @@ namespace SimpleECS
         }
 
         // keeps the queried archtypes up to date, return false if the query is not valid
-        bool Update(out World_Info world_info)
+        bool Update(out WorldInfo world_info)
         {
             if (world.TryGetWorldInfo(out world_info))
             {

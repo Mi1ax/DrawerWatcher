@@ -1,4 +1,4 @@
-namespace SimpleECS.Internal
+namespace CouscousEngine.ECS.Internal
 {
     using System.IO;
 
@@ -29,7 +29,7 @@ namespace SimpleECS.Internal
         {
             using (StreamWriter writer = new StreamWriter(output_path))
             {
-                writer.WriteLine($"namespace {nameof(SimpleECS)}");
+                writer.WriteLine($"namespace {nameof(ECS)}");
                 writer.WriteLine("{");
                 writer.WriteLine("  using Internal;");
                 writer.WriteLine("  public partial struct World");
@@ -64,7 +64,7 @@ namespace SimpleECS.Internal
         {
             using (StreamWriter writer = new StreamWriter(output_path))
             {
-                writer.WriteLine($"namespace {nameof(SimpleECS)}");
+                writer.WriteLine($"namespace {nameof(ECS)}");
                 writer.WriteLine("{");
                 writer.WriteLine("  public partial class Query");
                 writer.WriteLine("  {");

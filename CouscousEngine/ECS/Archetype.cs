@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     using System;
     using System.Collections;
@@ -108,7 +108,7 @@ namespace SimpleECS
         public void Destroy()
         {
             if (world.IsValid())
-                World_Info.All[world.index].data.StructureEvents.DestroyArchetype(this);
+                WorldInfo.All[world.index].data.StructureEvents.DestroyArchetype(this);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace SimpleECS
         public void ResizeBackingArrays()
         {
             if (world.IsValid())
-                World_Info.All[world.index].data.StructureEvents.ResizeBackingArrays(this);
+                WorldInfo.All[world.index].data.StructureEvents.ResizeBackingArrays(this);
         }
 
         bool IEquatable<Archetype>.Equals(Archetype other)
@@ -173,14 +173,14 @@ namespace SimpleECS
     }
 }
 
-namespace SimpleECS.Internal
+namespace CouscousEngine.ECS.Internal
 {
     using System;
     using System.Collections;
 
     public static partial class Extensions
     {
-        public static bool TryGetArchetypeInfo(this Archetype archetype, out World_Info world_info, out Archetype_Info arch_info)
+        public static bool TryGetArchetypeInfo(this Archetype archetype, out WorldInfo world_info, out Archetype_Info arch_info)
         {
             if (archetype.world.TryGetWorldInfo(out  world_info))
             {
@@ -214,7 +214,7 @@ namespace SimpleECS.Internal
 
     public class Archetype_Info
     {
-        public Archetype_Info(World_Info world, TypeSignature signature, int arch_index, int arch_version)
+        public Archetype_Info(WorldInfo world, TypeSignature signature, int arch_index, int arch_version)
         {
             this.world_info = world;
             this.signature = signature;
@@ -287,7 +287,7 @@ namespace SimpleECS.Internal
 
         public int entity_count;
         public Entity[] entities = new Entity[8];
-        public World_Info world_info;
+        public WorldInfo world_info;
         public TypeSignature signature;
         public readonly Archetype archetype;
         public readonly int component_count;

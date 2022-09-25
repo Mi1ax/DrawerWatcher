@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     using System;
     using Internal;
@@ -262,7 +262,7 @@ namespace SimpleECS
     }
 }
 
-namespace SimpleECS.Internal
+namespace CouscousEngine.ECS.Internal
 {
     public partial class Extensions
     {

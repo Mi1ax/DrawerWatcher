@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
   using Internal;
   public partial struct World

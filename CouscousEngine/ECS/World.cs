@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     using System;
     using System.Collections;
@@ -123,9 +123,9 @@ namespace SimpleECS
         public static World Create(string Name)
         {
             var index = -1;
-            for (int i = 0; i < World_Info.All.Length; ++i)
+            for (int i = 0; i < WorldInfo.All.Length; ++i)
             {
-                if (World_Info.All[i].data == null)
+                if (WorldInfo.All[i].data == null)
                 {
                     index = i;
                     break;
@@ -133,21 +133,21 @@ namespace SimpleECS
             }
             if (index < 0)
             {
-                index = World_Info.All.Length;
-                System.Array.Resize(ref World_Info.All, index + 4);
+                index = WorldInfo.All.Length;
+                System.Array.Resize(ref WorldInfo.All, index + 4);
             }
 
-            ref var world_data = ref World_Info.All[index];
+            ref var world_data = ref WorldInfo.All[index];
             var version = world_data.version;
-            world_data.data = new World_Info(Name, new World(index, version));
-            World_Info.world_count++;
+            world_data.data = new WorldInfo(Name, new World(index, version));
+            WorldInfo.world_count++;
             return world_data.data.world;
         }
 
         /// <summary>
         /// Returns true if the world is not null or destroyed
         /// </summary>
-        public bool IsValid() => World_Info.All[index].version == version;
+        public bool IsValid() => WorldInfo.All[index].version == version;
 
         /// <summary>
         /// Destroys the world along with all it's archetypes and entities
@@ -454,7 +454,7 @@ namespace SimpleECS
         public static bool operator ==(World a, World b) => a.index == b.index && a.version == b.version;
         public static bool operator !=(World a, World b) => !(a == b);
 
-        public static implicit operator bool(World world) => World_Info.All[world.index].version == world.version;
+        public static implicit operator bool(World world) => WorldInfo.All[world.index].version == world.version;
 
         /// <summary>
         /// Returns a copy of all active Worlds
@@ -462,7 +462,7 @@ namespace SimpleECS
         public static World[] GetAll()
         {
             var worlds = new List<World>();
-            foreach (var info in World_Info.All)
+            foreach (var info in WorldInfo.All)
             {
                 if (info.data != null)
                     worlds.Add(info.data.world);
@@ -517,7 +517,7 @@ namespace SimpleECS
     }
 }
 
-namespace SimpleECS.Internal
+namespace CouscousEngine.ECS.Internal
 {
     using System.Collections.Generic;
 
@@ -529,9 +529,9 @@ namespace SimpleECS.Internal
 
     public static partial class Extensions
     {
-        public static bool TryGetWorldInfo(this World world, out World_Info info)
+        public static bool TryGetWorldInfo(this World world, out WorldInfo info)
         {
-            var data = World_Info.All[world.index];
+            var data = WorldInfo.All[world.index];
             if (data.version == world.version)
             {
                 info = data.data;
@@ -542,20 +542,20 @@ namespace SimpleECS.Internal
         }
     }
 
-    public partial class World_Info
+    public partial class WorldInfo
     {
-        static World_Info()
+        static WorldInfo()
         {
-            All = new (World_Info, int)[4];
+            All = new (WorldInfo, int)[4];
             All[0].version = 1; // added a version to the 0th index so that a default world will be invalid
         }
 
-        public static (World_Info data, int version)[] All;
+        public static (WorldInfo data, int version)[] All;
         public static int world_count;
 
         public string name;
         public World world;
-        public World_Info(string name, World world)
+        public WorldInfo(string name, World world)
         {
             this.name = name;
             this.world = world;
@@ -650,10 +650,10 @@ namespace SimpleECS.Internal
         public StructureEventHandler StructureEvents;
     }
 
-    public struct Entity_Info
+    public struct EntityInfo
     {
         public Archetype_Info arch_info;
-        public World_Info world_info;
+        public WorldInfo world_info;
         public int version;
         public int arch_index;
     }
@@ -662,12 +662,12 @@ namespace SimpleECS.Internal
     {
         static Entities()
         {
-            All = new Entity_Info[1024];
+            All = new EntityInfo[1024];
             Free = new Queue<int>(1024);
             All[0].version++;
         }
 
-        public static Entity_Info[] All;
+        public static EntityInfo[] All;
         public static Queue<int> Free;
         public static int Last;
     }
@@ -738,14 +738,14 @@ namespace SimpleECS.Internal
 
     public struct StructureEventHandler
     {
-        public StructureEventHandler(World_Info world)
+        public StructureEventHandler(WorldInfo world)
         {
             cache_events = 0;
             events = new Queue<EventData>();
             this.world = world;
         }
 
-        World_Info world;
+        WorldInfo world;
         int cache_events;
         public int EnqueueEvents
         {
@@ -1084,7 +1084,7 @@ namespace SimpleECS.Internal
                 events.Enqueue(new EventData { type = EventType.DestroyWorld });
             else
             {
-                ref var world_info = ref World_Info.All[world.world.index];
+                ref var world_info = ref WorldInfo.All[world.world.index];
                 if (world_info.version == world.world.version)  // still needs to be checked incase multiple destorys are queued
                 {
                     world_info.version++;

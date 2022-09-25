@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     public partial class Query
     {

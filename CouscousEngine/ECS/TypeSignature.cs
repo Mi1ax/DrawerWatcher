@@ -1,4 +1,4 @@
-namespace SimpleECS
+namespace CouscousEngine.ECS
 {
     using System;
     using System.Collections;
@@ -314,7 +314,7 @@ namespace SimpleECS
     }
 }
 
-namespace SimpleECS.Internal
+namespace CouscousEngine.ECS.Internal
 {
     using System;
     using System.Collections.Generic;
