@@ -5,29 +5,34 @@ namespace CouscousEngine.GUI;
 
 public class Button : Visual
 {
-    private string _text;
+    public string Text { get; set; }
 
     private Action? _onClick;
     
-    public Button(string buttonName, string text) : base(buttonName)
+    public Button()
     {
-        _text = text;
+        Text = string.Empty;
         _onClick = null;
     }
     
-    public Button(string buttonName, string text, Size size, Vector2 position, Action onClick) 
-        : base(buttonName, size, position)
+    public Button(string text)
     {
-        _text = text;
+        Text = text;
+        _onClick = null;
+    }
+    
+    public Button(string text, Size size, Vector2 position, Action onClick) 
+        : base(size, position)
+    {
+        Text = text;
         _onClick = onClick;
     }
 
     public void SetOnClick(Action onClick) => _onClick = onClick;
-    public void SetText(string value) => _text = value;
 
     public override void Update()
     {
-        if (_gui.GuiButton(new Raylib_CsLo.Rectangle(Position.X, Position.Y, Size.Width, Size.Height), _text))
+        if (_gui.GuiButton(new Raylib_CsLo.Rectangle(Position.X, Position.Y, Size.Width, Size.Height), Text))
             _onClick?.Invoke();
     }
 }

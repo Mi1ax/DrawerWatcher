@@ -1,4 +1,7 @@
-﻿using CouscousEngine.Core;
+﻿using System.Numerics;
+using CouscousEngine.Core;
+using CouscousEngine.Editor;
+using CouscousEngine.GUI;
 using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
 
@@ -8,10 +11,12 @@ internal static class Program
 {
     private class Sandbox : Application
     {
+        private readonly Scene _scene;
+        
         public Sandbox() 
             : base("Sandbox")
         {
-            
+            _scene = Scene.Load("Sandbox");
         }
 
         protected override void Update()
@@ -19,14 +24,17 @@ internal static class Program
             Renderer.BeginDrawing();
             Renderer.ClearBackground(Color.BLACK);
             
+            _scene.Update();
+            
             rlImGui.Begin();
+            Inspector.DrawWindow(_scene.Buttons.First().Value);
             rlImGui.End();
             Renderer.EndDrawing();
         }
 
         protected override void OnExit()
         {
-            
+            Scene.Save(_scene, "SimpleScene");
         }
     }
     

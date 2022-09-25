@@ -1,12 +1,16 @@
-﻿namespace CouscousEngine.Editor;
+﻿using YamlDotNet.Serialization;
+
+namespace CouscousEngine.Editor;
 
 public abstract class UUID
 {
-    public readonly Guid _guid = Guid.NewGuid();
-    public readonly string _uniqueObjectName;
+    [YamlIgnore] public readonly Guid Guid = Guid.NewGuid();
 
-    protected UUID(string uniqueObjectName) => _uniqueObjectName = uniqueObjectName;
+    private readonly string? _uniqueName;
 
-    public Guid GetGuid() => _guid;
-    public string GetName() => _uniqueObjectName;
+    [YamlIgnore] public string UniqueName
+    {
+        get => _uniqueName ?? Guid.ToString();
+        init => _uniqueName = value;
+    }
 }

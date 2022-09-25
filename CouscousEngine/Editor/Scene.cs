@@ -1,31 +1,57 @@
 ﻿using CouscousEngine.GUI;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace CouscousEngine.Editor;
 
 public class Scene : UUID
 {
-    public Dictionary<Guid, Visual> Visuals { get; set; }
+    public Dictionary<Guid, Button> Buttons { get; set; }
 
-    public Scene(string sceneName) 
-        : base(sceneName)
+    public Scene()
     {
-        Visuals = new Dictionary<Guid, Visual>();
+        Buttons = new Dictionary<Guid, Button>();
     }
 
-    public Visual AddObject(Visual visual)
+    public Button AddObject(Button visual)
     {
-        Visuals.Add(visual.GetGuid(), visual);
-        return Visuals[visual.GetGuid()];
+        Buttons.Add(visual.Guid, visual);
+        return Buttons[visual.Guid];
     }
 
-    public Visual GetObject(Guid guid) => Visuals[guid];
+    public Button GetObject(Guid guid) => Buttons[guid];
 
-    public Visual? GetObject(string objectName)
-        => Visuals.Values.FirstOrDefault(visualsValue => visualsValue.GetName() == objectName);
+    public Button? GetObject(string objectName)
+        => Buttons.Values.FirstOrDefault(visualsValue => visualsValue.UniqueName == objectName);
 
     public void Update()
     {
-        foreach (var visual in Visuals.Values)
+        foreach (var visual in Buttons.Values)
             visual.Update();
+    }
+
+    public static void Save(Scene scene, string filename)
+    {
+        var filepath = "Scenes/" + filename + ".yaml";
+
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+        File.WriteAllText(filepath, serializer.Serialize(scene));
+    }
+
+    public static Scene Load(string filename)
+    {
+        var filepath = "Scenes/" + filename + ".yaml";
+        
+        if (File.Exists(filepath))
+            return new Scene();
+        
+        var text = File.ReadAllText(filepath);
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        return deserializer.Deserialize<Scene>(text);
     }
 }

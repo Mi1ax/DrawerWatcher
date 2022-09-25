@@ -7,11 +7,10 @@ namespace CouscousEngine.GUI;
 
 public abstract class Visual : UUID
 {
-    [Inspectable] protected Size Size { get; set; }
-    [Inspectable] protected Vector2 Position { get; set; }
+    [Inspectable] public Size Size { get; set; }
+    [Inspectable] public Vector2 Position { get; set; }
     
-    protected Visual(string uniqueObjectName) 
-        : base(uniqueObjectName)
+    protected Visual()
     {
         Size = new Size(125, 25);
         var windowSize = Application.Instance.GetSize();
@@ -20,8 +19,7 @@ public abstract class Visual : UUID
             windowSize.Height / 2f - Size.Height / 2f);
     }
     
-    protected Visual(string uniqueObjectName, Size size, Vector2 position)
-        : base(uniqueObjectName)
+    protected Visual(Size size, Vector2 position)
     {
         Size = size;
         Position = position;

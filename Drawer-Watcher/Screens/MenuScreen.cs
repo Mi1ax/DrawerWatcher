@@ -20,7 +20,6 @@ public class MenuScreen : Screen
             Application.Instance.GetSize().Height / 2f);
         
         _buttons[0] = new Button(
-            "JoinGameButton",
             "Join Game",
             buttonSize,
             screenCenter, 
@@ -30,7 +29,6 @@ public class MenuScreen : Screen
             });
         
         _buttons[1] = new Button(
-            "CreateGameButton",
             "Create Game",
             buttonSize,
             new Vector2(screenCenter.X, screenCenter.Y - buttonSize.Height - 10),
