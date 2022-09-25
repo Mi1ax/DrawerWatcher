@@ -82,6 +82,11 @@ internal class Sandbox : Application
         }
         Renderer.EndDrawing();
     }
+
+    protected override void OnExit()
+    {
+        
+    }
 }
 
 internal static class Program

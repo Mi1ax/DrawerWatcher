@@ -1,7 +1,6 @@
-﻿using CouscousEngine.CCGui;
-using CouscousEngine.Core;
+﻿using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
-using ImGuiNET;
 
 namespace Sandbox;
 
@@ -21,15 +20,19 @@ internal static class Program
             Renderer.ClearBackground(Color.BLACK);
             
             rlImGui.Begin();
-            ImGui.ShowDemoWindow();
             rlImGui.End();
             Renderer.EndDrawing();
+        }
+
+        protected override void OnExit()
+        {
+            
         }
     }
     
     private static void Main()
     {
-        var sandbox = new Sandbox();
+        using var sandbox = new Sandbox();
         sandbox.Run();
     }
 }

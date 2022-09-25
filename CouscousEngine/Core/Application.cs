@@ -1,5 +1,4 @@
-﻿using CouscousEngine.CCGui;
-using CouscousEngine.Networking;
+﻿using CouscousEngine.Networking;
 using CouscousEngine.Utils;
 
 namespace CouscousEngine.Core;
@@ -25,10 +24,12 @@ public abstract class Application : IDisposable
             width, 
             height)
         );
-        rlImGui.Setup();
+        rlImGui.rlImGui.Setup();
     }
 
     protected abstract void Update();
+
+    protected abstract void OnExit();
 
     public Size GetSize() => new (Window.Width, Window.Height);
     
@@ -40,6 +41,7 @@ public abstract class Application : IDisposable
 
     public void Dispose()
     {
+        OnExit();
         Window.Dispose();
         ClientManager.Client?.Disconnect();
         GC.SuppressFinalize(this);
