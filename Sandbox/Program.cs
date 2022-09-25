@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using CouscousEngine.Core;
-using CouscousEngine.ECS;
+﻿using CouscousEngine.Core;
 using CouscousEngine.Editor;
 using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
@@ -35,16 +33,6 @@ internal static class Program
         protected override void OnExit()
         {
             Scene.Save(_scene, "SimpleScene");
-        }
-    }
-
-    private class NameComponent
-    {
-        public string Name { get; set; }
-
-        public NameComponent(string name)
-        {
-            Name = name;
         }
     }
     

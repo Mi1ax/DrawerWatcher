@@ -147,7 +147,7 @@ namespace CouscousEngine.ECS
         /// <summary>
         /// Returns true if the world is not null or destroyed
         /// </summary>
-        public bool IsValid() => WorldInfo.All[index].version == version;
+        public readonly bool IsValid() => WorldInfo.All[index].version == version;
 
         /// <summary>
         /// Destroys the world along with all it's archetypes and entities

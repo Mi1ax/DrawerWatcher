@@ -25,7 +25,7 @@ namespace CouscousEngine.ECS
         /// returns a copy of component types in this archetype
         /// </summary>
         public Type[] GetTypes()
-            => this.TryGetArchetypeInfo(out var archetype_Info) ? archetype_Info.GetComponentTypes() : new Type[0];
+            => this.TryGetArchetypeInfo(out var archetype_Info) ? archetype_Info.GetComponentTypes() : Type.EmptyTypes;
         
         /// <summary>
         /// the world this archetype belongs to
@@ -83,7 +83,7 @@ namespace CouscousEngine.ECS
                 entity_buffer = data.entities;
                 return true;
             }
-            entity_buffer = default;
+            entity_buffer = default!;
             return false;
         }
 
@@ -97,7 +97,7 @@ namespace CouscousEngine.ECS
         {
             if (this.TryGetArchetypeInfo(out var data))
                 return data.TryGetArray(out comp_buffer);
-            comp_buffer = default;
+            comp_buffer = default!;
             return false;
         }
 
@@ -132,7 +132,7 @@ namespace CouscousEngine.ECS
 
         public static implicit operator bool(Archetype archetype) => archetype.IsValid();
 
-        public override bool Equals(object obj) => obj is Archetype a ? a == this : false;
+        public override bool Equals(object? obj) => obj is Archetype a && a == this;
 
         public static implicit operator int(Archetype a) => a.index;
 
@@ -191,8 +191,8 @@ namespace CouscousEngine.ECS.Internal
                     return true;
                 }
             }
-            arch_info = default;
-            world_info = default;
+            arch_info = default!;
+            world_info = default!;
             return false;
         }
 
@@ -200,14 +200,14 @@ namespace CouscousEngine.ECS.Internal
         {
             if (archetype.world.TryGetWorldInfo(out var world_info))
             {
-                var arch = world_info.archetypes[archetype.index];
-                if (arch.version == archetype.version)
+                var (data, version) = world_info.archetypes[archetype.index];
+                if (version == archetype.version)
                 {
-                    arch_info = arch.data;
+                    arch_info = data;
                     return true;
                 }
             }
-            arch_info = default;
+            arch_info = default!;
             return false;
         }
     }
@@ -281,17 +281,17 @@ namespace CouscousEngine.ECS.Internal
             }
 
             CompBuffer CreatePool(Type type)
-                => Activator.CreateInstance(typeof(CompBuffer<>).MakeGenericType(type)) as CompBuffer;
+                => (Activator.CreateInstance(typeof(CompBuffer<>).MakeGenericType(type)) as CompBuffer)!;
         }
 
 
         public int entity_count;
         public Entity[] entities = new Entity[8];
-        public WorldInfo world_info;
-        public TypeSignature signature;
+        public readonly WorldInfo world_info;
+        public readonly TypeSignature signature;
         public readonly Archetype archetype;
         public readonly int component_count;
-        public CompBufferData[] component_buffers;
+        public readonly CompBufferData[] component_buffers;
 
         public struct CompBufferData
         {
@@ -305,25 +305,23 @@ namespace CouscousEngine.ECS.Internal
         /// </summary>
         public void ResizeBackingArrays()
         {
-            int size = 8;
+            var size = 8;
             while (size <= entity_count)
                 size *= 2;
-            System.Array.Resize(ref entities, size);
-            for(int i = 0; i < component_count; ++ i)
+            Array.Resize(ref entities, size);
+            for (var i = 0; i < component_count; ++ i)
                 component_buffers[i].buffer.Resize(size);
         }
 
         public void EnsureCapacity(int capacity)
         {
-            if (capacity >= entities.Length)
-            {
-                int size = entities.Length;
-                while (capacity >= size)
-                    size *= 2;
-                System.Array.Resize(ref entities, size);
-                for (int i = 0; i < component_count; ++i)
-                    component_buffers[i].buffer.Resize(size);
-            }
+            if (capacity < entities.Length) return;
+            var size = entities.Length;
+            while (capacity >= size)
+                size *= 2;
+            Array.Resize(ref entities, size);
+            for (var i = 0; i < component_count; ++i)
+                component_buffers[i].buffer.Resize(size);
         }
 
         public bool Has(int type_id)
@@ -343,7 +341,7 @@ namespace CouscousEngine.ECS.Internal
 
         public bool TryGetArray<Component>(out Component[] components)
         {
-            int type_id = TypeID<Component>.Value;
+            var type_id = TypeID<Component>.Value;
             var data = component_buffers[type_id % component_buffers.Length];
             if (data.type_id == type_id)
             {
@@ -353,13 +351,11 @@ namespace CouscousEngine.ECS.Internal
             while (data.next >= 0)
             {
                 data = component_buffers[data.next];
-                if (data.type_id == type_id)
-                {
-                    components = (Component[])data.buffer.array;
-                    return true;
-                }
+                if (data.type_id != type_id) continue;
+                components = (Component[])data.buffer.array;
+                return true;
             }
-            components = default;
+            components = default!;
             return false;
         }
 
@@ -374,13 +370,11 @@ namespace CouscousEngine.ECS.Internal
             while (data.next >= 0)
             {
                 data = component_buffers[data.next];
-                if (data.type_id == type_id)
-                {
-                    buffer = data.buffer;
-                    return true;
-                }
+                if (data.type_id != type_id) continue;
+                buffer = data.buffer;
+                return true;
             }
-            buffer = default;
+            buffer = default!;
             return false;
         }
 
@@ -389,7 +383,7 @@ namespace CouscousEngine.ECS.Internal
             object[] components = new object[component_count];
 
             for (int i = 0; i < component_count; ++i)
-                components[i] = component_buffers[i].buffer.array[entity_arch_index];
+                components[i] = component_buffers[i].buffer.array[entity_arch_index]!;
             return components;
         }
 
@@ -403,7 +397,7 @@ namespace CouscousEngine.ECS.Internal
 
         public abstract class CompBuffer    //handles component data
         {
-            public IList array;
+            public IList array = null!;
             public abstract void Resize(int capacity);
             /// <summary>
             /// returns removed component
@@ -424,7 +418,7 @@ namespace CouscousEngine.ECS.Internal
 
             public override void Resize(int capacity)
             {
-                System.Array.Resize(ref components, capacity);
+                Array.Resize(ref components, capacity);
                 array = components;
             }
 
@@ -432,8 +426,8 @@ namespace CouscousEngine.ECS.Internal
             {
                 var comp = components[entity_arch_index];
                 components[entity_arch_index] = components[last];
-                components[last] = default;
-                return comp;
+                components[last] = default!;
+                return comp!;
             }
 
             public override void Move(int entity_arch_index, int last_entity_index, Archetype_Info target_archetype, int target_index)
@@ -443,14 +437,14 @@ namespace CouscousEngine.ECS.Internal
                     target_array[target_index] = components[entity_arch_index];
                 }
                 components[entity_arch_index] = components[last_entity_index];
-                components[last_entity_index] = default;
+                components[last_entity_index] = default!;
             }
 
             public override void Move(int entity_arch_index, int last_entity_index, object buffer, int target_index)
             {
                 ((Component[])buffer)[target_index] = components[entity_arch_index];
                 components[entity_arch_index] = components[last_entity_index];
-                components[last_entity_index] = default;
+                components[last_entity_index] = default!;
             }
         }
     }
