@@ -72,6 +72,7 @@ public class Player
     {
         // Send from Client to Server
         if (!_isDrawer) return;
+        if (ImGui.GetIO().WantCaptureMouse) return;
         
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
         message.AddVector2(position);
@@ -81,12 +82,27 @@ public class Player
         ClientManager.Client!.Send(message);
     }
 
+    public static void SendAllClear()
+    {
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.AllClear);
+        ClientManager.Client!.Send(message);
+    }
+
     [MessageHandler((ushort) MessageID.SendPainting)]
     private static void ReceivePaintingHadler(Message message)
     {
         // Get data from Server to Client
         Renderer.BeginTextureMode(GameData.Painting);
         Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
+        Renderer.EndTextureMode();
+    }
+    
+    [MessageHandler((ushort) MessageID.AllClear)]
+    private static void ReceiveAllClearHadler(Message _)
+    {
+        // Get data from Server to Client
+        Renderer.BeginTextureMode(GameData.Painting);
+        Renderer.ClearBackground(GameData.ClearColor);
         Renderer.EndTextureMode();
     }
 
@@ -135,6 +151,15 @@ public class Player
     
     [MessageHandler((ushort) MessageID.SendPainting)]
     private static void ReceivePaintingHandler(ushort fromClientID, Message message)
+    {
+        if (!GameManager.Players[fromClientID]._isDrawer) return;
+        // Receive data from Client and use in Server 
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    
+    [MessageHandler((ushort) MessageID.AllClear)]
+    private static void ReceiveAllClearHandler(ushort fromClientID, Message message)
     {
         if (!GameManager.Players[fromClientID]._isDrawer) return;
         // Receive data from Client and use in Server 

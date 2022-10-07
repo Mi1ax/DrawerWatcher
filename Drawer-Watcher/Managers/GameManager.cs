@@ -18,6 +18,7 @@ public enum MessageID : ushort
     SendPainting = 1,
     SendPosition,
     DrawerChanged,
+    AllClear
 }
 
 public struct GameData : IDisposable
@@ -35,8 +36,6 @@ public struct GameData : IDisposable
 public static class GameManager
 {
     public static readonly Dictionary<ushort, Player> Players = new();
-    
-    //private static RenderTexture _painting;
     
     public static void DrawPainting() => Renderer.DrawTexture(GameData.Painting, Vector2.Zero, Color.WHITE);
 }

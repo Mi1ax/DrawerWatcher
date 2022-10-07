@@ -23,12 +23,9 @@ public class GameScreen : Screen
         if (NetworkManager.IsHost)
         {
             ImGui.Begin("Players");
-            if (ImGui.Button("Clear All"))
-            {
-                Renderer.BeginTextureMode(GameData.Painting);
-                Renderer.ClearBackground(GameData.ClearColor);
-                Renderer.EndTextureMode();
-            }
+            if (ImGui.Button("Clear all"))
+                Player.SendAllClear();
+            
             foreach (var (id, player) in GameManager.Players)
             {
                 ImGui.Text($"Player {player.IsApplicationOwner}: {id}");
