@@ -1,4 +1,6 @@
-﻿namespace CouscousEngine.Utils;
+﻿using System.Numerics;
+
+namespace CouscousEngine.Utils;
 
 public struct Color
 {
@@ -23,4 +25,12 @@ public struct Color
     
     public static implicit operator Raylib_CsLo.Color(Color color) 
         => new(color.R, color.G, color.B, color.A);
+    
+    public static implicit operator Vector3(Color color) => new(color.R / 255f, color.G / 255f, color.B / 255f);
+    public static explicit operator Color(Vector3 color) => new(
+        (byte)(color.X * 255), 
+        (byte)(color.Y * 255), 
+        (byte)(color.Z * 255)
+        );
+
 }

@@ -2,6 +2,7 @@
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
+using ImGuiNET;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
@@ -10,6 +11,8 @@ namespace Drawer_Watcher;
 
 public class Player
 {
+    public static Player? ApplicationOwner;
+    
     public ushort ID { get; }
 
     private bool _isDrawer;
@@ -26,6 +29,7 @@ public class Player
         }
     }
 
+    public bool CanDraw = true;
     public bool IsApplicationOwner => ClientManager.Client?.Id == ID;
 
     public Brush CurrentBrush;
@@ -33,6 +37,8 @@ public class Player
     public Player(ushort clientId)
     {
         ID = clientId;
+        if (IsApplicationOwner)
+            ApplicationOwner = this;
         CurrentBrush = Brush.Default;
 
         if (!NetworkManager.IsHost) return;
@@ -46,7 +52,9 @@ public class Player
 
     public void Update()
     {
-        if (!IsDrawer) return;
+        if (!IsDrawer || !CanDraw) return;
+        var io = ImGui.GetIO();
+        if (io.WantCaptureMouse) return;
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
@@ -67,6 +75,7 @@ public class Player
         
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
         message.AddVector2(position);
+        message.AddFloat(CurrentBrush.Thickness);
         message.AddColor(color);
         
         ClientManager.Client!.Send(message);
@@ -77,7 +86,7 @@ public class Player
     {
         // Get data from Server to Client
         Renderer.BeginTextureMode(GameData.Painting);
-        Renderer.DrawCircle(message.GetVector2(), 16f, message.GetColor());
+        Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
         Renderer.EndTextureMode();
     }
 
