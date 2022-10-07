@@ -24,13 +24,9 @@ public struct GameData : IDisposable
 {
     public static readonly Color ClearColor = Color.WHITE;
 
-    /*public static readonly RenderTexture Painting = Renderer.LoadRenderTexture(
-        (int)Application.Instance.GetSize().Width,
-        (int)Application.Instance.GetSize().Height);*/
-    
     public static readonly RenderTexture Painting = Renderer.LoadRenderTexture(
-        1000,
-        700);
+        (int)Application.Instance.GetSize().Width,
+        (int)Application.Instance.GetSize().Height);
 
 
     public void Dispose() => Renderer.UnloadRenderTexture(Painting);

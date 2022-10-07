@@ -54,8 +54,7 @@ public class Player
 
     public void Update()
     {
-        if (!IsDrawer || !CanDraw || 
-            !(Docking.IsViewportFocused && Docking.IsViewportHovered)) return;
+        if (!IsDrawer || !CanDraw) return;
 
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
