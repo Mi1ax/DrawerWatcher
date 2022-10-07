@@ -6,8 +6,9 @@ namespace Drawer_Watcher;
 internal class Sandbox : Application
 {
     public Sandbox() 
-        : base("Sandbox")
+        : base("Drawer Watcher")
     {
+        //BIG TODO: Set server on different thread
         ScreenManager.NavigateTo(new MenuScreen());
             
         GameManager.Initialize();

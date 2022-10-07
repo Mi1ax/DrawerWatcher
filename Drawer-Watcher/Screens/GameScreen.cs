@@ -25,7 +25,7 @@ public class GameScreen : Screen
                 {
                     ImGui.Text($"Player: {id}");
                     var isDrawer = player.IsDrawer;
-                    ImGui.Checkbox("Drawer", ref isDrawer);
+                    ImGui.Checkbox($"Drawer##{id}", ref isDrawer);
                     player.IsDrawer = isDrawer;
                     ImGui.Separator();
                 }

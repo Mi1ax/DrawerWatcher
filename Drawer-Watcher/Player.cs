@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
-using ImGuiNET;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
