@@ -1,4 +1,5 @@
 ﻿using CouscousEngine.Core;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
 
@@ -23,9 +24,7 @@ internal class Sandbox : Application
         Renderer.ClearBackground(GameData.ClearColor);
         {
             GameManager.DrawPainting();
-            
             ScreenManager.Update();
-            
             Renderer.DrawFPS();
         }
         Renderer.EndDrawing();

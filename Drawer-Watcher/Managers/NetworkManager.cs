@@ -4,8 +4,7 @@ namespace Drawer_Watcher.Managers;
 
 public static class NetworkManager
 {
-    public static readonly Dictionary<ushort, Player> Players = new();
-    public static bool IsConnectedToServer => IsHost || ClientManager.Client is {IsConnected: true};
+    public static bool IsConnectedToServer => _isHost || ClientManager.Client!.IsConnected;
 
     #region Server
     
@@ -31,7 +30,7 @@ public static class NetworkManager
             },
             (_, e) =>
             {
-                Players.Remove(e.Client.Id);
+                GameManager.Players.Remove(e.Client.Id);
             }
         );
         ServerManager.Start((ushort)ConnectionInfo.Port, ConnectionInfo.MaxConnection);
@@ -54,7 +53,7 @@ public static class NetworkManager
     {
         ClientManager.Initialize((_, e) =>
         {
-            Players.Remove(e.Id);
+            GameManager.Players.Remove(e.Id);
         });
     }
 

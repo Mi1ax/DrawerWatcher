@@ -24,7 +24,7 @@ public class GameScreen : Screen
                 ImGui.Begin("Players");
                 foreach (var (id, player) in GameManager.Players)
                 {
-                    ImGui.Text($"Player: {id}");
+                    ImGui.Text($"Player {player.IsApplicationOwner}: {id}");
                     var isDrawer = player.IsDrawer;
                     ImGui.Checkbox($"Drawer##{id}", ref isDrawer);
                     player.IsDrawer = isDrawer;

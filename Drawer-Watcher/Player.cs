@@ -26,6 +26,8 @@ public class Player
         }
     }
 
+    public bool IsApplicationOwner => ClientManager.Client?.Id == ID;
+
     public Brush CurrentBrush;
     
     public Player(ushort clientId)
