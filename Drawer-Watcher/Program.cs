@@ -11,12 +11,12 @@ internal class Sandbox : Application
         //BIG TODO: Set server on different thread
         ScreenManager.NavigateTo(new MenuScreen());
             
-        GameManager.Initialize();
+        NetworkManager.Initialize();
     }
     
     protected override void Update()
-    {
-        GameManager.Update();
+    { 
+        NetworkManager.Update();
         
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);

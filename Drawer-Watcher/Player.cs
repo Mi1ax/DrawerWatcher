@@ -20,7 +20,7 @@ public class Player
         {
             if (_isDrawer == value) return;
             _isDrawer = value;
-            if (GameManager.IsHost)
+            if (NetworkManager.IsHost)
                 SendDrawerChanged(value);
         }
     }
@@ -29,7 +29,7 @@ public class Player
     {
         ID = clientId;
 
-        if (!GameManager.IsHost) return;
+        if (!NetworkManager.IsHost) return;
 
         foreach (var otherPlayer in GameManager.Players.Values)
             ServerManager.Server.Send(otherPlayer.CreateNewConnectionMessage(), ID);
@@ -79,7 +79,7 @@ public class Player
     private static void ReceiveNewConnnectionHandler(Message message)
     {
         // Get data from Server to Client
-        if (GameManager.IsHost) return;
+        if (NetworkManager.IsHost) return;
         
         var id = message.GetUShort();
         var isDrawer = message.GetBool();

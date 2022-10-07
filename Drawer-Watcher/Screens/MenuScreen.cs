@@ -39,8 +39,6 @@ public class MenuScreen : Screen
     
     public override void OnUpdate()
     {
-        if (GameManager.IsConnectedToServer) return;
-        
         foreach (var button in _buttons)
             button.Update();
     }

@@ -10,13 +10,13 @@ public class GameScreen : Screen
 {
     public override void OnUpdate()
     {
-        if (GameManager.IsConnectedToServer && GameManager.Players.Count != 0) 
+        if (NetworkManager.IsConnectedToServer && GameManager.Players.Count != 0) 
         {
             foreach (var player in GameManager.Players.Values)
                 player.Update();
         }
         
-        if (GameManager.IsHost)
+        if (NetworkManager.IsHost)
         {
             rlImGui.OnUpdate(() =>
             {

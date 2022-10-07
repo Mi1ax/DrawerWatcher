@@ -1,4 +1,5 @@
-﻿using CouscousEngine.rlImGui;
+﻿using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
@@ -15,8 +16,8 @@ public class CreatingGameScreen : Screen
                 ImGui.InputInt("Port", ref ConnectionInfo.Port, 6);
                 if (ImGui.Button("Create Game"))
                 {
-                    GameManager.IsHost = true;
-                    GameManager.Connect();
+                    NetworkManager.IsHost = true;
+                    NetworkManager.Connect();
                     ScreenManager.NavigateTo(new GameScreen());
                 }
             }

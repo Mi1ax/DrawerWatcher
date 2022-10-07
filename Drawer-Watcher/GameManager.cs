@@ -1,9 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
-using CouscousEngine.Networking;
-using Drawer_Watcher.Screens;
 using Raylib_CsLo;
-using Riptide;
 using Color = CouscousEngine.Utils.Color;
 
 namespace Drawer_Watcher;
@@ -38,73 +35,8 @@ public struct GameData : IDisposable
 public static class GameManager
 {
     public static readonly Dictionary<ushort, Player> Players = new();
-
-    public static bool IsConnectedToServer => _isHost || ClientManager.Client!.IsConnected;
-
+    
     //private static RenderTexture _painting;
     
     public static void DrawPainting() => Renderer.DrawTexture(GameData.Painting, Vector2.Zero, Color.WHITE);
-    
-    #region Server
-    
-    private static bool _isHost;
-
-    public static bool IsHost
-    {
-        get => _isHost;
-        set
-        {
-            _isHost = value;
-            if (_isHost) InitializeServer();
-            else CloseServer();
-        }
-    }
-
-    private static void InitializeServer()
-    {
-        ServerManager.Initialize(
-            (_, e) =>
-            {
-                new Player(e.Client.Id);
-            },
-            (_, e) =>
-            {
-                Players.Remove(e.Client.Id);
-            }
-        );
-        ServerManager.Start((ushort)ConnectionInfo.Port, ConnectionInfo.MaxConnection);
-    }
-
-    private static void CloseServer()
-    {
-        ServerManager.Stop();
-    }
-    
-    #endregion
-
-    #region Client
-
-    private static bool _isConnect;
-    
-    public static void Initialize()
-    {
-        ClientManager.Initialize((_, e) =>
-        {
-            Players.Remove(e.Id);
-        });
-    }
-
-    public static bool Connect()
-    {
-        _isConnect = ClientManager.Connect(ConnectionInfo.Ip, (ushort)ConnectionInfo.Port);
-        return _isConnect;
-    }
-    
-    #endregion
-    
-    public static void Update()
-    {
-        if (IsHost) ServerManager.Update();
-        ClientManager.Update();
-    }
 }

@@ -1,3 +1,4 @@
+using CouscousEngine.Core;
 using CouscousEngine.rlImGui;
 using ImGuiNET;
 
@@ -15,7 +16,7 @@ public class ConnectionScreen : Screen
                 ImGui.InputInt("Port", ref ConnectionInfo.Port, 6);
                 if (ImGui.Button("Connect"))
                 {
-                    GameManager.Connect();
+                    NetworkManager.Connect();
                     ScreenManager.NavigateTo(new GameScreen());
                 }
             }
