@@ -24,9 +24,10 @@ internal static class Program
             
             _scene.Update();
             
-            rlImGui.Begin();
-            Inspector.DrawWindow(_scene.Buttons.First().Value);
-            rlImGui.End();
+            rlImGui.OnUpdate(() =>
+            {
+                Inspector.DrawWindow(_scene.Buttons.First().Value);
+            });
             Renderer.EndDrawing();
         }
 

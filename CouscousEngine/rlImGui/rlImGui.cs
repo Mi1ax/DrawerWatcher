@@ -34,6 +34,13 @@ public static class rlImGui
         EndInitImGui();
     }
 
+    public static void OnUpdate(Action action)
+    {
+        Begin();
+        action.Invoke();
+        End();
+    }
+    
     public static void BeginInitImGui()
     {
         ImGuiContext = ImGui.CreateContext();
@@ -188,7 +195,7 @@ public static class rlImGui
         }
     }
 
-    public static void Begin()
+    private static void Begin()
     {
         ImGui.SetCurrentContext(ImGuiContext);
 
@@ -283,7 +290,7 @@ public static class rlImGui
         rlEnableBackfaceCulling();
     }
 
-    public static void End()
+    private static void End()
     {
         ImGui.SetCurrentContext(ImGuiContext);
         ImGui.Render();
