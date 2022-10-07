@@ -31,6 +31,8 @@ public abstract class Application : IDisposable
 
     protected abstract void OnExit();
 
+    public void Exit() => Dispose();
+    
     public Size GetSize() => new (Window.Width, Window.Height);
     
     public void Run()
