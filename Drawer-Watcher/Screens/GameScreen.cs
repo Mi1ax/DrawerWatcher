@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.rlImGui;
-using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
@@ -18,7 +17,20 @@ public class GameScreen : Screen
                 player.Update();
         }
         
-        rlImGui.OnUpdate(() =>
+        rlImGui.Begin();
+        Docking.Draw(() =>
+        {
+            var size = ImGui.GetContentRegionAvail();
+            var viewRect = new Raylib_CsLo.Rectangle
+            {
+                x = GameData.Painting.texture.width / 2f - size.X / 2,
+                y = GameData.Painting.texture.height / 2f - size.Y / 2,
+                width = size.X,
+                height = -size.Y
+            };
+            
+            rlImGui.ImageRect(GameData.Painting.texture, (int)size.X, (int)size.Y, viewRect);
+        }, () =>
         {
             if (NetworkManager.IsHost)
             {
@@ -60,7 +72,7 @@ public class GameScreen : Screen
                 ImGui.End();
             }
         });
-        
+        rlImGui.End();
     }
 
     public override void Dispose()

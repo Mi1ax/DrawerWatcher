@@ -22,9 +22,8 @@ internal class Sandbox : Application
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);
         {
-            GameManager.DrawPainting();
             ScreenManager.Update();
-            Renderer.DrawFPS();
+            //Renderer.DrawFPS();
         }
         Renderer.EndDrawing();
     }

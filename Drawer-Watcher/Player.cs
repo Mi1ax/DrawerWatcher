@@ -1,7 +1,9 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Screens;
 using ImGuiNET;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
@@ -52,10 +54,9 @@ public class Player
 
     public void Update()
     {
-        if (!IsDrawer || !CanDraw) return;
-        var io = ImGui.GetIO();
-        if (io.WantCaptureMouse) return;
-        
+        if (!IsDrawer || !CanDraw || 
+            !(Docking.IsViewportFocused && Docking.IsViewportHovered)) return;
+
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
             SendDrawingData(Input.GetMousePosition(), CurrentBrush.Color);
