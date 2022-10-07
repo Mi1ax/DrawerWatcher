@@ -29,7 +29,7 @@ public static class ServerManager
 
         _server = new Server();
         _server.ChangeTransport(new UdpServer(SocketMode.IPv4Only));
-        
+
         Server.ClientConnected += onClientConnected;
         Server.ClientDisconnected += onClientDisconnected;
     }

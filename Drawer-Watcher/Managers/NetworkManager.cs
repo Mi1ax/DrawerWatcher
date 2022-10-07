@@ -1,6 +1,6 @@
 ﻿using CouscousEngine.Networking;
 
-namespace Drawer_Watcher;
+namespace Drawer_Watcher.Managers;
 
 public static class NetworkManager
 {

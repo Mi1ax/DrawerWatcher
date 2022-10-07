@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
+using Drawer_Watcher.Managers;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
@@ -13,7 +14,7 @@ public class Player
 
     private bool _isDrawer;
 
-    public bool IsDrawer
+    public bool IsDrawer 
     {
         get => _isDrawer;
         set
@@ -25,9 +26,12 @@ public class Player
         }
     }
 
+    public Brush CurrentBrush;
+    
     public Player(ushort clientId)
     {
         ID = clientId;
+        CurrentBrush = Brush.Default;
 
         if (!NetworkManager.IsHost) return;
 
@@ -44,11 +48,11 @@ public class Player
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
-            SendDrawingData(Input.GetMousePosition(), Color.RED);
+            SendDrawingData(Input.GetMousePosition(), CurrentBrush.Color);
         } 
         else if (Input.IsMouseButtonDown(MouseButton.RIGHT))
         {
-            SendDrawingData(Input.GetMousePosition(), GameData.ClearColor);
+            SendDrawingData(Input.GetMousePosition(), Brush.ClearColor);
         }
     }
 

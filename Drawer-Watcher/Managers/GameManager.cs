@@ -3,7 +3,7 @@ using CouscousEngine.Core;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 
-namespace Drawer_Watcher;
+namespace Drawer_Watcher.Managers;
 
 public static class ConnectionInfo
 {
@@ -22,7 +22,7 @@ public enum MessageID : ushort
 
 public struct GameData : IDisposable
 {
-    public static readonly Color ClearColor = Color.BLACK;
+    public static readonly Color ClearColor = Color.WHITE;
 
     public static readonly RenderTexture Painting = Renderer.LoadRenderTexture(
         (int)Application.Instance.GetSize().Width,
