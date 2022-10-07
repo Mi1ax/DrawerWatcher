@@ -1,9 +1,9 @@
-using CouscousEngine.rlImGui;
+﻿using CouscousEngine.rlImGui;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
-public class ConnectionScreen : Screen
+public class CreatingGameScreen : Screen
 {
     public override void OnUpdate()
     {
@@ -13,8 +13,9 @@ public class ConnectionScreen : Screen
             {
                 ImGui.InputText("IP", ref ConnectionInfo.Ip, 128);
                 ImGui.InputInt("Port", ref ConnectionInfo.Port, 6);
-                if (ImGui.Button("Connect"))
+                if (ImGui.Button("Create Game"))
                 {
+                    GameManager.IsHost = true;
                     GameManager.Connect();
                     ScreenManager.NavigateTo(new GameScreen());
                 }
@@ -22,7 +23,7 @@ public class ConnectionScreen : Screen
             ImGui.End();
         });
     }
-
+    
     public override void Dispose()
     {
         GC.SuppressFinalize(this);

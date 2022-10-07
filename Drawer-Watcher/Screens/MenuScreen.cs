@@ -1,7 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.GUI;
-using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 
 namespace Drawer_Watcher.Screens;
@@ -34,17 +33,16 @@ public class MenuScreen : Screen
             new Vector2(screenCenter.X, screenCenter.Y - buttonSize.Height - 10),
             () =>
             {
-                
+                ScreenManager.NavigateTo(new CreatingGameScreen());
             });
     }
     
-    public override void Update()
+    public override void OnUpdate()
     {
-        if (!GameManager.IsConnectedToServer)
-        {
-            foreach (var button in _buttons)
-                button.Update();
-        }
+        if (GameManager.IsConnectedToServer) return;
+        
+        foreach (var button in _buttons)
+            button.Update();
     }
     
     public override void Dispose()

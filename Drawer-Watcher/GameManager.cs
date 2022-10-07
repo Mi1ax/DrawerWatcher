@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
+using Drawer_Watcher.Screens;
 using Raylib_CsLo;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
@@ -9,8 +10,8 @@ namespace Drawer_Watcher;
 
 public static class ConnectionInfo
 {
-    public const string Ip = "46.138.252.180";
-    public const ushort Port = 34827;
+    public static string Ip = "46.138.252.180";
+    public static int Port = 34827;
 
     public const int MaxConnection = 2;
 }
@@ -71,7 +72,7 @@ public static class GameManager
                 Players.Remove(e.Client.Id);
             }
         );
-        ServerManager.Start(ConnectionInfo.Port, ConnectionInfo.MaxConnection);
+        ServerManager.Start((ushort)ConnectionInfo.Port, ConnectionInfo.MaxConnection);
     }
 
     private static void CloseServer()
@@ -95,7 +96,7 @@ public static class GameManager
 
     public static bool Connect()
     {
-        _isConnect = ClientManager.Connect(ConnectionInfo.Ip, ConnectionInfo.Port);
+        _isConnect = ClientManager.Connect(ConnectionInfo.Ip, (ushort)ConnectionInfo.Port);
         return _isConnect;
     }
     

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
+using ImGuiNET;
 using Riptide;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
@@ -18,12 +19,13 @@ public class Player
         get => _isDrawer;
         set
         {
+            if (_isDrawer == value) return;
             _isDrawer = value;
             if (GameManager.IsHost)
                 SendDrawerChanged(value);
         }
     }
-    
+
     public Player(ushort clientId)
     {
         ID = clientId;

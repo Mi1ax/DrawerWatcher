@@ -12,6 +12,6 @@ public static class ScreenManager
 
     public static void Update()
     {
-        _currentScreen?.Update();
+        _currentScreen?.OnUpdate();
     }
 }
