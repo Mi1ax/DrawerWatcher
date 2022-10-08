@@ -76,7 +76,7 @@ public class Player
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
-            SendDrawingData(_prevPoint, _currPoint, CurrentBrush.Color);
+            SendDrawingData(_prevPoint, _currPoint, (Color)CurrentBrush.Color);
         } 
         else if (Input.IsMouseButtonDown(MouseButton.RIGHT))
         {
