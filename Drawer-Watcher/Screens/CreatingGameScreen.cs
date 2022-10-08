@@ -9,7 +9,11 @@ public class CreatingGameScreen : Screen
 {
     public override void OnUpdate()
     {
-        rlImGui.Begin();
+        
+    }
+
+    public override void OnImGuiUpdate()
+    {
         ImGui.Begin("Connection");
         {
             ImGui.InputText("IP", ref ConnectionInfo.Ip, 128);
@@ -22,9 +26,8 @@ public class CreatingGameScreen : Screen
             }
         }
         ImGui.End();
-        rlImGui.End();
     }
-    
+
     public override void Dispose()
     {
         GC.SuppressFinalize(this);

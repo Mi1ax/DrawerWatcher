@@ -1,7 +1,4 @@
 ﻿using System.Numerics;
-using CouscousEngine.Core;
-using CouscousEngine.rlImGui;
-using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -18,8 +15,10 @@ public class GameScreen : Screen
             foreach (var player in GameManager.Players.Values)
                 player.Update();
         }
-        
-        rlImGui.Begin();
+    }
+
+    public override void OnImGuiUpdate()
+    {
         if (NetworkManager.IsHost)
         {
             ImGui.Begin("Players");
@@ -47,7 +46,7 @@ public class GameScreen : Screen
             var playerBrushColor = brush.Color;
             ImGui.ColorEdit3("Color", ref playerBrushColor);
             if (playerBrushColor != brush.Color)
-               Player.ApplicationOwner.CurrentBrush.Color = playerBrushColor;
+                Player.ApplicationOwner.CurrentBrush.Color = playerBrushColor;
             
             // Thickness
             var thickness = brush.Thickness;
@@ -56,7 +55,6 @@ public class GameScreen : Screen
             
             ImGui.End();
         }
-        rlImGui.End();
     }
 
     public override void Dispose()

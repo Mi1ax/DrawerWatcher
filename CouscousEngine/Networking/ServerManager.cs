@@ -9,6 +9,7 @@ namespace CouscousEngine.Networking;
 public static class ServerManager
 {
     private static Server? _server;
+    private static RiptideLogger.LogMethod? LogMethod = null;
 
     public static Server Server
     {
@@ -20,12 +21,15 @@ public static class ServerManager
         }
     }
 
+    public static void SetLogger(RiptideLogger.LogMethod logMethod)
+        => LogMethod = logMethod;
+    
     public static void Initialize(
         EventHandler<ServerConnectedEventArgs> onClientConnected, 
         EventHandler<ServerDisconnectedEventArgs> onClientDisconnected
         )
     {
-        RiptideLogger.Initialize(Console.WriteLine, true);
+        RiptideLogger.Initialize(LogMethod ??= Console.WriteLine, true);
 
         _server = new Server();
         _server.ChangeTransport(new UdpServer(SocketMode.IPv4Only));

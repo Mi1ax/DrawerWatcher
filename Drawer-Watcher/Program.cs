@@ -1,6 +1,8 @@
 ﻿using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
+using ImGuiNET;
 
 namespace Drawer_Watcher;
 
@@ -11,7 +13,7 @@ internal class Sandbox : Application
     {
         //BIG TODO: Set server on different thread
         ScreenManager.NavigateTo(new MenuScreen());
-            
+
         NetworkManager.Initialize();
     }
     
@@ -24,6 +26,11 @@ internal class Sandbox : Application
         {
             GameManager.DrawPainting();
             ScreenManager.Update();
+            
+            rlImGui.Begin();
+            ScreenManager.UpdateImGui();
+            rlImGui.End();
+
             Renderer.DrawFPS();
         }
         Renderer.EndDrawing();

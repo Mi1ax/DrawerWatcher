@@ -42,7 +42,12 @@ public class MenuScreen : Screen
         foreach (var button in _buttons)
             button.Update();
     }
-    
+
+    public override void OnImGuiUpdate()
+    {
+        
+    }
+
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
