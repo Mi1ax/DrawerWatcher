@@ -10,8 +10,7 @@ public static class ScreenManager
         _currentScreen = newScreen;
     }
 
-    public static void Update()
-    {
-        _currentScreen?.OnUpdate();
-    }
+    public static void UpdateImGui() => _currentScreen?.OnImGuiUpdate();
+
+    public static void Update() => _currentScreen?.OnUpdate();
 }
