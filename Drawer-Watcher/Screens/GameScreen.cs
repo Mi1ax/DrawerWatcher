@@ -43,10 +43,12 @@ public class GameScreen : Screen
             
             ImGui.Begin($"Player: {Player.ApplicationOwner.ID}");
             ImGui.Text("Brush");
+            // IMPORTANT TODO: Fixed memory allocation
             // Color
             Vector3 playerBrushColor = brush.Color;
             ImGui.ColorEdit3("Color", ref playerBrushColor);
-            Player.ApplicationOwner.CurrentBrush.Color = (Color)playerBrushColor;
+            if (playerBrushColor != brush.Color)
+                Player.ApplicationOwner.CurrentBrush.Color = (Color)playerBrushColor;
             
             // Thickness
             var thickness = brush.Thickness;

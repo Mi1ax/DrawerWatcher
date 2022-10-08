@@ -36,6 +36,9 @@ public class Player
 
     public Brush CurrentBrush;
     
+    private Vector2 _prevPoint = Vector2.Zero;
+    private Vector2 _currPoint = Vector2.Zero;
+
     public Player(ushort clientId)
     {
         ID = clientId;
@@ -52,30 +55,48 @@ public class Player
         ServerManager.Server.SendToAll(CreateNewConnectionMessage());
     }
 
+    private static void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
+    {
+        var dx = end.X - start.X;
+        var dy = end.Y - start.Y;
+        var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+        for (var i = 0; i < distance; i++)
+        {
+            var x = (int)(start.X + i / distance * dx);
+            var y = (int)(start.Y + i / distance * dy);
+            _rl.DrawCircleV(new Vector2(x, y), thickness, color);
+        }
+    }
+    
     public void Update()
     {
         if (!IsDrawer || !CanDraw) return;
 
+        _currPoint = Input.GetMousePosition();
+        
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
-            SendDrawingData(Input.GetMousePosition(), CurrentBrush.Color);
+            SendDrawingData(_prevPoint, _currPoint, CurrentBrush.Color);
         } 
         else if (Input.IsMouseButtonDown(MouseButton.RIGHT))
         {
-            SendDrawingData(Input.GetMousePosition(), Brush.ClearColor);
+            SendDrawingData(_prevPoint, _currPoint, Brush.ClearColor);
         }
+
+        _prevPoint = _currPoint;
     }
 
     #region Client
 
-    private void SendDrawingData(Vector2 position, Color color)
+    private void SendDrawingData(Vector2 start, Vector2 end, Color color)
     {
         // Send from Client to Server
         if (!_isDrawer) return;
         if (ImGui.GetIO().WantCaptureMouse) return;
         
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
-        message.AddVector2(position);
+        message.AddVector2(start);
+        message.AddVector2(end);
         message.AddFloat(CurrentBrush.Thickness);
         message.AddColor(color);
         
@@ -93,7 +114,8 @@ public class Player
     {
         // Get data from Server to Client
         Renderer.BeginTextureMode(GameData.Painting);
-        Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
+        DrawLine(message.GetVector2(), message.GetVector2(), message.GetFloat(), message.GetColor());
+        //Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
         Renderer.EndTextureMode();
     }
     
