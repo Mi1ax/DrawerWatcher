@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
-using ImGuiNET;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using KeyboardKey = CouscousEngine.Core.KeyboardKey;
@@ -12,6 +11,9 @@ namespace Drawer_Watcher.Panels;
 
 public class InputBox
 {
+    private const int _maxCharInBox = 12;
+    private const int _maxCharInInput = 32;
+    
     private readonly Rectangle _bounds;
     private readonly Vector2 _separatorSize;
 
@@ -19,6 +21,7 @@ public class InputBox
     private bool _allSelected;
 
     private string _text;
+    private string _displayText;
 
     private readonly Font _font;
 
@@ -42,8 +45,9 @@ public class InputBox
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
         
         _text = "";
+        _displayText = "";
 
-        _separatorSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "|", 18f, 2f);
+        _separatorSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "|", 24f, 1f);
     }
     
     public void OnUpdate()
@@ -78,19 +82,22 @@ public class InputBox
 
             _rl.DrawText("|", 
                 _bounds.Position.X + _bounds.Size.Width - 10, 
-                _bounds.Position.Y + _separatorSize.Y / 4, 18f, 
+                _bounds.Position.Y + _separatorSize.Y / 2f, 24f, 
                 Color.BLACK
                 );
         }
-        
-        var key = _rl.GetCharPressed();
 
-        while (key > 0)
+        if (_text.Length <= _maxCharInInput)
         {
-            if (key is >= 32 and <= 125 or >= 1040 and <= 1103 && _text.Length < 64)
-                _text += (char)key;
+            var key = _rl.GetCharPressed();
+
+            while (key > 0)
+            {
+                if (key is >= 32 and <= 125 or >= 1040 and <= 1103 && _text.Length < 64)
+                    _text += (char)key;
             
-            key = _rl.GetCharPressed();  // Check next character in the queue
+                key = _rl.GetCharPressed();  // Check next character in the queue
+            }
         }
 
         if (Input.IsKeyPressed(KeyboardKey.BACKSPACE) && _text.Length != 0)
@@ -103,12 +110,16 @@ public class InputBox
                 _text = _text[..^1];
         }
 
-        var textSize = _rl.MeasureTextEx(_rl.GetFontDefault(), _text, 18f, 2f);
+        _displayText = _text.Length > _maxCharInBox 
+            ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
+            : _text;
         
-        _rl.DrawTextEx(_font, _text, 
+        var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
+        
+        _rl.DrawTextEx(_font, _displayText, 
             new Vector2(
-                _bounds.Position.X + _bounds.Size.Width - 14 - textSize.X, 
-                _bounds.Position.Y + _separatorSize.Y / 4), 18f, 2f, Color.BLACK);
+                _bounds.Position.X + _bounds.Size.Width - 12 - textSize.X, 
+                _bounds.Position.Y + _separatorSize.Y / 2.5f), 24f, 1f, Color.BLACK);
 
         if (Input.IsKeyDown(KeyboardKey.LEFT_CONTROL))
         {
@@ -126,7 +137,7 @@ public class ChatPanel
     public ChatPanel(Rectangle bounds)
     {
         _bounds = bounds;
-        _inputBox = new InputBox(new Rectangle(new Size(125, 25), Vector2.Zero));
+        _inputBox = new InputBox(new Rectangle(new Size(145, 45), new Vector2(100)));
     }
 
     public void OnUpdate()
