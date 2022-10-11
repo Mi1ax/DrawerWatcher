@@ -136,6 +136,22 @@ public static class Input
     public static bool IsKeyDown(KeyboardKey key) => rl.IsKeyDown((int) key);
     public static bool IsKeyPressed(KeyboardKey key) => rl.IsKeyPressed((int) key);
 
+    public static bool IsKeyPressedWithModifier(KeyboardKey modifier, KeyboardKey key)
+        => IsKeyDown(modifier) && IsKeyDown(key);
+
+    public static void GetAsciiKeyPressed(ref string text)
+    {
+        var key = _rl.GetCharPressed();
+
+        while (key > 0)
+        {
+            if (key is >= 32 and <= 125 or >= 1040 and <= 1103)
+                text += (char)key;
+            
+            key = _rl.GetCharPressed();
+        }
+    }
+
     #endregion
     
     #region Mouse
