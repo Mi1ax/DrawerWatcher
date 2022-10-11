@@ -17,10 +17,14 @@ public class InputBox
     private readonly Rectangle _bounds;
     private readonly Vector2 _separatorSize;
 
+    private bool _isUsed;
     private bool _allSelected;
 
     private string _text;
     private string _displayText;
+
+    private float _backspaceDownTime;
+    private float _eraseTime;
 
     // TODO: Move to asset manager
     private readonly Font _font;
@@ -54,16 +58,29 @@ public class InputBox
     {
         if (_text.Length <= _maxCharInInput)
             Input.GetAsciiKeyPressed(ref _text);
-        
 
-        if (!Input.IsKeyPressed(KeyboardKey.BACKSPACE) || _text.Length == 0) return;
-        
-        if (_allSelected)
+
+        if (Input.IsKeyPressed(KeyboardKey.BACKSPACE) && _text.Length != 0)
         {
-            _text = "";
-            _allSelected = false;
-        } else
-            _text = _text[..^1];
+            if (_allSelected)
+            {
+                _text = "";
+                _allSelected = false;
+            } else
+                _text = _text[..^1];
+        }
+
+        _backspaceDownTime = Input.GetKeyDownTime(KeyboardKey.BACKSPACE);
+        if (_backspaceDownTime >= 0.3f)
+        {
+            _eraseTime += 0.1f * _rl.GetFrameTime();
+            if (!(Math.Abs(_eraseTime - 0.01f) < 0.001f)) return;
+            
+            if (_text.Length != 0)
+                _text = _text[..^1];
+            _eraseTime = 0;
+        }
+        else _eraseTime = 0;
     }
 
     public void DisplayText()
@@ -80,7 +97,7 @@ public class InputBox
                 _bounds.Position.Y + _separatorSize.Y / 2.5f), 24f, 1f, Color.BLACK);
     }
 
-    public bool IsActive()
+    public void CheckActivity()
     {
         if (_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds))
         {
@@ -89,21 +106,19 @@ public class InputBox
             
             if (Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
-                return true;
+                _isUsed = true;
             }
         }
         else if (!_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds)
                  && Input.IsMouseButtonPressed(MouseButton.LEFT))
         {
-            return false;
+            _isUsed = false;
         }
         else
         {
             _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
             _bounds.Color = Color.GRAY;
         }
-        
-        return false;
     }
     
     public void OnUpdate()
@@ -111,8 +126,10 @@ public class InputBox
         _bounds.Update();
         Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
 
+        CheckActivity();
+
         
-        if (IsActive())
+        if (_isUsed)
         {
             _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
 
@@ -122,10 +139,11 @@ public class InputBox
                 Color.BLACK
                 );
         }
-        
+
         TextEntering();
         DisplayText();
 
-        _allSelected = Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A);
+        if (Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
+            _allSelected = true;
     }
 }

@@ -131,10 +131,33 @@ public enum MouseButton
 
 public static class Input
 {
+    private static bool _isDown;
+    private static float _downTimer;
+    
     #region Keyboard
     
     public static bool IsKeyDown(KeyboardKey key) => rl.IsKeyDown((int) key);
+
+    public static float GetKeyDownTime(KeyboardKey key)
+    {
+        if (IsKeyPressed(key))
+        {
+            _isDown = true;
+            _downTimer = 0;
+        }
+
+        if (_isDown) _downTimer += 1f * _rl.GetFrameTime();
+
+        if (!IsKeyReleased(key)) return _downTimer;
+        
+        _isDown = false;
+        _downTimer = 0;
+
+        return _downTimer;
+    }
+    
     public static bool IsKeyPressed(KeyboardKey key) => rl.IsKeyPressed((int) key);
+    public static bool IsKeyReleased(KeyboardKey key) => rl.IsKeyReleased((int) key);
 
     public static bool IsKeyPressedWithModifier(KeyboardKey modifier, KeyboardKey key)
         => IsKeyDown(modifier) && IsKeyDown(key);
