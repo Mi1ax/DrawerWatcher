@@ -10,7 +10,7 @@ public static class ConnectionInfo
     public static string Ip = "46.138.252.180";
     public static int Port = 34827;
 
-    public const int MaxConnection = 2;
+    public const int MaxConnection = 4;
 }
 
 public enum MessageID : ushort
@@ -25,17 +25,17 @@ public struct GameData : IDisposable
 {
     public static readonly Color ClearColor = Color.WHITE;
 
-    public static readonly RenderTexture Painting = Renderer.LoadRenderTexture(
-        (int)Application.Instance.GetSize().Width,
-        (int)Application.Instance.GetSize().Height);
+    public static RenderTexture? Painting = null;
 
 
-    public void Dispose() => Renderer.UnloadRenderTexture(Painting);
+    public void Dispose()
+    {
+        if (Painting != null) 
+            Renderer.UnloadRenderTexture(Painting.Value);
+    }
 }
 
 public static class GameManager
 {
     public static readonly Dictionary<ushort, Player> Players = new();
-    
-    public static void DrawPainting() => Renderer.DrawTexture(GameData.Painting, Vector2.Zero, Color.WHITE);
 }

@@ -72,7 +72,7 @@ public class Player
     {
         if (!IsDrawer || !CanDraw) return;
 
-        _currPoint = Input.GetMousePosition();
+        _currPoint = GameScreen.MousePositionOnPainting;
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
@@ -113,7 +113,7 @@ public class Player
     private static void ReceivePaintingHadler(Message message)
     {
         // Get data from Server to Client
-        Renderer.BeginTextureMode(GameData.Painting);
+        Renderer.BeginTextureMode(GameData.Painting!.Value);
         DrawLine(message.GetVector2(), message.GetVector2(), message.GetFloat(), message.GetColor());
         //Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
         Renderer.EndTextureMode();
@@ -123,7 +123,7 @@ public class Player
     private static void ReceiveAllClearHadler(Message _)
     {
         // Get data from Server to Client
-        Renderer.BeginTextureMode(GameData.Painting);
+        Renderer.BeginTextureMode(GameData.Painting!.Value);
         Renderer.ClearBackground(GameData.ClearColor);
         Renderer.EndTextureMode();
     }

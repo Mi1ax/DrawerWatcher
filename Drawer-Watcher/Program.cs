@@ -24,7 +24,6 @@ internal class Sandbox : Application
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);
         {
-            GameManager.DrawPainting();
             ScreenManager.Update();
             
             rlImGui.Begin();

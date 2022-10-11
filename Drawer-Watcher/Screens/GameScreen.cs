@@ -1,20 +1,51 @@
 ﻿using System.Numerics;
+using CouscousEngine.Core;
+using CouscousEngine.Shapes;
+using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Panels;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
 public class GameScreen : Screen
 {
-    public static Vector2 ViewportMousePos = Vector2.Zero;
+    public static Vector2 MousePositionOnPainting = Vector2.Zero;
+    
+    private readonly Rectangle _chatPanel;
+    private readonly Rectangle _drawingPanel;
+    private readonly ToolPanel _toolPanel;
+
+    public GameScreen()
+    {
+        _chatPanel = new Rectangle(new Size(350, 720), Vector2.Zero)
+        {
+            Color = new Color(193, 193, 193)
+        };
+        
+        _toolPanel = new ToolPanel(new Rectangle(new Size(930, 144), new Vector2(350, 720 - 144))
+        {
+            Color = Color.GRAY
+        });
+        
+        _drawingPanel = new Rectangle(new Size(930, 720 - 144), new Vector2(350, 0));
+
+        GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
+    }
 
     public override void OnUpdate()
     {
-        if (NetworkManager.IsConnectedToServer && GameManager.Players.Count != 0) 
-        {
-            foreach (var player in GameManager.Players.Values)
-                player.Update();
-        }
+        if (!NetworkManager.IsConnectedToServer || GameManager.Players.Count == 0) return;
+        MousePositionOnPainting = Input.GetMousePosition() - new Vector2(350, 0);
+            
+        foreach (var player in GameManager.Players.Values)
+            player.Update();
+            
+        Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
+        Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
+        Renderer.DrawRectangleLines(_chatPanel, 1f, Color.RED);
+        
+        _toolPanel.OnUpdate(true);
     }
 
     public override void OnImGuiUpdate()
@@ -30,7 +61,12 @@ public class GameScreen : Screen
                 ImGui.Text($"Player {player.IsApplicationOwner}: {id}");
                 var isDrawer = player.IsDrawer;
                 ImGui.Checkbox($"Drawer##{id}", ref isDrawer);
-                player.IsDrawer = isDrawer;
+                if (player.IsDrawer != isDrawer)
+                {
+                    foreach (var otherPlayers in GameManager.Players.Values)
+                        otherPlayers.IsDrawer = false;
+                    player.IsDrawer = isDrawer;
+                }
                 ImGui.Separator();
             }
             ImGui.End();
@@ -59,6 +95,7 @@ public class GameScreen : Screen
 
     public override void Dispose()
     {
+        _toolPanel.Dispose();
         GC.SuppressFinalize(this);
     }
 }

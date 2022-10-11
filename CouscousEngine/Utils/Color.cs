@@ -4,6 +4,7 @@ namespace CouscousEngine.Utils;
 
 public struct Color
 {
+    public static readonly Color Empty = new(0, 0, 0, 0);
     public static readonly Color BLACK = new(0, 0, 0);
     public static readonly Color WHITE = new(255, 255, 255);
     public static readonly Color RED = new(255, 0, 0);
@@ -26,6 +27,12 @@ public struct Color
     public static implicit operator Raylib_CsLo.Color(Color color) 
         => new(color.R, color.G, color.B, color.A);
     
+    public static implicit operator Color(System.Drawing.Color color) 
+        => new(color.R, color.G, color.B, color.A);
+    
+    public static explicit operator Color(Raylib_CsLo.Color color) 
+        => new(color.r, color.g, color.b, color.a);
+
     public static implicit operator Vector3(Color color) => new(color.R / 255f, color.G / 255f, color.B / 255f);
     public static explicit operator Color(Vector3 color) => new(
         (byte)(color.X * 255), 
