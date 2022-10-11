@@ -45,7 +45,7 @@ public class GameScreen : Screen
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
         Renderer.DrawRectangleLines(_chatPanel, 1f, Color.RED);
         
-        _toolPanel.OnUpdate(true);
+        _toolPanel.OnUpdate();
     }
 
     public override void OnImGuiUpdate()
