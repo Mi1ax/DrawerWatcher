@@ -5,7 +5,6 @@ using ImGuiNET;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using KeyboardKey = CouscousEngine.Core.KeyboardKey;
-using MouseButton = CouscousEngine.Core.MouseButton;
 
 namespace Sandbox;
 
@@ -13,29 +12,25 @@ internal static class Program
 {
     private class Sandbox : Application
     {
-        private readonly RenderTexture _renderTexture;
+        private string _text;
 
-        private Vector2 _currPoint = Vector2.Zero;
-        private Vector2 _prevPoint = Vector2.Zero;
-
-        private float _thickness = 8f;
-
+        private readonly Font _font;
+        
         public Sandbox() 
             : base("Sandbox")
         {
-            _renderTexture = Renderer.LoadRenderTexture(1280, 720);
-        }
-
-        private void DrawLine(Vector2 start, Vector2 end)
-        {
-            var dx = end.X - start.X;
-            var dy = end.Y - start.Y;
-            var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
-            for (var i = 0; i < distance; i++)
+            _text = "";
+            
+            unsafe
             {
-                var x = (int)(start.X + i / distance * dx);
-                var y = (int)(start.Y + i / distance * dy);
-                _rl.DrawCircleV(new Vector2(x, y), _thickness, Color.WHITE);
+                fixed (int* codepoints = new int[512])
+                {
+                    for (var i = 0; i < 95; i++) 
+                        codepoints[i] = 32 + i;   // Basic ASCII characters
+                    for (var i = 0; i < 255; i++) 
+                        codepoints[96 + i] = 0x400 + i;   // Cyrillic characters
+                    _font = _rl.LoadFontEx("Assets/Fonts/RobotoMono-Regular.ttf", 24, codepoints, 512);
+                }
             }
         }
 
@@ -44,39 +39,22 @@ internal static class Program
             Renderer.BeginDrawing();
             Renderer.ClearBackground(Color.BLACK);
 
-            _currPoint = _rl.GetMousePosition();
+            var key = _rl.GetCharPressed();
 
-            if (Input.IsMouseButtonDown(MouseButton.LEFT))
+            while (key > 0)
             {
-                Renderer.BeginTextureMode(_renderTexture);
-                {
-                    //_rl.DrawLineEx(_prevPoint, _currPoint, _thickness, Color.WHITE);
-                    DrawLine(_prevPoint, _currPoint);
-                }
-                Renderer.EndTextureMode();
+                if (key is >= 32 and <= 125 or >= 1040 and <= 1103 && _text.Length < 64)
+                    _text += (char)key;
+            
+                key = _rl.GetCharPressed();
             }
             
-            _prevPoint = _currPoint;
-
-            if (Input.IsKeyPressed(KeyboardKey.SPACE))
+            if (Input.IsKeyPressed(KeyboardKey.BACKSPACE) && _text.Length != 0)
             {
-                Renderer.BeginTextureMode(_renderTexture);
-                Renderer.ClearBackground(Color.BLACK);
-                Renderer.EndTextureMode();
+                _text = _text[..^1];
             }
             
-
-            Renderer.DrawTexture(_renderTexture, Vector2.Zero, Color.WHITE);     
-            
-            rlImGui.Begin();
-            ImGui.Begin("Status");
-            ImGui.Text($"FPS: {_rl.GetFPS()}");
-            ImGui.Text($"Mouse Position: [{Input.GetMousePosition().X}:{Input.GetMousePosition().Y}]");
-            ImGui.Text($"Mouse Current Position: [{_currPoint.X}:{_currPoint.Y}]");
-            ImGui.Text($"Mouse Previous Position: [{_prevPoint.X}:{_prevPoint.Y}]");
-            ImGui.DragFloat("Thickness", ref _thickness);
-            ImGui.End();
-            rlImGui.End();
+            _rl.DrawTextEx(_font, _text, new Vector2(100), 24f, 2f, Color.WHITE);
             
             Renderer.EndDrawing();
         }

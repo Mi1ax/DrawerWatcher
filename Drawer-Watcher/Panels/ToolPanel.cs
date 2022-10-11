@@ -51,9 +51,8 @@ public class ToolPanel : IDisposable
         };
     }
 
-    public void OnUpdate(bool drawLines = false)
+    public void OnUpdate()
     {
-        if (drawLines) Renderer.DrawRectangleLines(_bounds, 2f, Color.RED);
         Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
 
         var endBrushPos = DrawBrushes(_bounds.Position + new Vector2(0, _colorSize + 55));

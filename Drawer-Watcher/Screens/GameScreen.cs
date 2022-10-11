@@ -12,16 +12,16 @@ public class GameScreen : Screen
 {
     public static Vector2 MousePositionOnPainting = Vector2.Zero;
     
-    private readonly Rectangle _chatPanel;
     private readonly Rectangle _drawingPanel;
+    private readonly ChatPanel _chatPanel;
     private readonly ToolPanel _toolPanel;
 
     public GameScreen()
     {
-        _chatPanel = new Rectangle(new Size(350, 720), Vector2.Zero)
+        _chatPanel = new ChatPanel(new Rectangle(new Size(350, 720), Vector2.Zero)
         {
             Color = new Color(193, 193, 193)
-        };
+        });
         
         _toolPanel = new ToolPanel(new Rectangle(new Size(930, 144), new Vector2(350, 720 - 144))
         {
@@ -43,8 +43,11 @@ public class GameScreen : Screen
             
         Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
-        Renderer.DrawRectangleLines(_chatPanel, 1f, Color.RED);
         
+        // TODO: Move somewhere
+        _rl.DrawLine(351, 720 - 144, 350, 720, Color.BLACK);
+
+        _chatPanel.OnUpdate();
         _toolPanel.OnUpdate();
     }
 
