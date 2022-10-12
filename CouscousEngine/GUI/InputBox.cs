@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Core;
+using CouscousEngine.Utils;
 using Raylib_CsLo;
 
 using Color = CouscousEngine.Utils.Color;
@@ -11,9 +12,29 @@ namespace CouscousEngine.GUI;
 
 public class InputBox
 {
-    private const int _maxCharInBox = 12;
+    public Vector2 Position
+    {
+        get => _bounds.Position;
+        set => _bounds.Position = value;
+    }
+
+    public Size Size
+    {
+        get => _bounds.Size;
+        set => _bounds.Size = value;
+    }
+
+    public string Text
+    {
+        get => _text;
+        set => _text = value;
+    }
+    
+    private const int _maxCharInBox = 26;
     private const int _maxCharInInput = 32;
     
+    private const float _eraseSpeed = 0.005f;
+
     private readonly Rectangle _bounds;
     private readonly Vector2 _separatorSize;
 
@@ -28,6 +49,8 @@ public class InputBox
 
     // TODO: Move to asset manager
     private readonly Font _font;
+
+    private Action? OnEnterPressed;
 
     public InputBox(Rectangle bounds)
     {
@@ -54,7 +77,9 @@ public class InputBox
         _separatorSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "|", 24f, 1f);
     }
 
-    public void TextEntering()
+    public void SetAction(Action action) => OnEnterPressed = action;
+
+    public void TextEntering() 
     {
         if (_text.Length <= _maxCharInInput)
             Input.GetAsciiKeyPressed(ref _text);
@@ -74,7 +99,7 @@ public class InputBox
         if (_backspaceDownTime >= 0.3f)
         {
             _eraseTime += 0.1f * _rl.GetFrameTime();
-            if (!(Math.Abs(_eraseTime - 0.01f) < 0.001f)) return;
+            if (!(Math.Abs(_eraseTime - _eraseSpeed) < 0.001f)) return;
             
             if (_text.Length != 0)
                 _text = _text[..^1];
@@ -83,9 +108,9 @@ public class InputBox
         else _eraseTime = 0;
     }
 
-    public void DisplayText()
+    public void DisplayText() 
     {
-        _displayText = _text.Length > _maxCharInBox 
+        _displayText = _text.Length > _maxCharInBox
             ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
             : _text;
         
@@ -97,7 +122,7 @@ public class InputBox
                 _bounds.Position.Y + _separatorSize.Y / 2.5f), 24f, 1f, Color.BLACK);
     }
 
-    public void CheckActivity()
+    public void CheckActivity() 
     {
         if (_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds))
         {
@@ -119,6 +144,19 @@ public class InputBox
             _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
             _bounds.Color = Color.GRAY;
         }
+
+        if (!_isUsed) return;
+        
+        _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
+
+        _rl.DrawText("|", 
+            _bounds.Position.X + _bounds.Size.Width - 10, 
+            _bounds.Position.Y + _separatorSize.Y / 2f, 24f, 
+            Color.BLACK
+        );
+        
+        if (Input.IsKeyPressed(KeyboardKey.ENTER))
+            OnEnterPressed?.Invoke();
     }
     
     public void OnUpdate()
@@ -127,19 +165,6 @@ public class InputBox
         Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
 
         CheckActivity();
-
-        
-        if (_isUsed)
-        {
-            _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
-
-            _rl.DrawText("|", 
-                _bounds.Position.X + _bounds.Size.Width - 10, 
-                _bounds.Position.Y + _separatorSize.Y / 2f, 24f, 
-                Color.BLACK
-                );
-        }
-
         TextEntering();
         DisplayText();
 

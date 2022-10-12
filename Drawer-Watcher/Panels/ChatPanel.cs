@@ -15,7 +15,17 @@ public class ChatPanel
     public ChatPanel(Rectangle bounds)
     {
         _bounds = bounds;
-        _inputBox = new InputBox(new Rectangle(new Size(145, 45), new Vector2(100)));
+        _inputBox = new InputBox(new Rectangle(
+            new Size(_bounds.Size.Width - 55, 45), 
+            new Vector2(
+                _bounds.Size.Width / 2 - (_bounds.Size.Width - 55) / 2, 
+                _bounds.Size.Height - 60
+            )));
+        
+        _inputBox.SetAction(() =>
+        {
+            _inputBox.Text = "";
+        });
     }
 
     public void OnUpdate()
