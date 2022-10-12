@@ -27,7 +27,7 @@ public class ToolPanel : IDisposable
     {
         _bounds = bounds;
 
-        _bombTexture = _rl.LoadTexture("Assets/bomb.png");
+        _bombTexture = AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
         _bombTexture.width = 64;
         _bombTexture.height = 64;
 
@@ -142,7 +142,6 @@ public class ToolPanel : IDisposable
 
     public void Dispose()
     {
-        _rl.UnloadTexture(_bombTexture);
         GC.SuppressFinalize(this);
     }
 }

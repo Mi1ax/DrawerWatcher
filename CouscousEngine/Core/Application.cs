@@ -25,6 +25,7 @@ public abstract class Application : IDisposable
             height)
         );
         rlImGui.rlImGui.Setup();
+        AssetManager.Initialize();
     }
 
     protected abstract void Update();
@@ -44,6 +45,7 @@ public abstract class Application : IDisposable
     public void Dispose()
     {
         OnExit();
+        AssetManager.Deinitialize();
         Window.Dispose();
         ClientManager.Client?.Disconnect();
         GC.SuppressFinalize(this);
