@@ -20,7 +20,7 @@ public class ChatPanel : IDisposable
         _inputBox = new InputBox(new Rectangle(
             new Size(_bounds.Size.Width - 55, 45), 
             new Vector2(
-                _bounds.Size.Width / 2 - (_bounds.Size.Width - 55) / 2, 
+                _bounds.Position.X + _bounds.Size.Width / 2 - (_bounds.Size.Width - 55) / 2, 
                 _bounds.Size.Height - 60
             )));
         

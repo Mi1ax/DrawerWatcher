@@ -18,25 +18,25 @@ public class GameScreen : Screen
 
     public GameScreen()
     {
-        _chatPanel = new ChatPanel(new Rectangle(new Size(350, 720), Vector2.Zero)
+        _chatPanel = new ChatPanel(new Rectangle(new Size(350, 720), new Vector2(930, 0))
         {
             Color = new Color(193, 193, 193)
         });
         
-        _toolPanel = new ToolPanel(new Rectangle(new Size(930, 144), new Vector2(350, 720 - 144))
+        _drawingPanel = new Rectangle(new Size(930, 720 - 144), Vector2.Zero);
+
+        _toolPanel = new ToolPanel(new Rectangle(new Size(930, 144), new Vector2(0, 720 - 144))
         {
             Color = Color.GRAY
         });
         
-        _drawingPanel = new Rectangle(new Size(930, 720 - 144), new Vector2(350, 0));
-
         GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
     }
 
     public override void OnUpdate()
     {
         if (!NetworkManager.IsConnectedToServer || GameManager.Players.Count == 0) return;
-        MousePositionOnPainting = Input.GetMousePosition() - new Vector2(350, 0);
+        MousePositionOnPainting = Input.GetMousePosition();
             
         foreach (var player in GameManager.Players.Values)
             player.Update();
@@ -45,7 +45,7 @@ public class GameScreen : Screen
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
         
         // TODO: Move somewhere
-        _rl.DrawLine(351, 720 - 144, 350, 720, Color.BLACK);
+        _rl.DrawLine(930, 720 - 144, 930, 720, Color.BLACK);
 
         _chatPanel.OnUpdate();
         _toolPanel.OnUpdate();
