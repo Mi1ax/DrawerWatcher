@@ -74,12 +74,15 @@ public class LobbyScreen : Screen
 
     private void DrawDrawerPanel()
     {
-        var textSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "Drawer", 24f, 1f);
+        var textSize = _rl.MeasureTextEx(
+            AssetManager.GetFont("RobotoMono-Regular"), 
+            "Drawer", 24f, 1f
+            );
         
-        _rl.DrawText("Drawer", 
-            _topRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2, 
-            _topRightPanel.Y + 25, 
-            24f, Color.BLACK);
+        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Drawer", 
+            new Vector2(_topRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2, 
+            _topRightPanel.Y + 25), 
+            24f, 1f, Color.BLACK);
 
         foreach (var (id, player) in GameManager.Players)
         {
@@ -92,24 +95,24 @@ public class LobbyScreen : Screen
             _drawerName = "Empty";
         }
         
-        var nameSize = _rl.MeasureTextEx(_rl.GetFontDefault(), _drawerName, 24f, 1f);
+        var nameSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), _drawerName, 24f, 1f);
 
-        _rl.DrawText(_drawerName, 
-            _topRightPanel.X + _bounds.Size.Width / 4 - nameSize.X / 2, 
-            _topRightPanel.Y + _bounds.Size.Height / 4 - 15, 
-            24f, Color.BLACK);
+        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), _drawerName, 
+            new Vector2(_topRightPanel.X + _bounds.Size.Width / 4 - nameSize.X / 2, 
+            _topRightPanel.Y + _bounds.Size.Height / 4 - 15), 
+            24f, 1f, Color.BLACK);
 
         _joinDrawerButton.Update();
     }
 
     private void DrawWatchersPanel()
     {
-        var textSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "Watchers", 24f, 1f);
+        var textSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Watchers", 24f, 1f);
 
-        _rl.DrawText("Watchers",
-            _bottomRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2,
-            _bottomRightPanel.Y + 25,
-            24f, Color.BLACK);
+        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Watchers",
+            new Vector2(_bottomRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2,
+            _bottomRightPanel.Y + 25),
+            24f, 1f, Color.BLACK);
         
         foreach (var (id, player) in GameManager.Players)
         {
@@ -132,22 +135,23 @@ public class LobbyScreen : Screen
             {
                 for (var i = 0; i < _watchersNames.Count; i++)
                 {
-                    var nameSize = _rl.MeasureTextEx(_rl.GetFontDefault(), longestName, 24f, 1f);
-                    _rl.DrawText(_watchersNames[i], 
-                        _bottomRightPanel.X + 25 + (nameSize.X + 15) * (i % 3), 
+                    var nameSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+                        longestName, 24f, 1f);
+                    _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), _watchersNames[i], 
+                        new Vector2(_bottomRightPanel.X + 25 + (nameSize.X + 15) * (i % 3), 
                         // ReSharper disable once PossibleLossOfFraction
-                        _bottomRightPanel.Y + 50 + textSize.Y + textSize.Y * (i / 3), 
-                        24f, Color.BLACK);
+                        _bottomRightPanel.Y + 50 + textSize.Y + textSize.Y * (i / 3)), 
+                        24f, 1f, Color.BLACK);
                 }
             }
         }
         else
         {
-            var emptySize = _rl.MeasureTextEx(_rl.GetFontDefault(), "Empty", 24f, 1f);
-            _rl.DrawText("Empty", 
-                _bottomRightPanel.X + _bounds.Size.Width / 4 - emptySize.X / 2, 
-                _bottomRightPanel.Y + _bounds.Size.Height / 4 - 15, 
-                24f, Color.BLACK);
+            var emptySize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Empty", 24f, 1f);
+            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Empty", 
+                new Vector2(_bottomRightPanel.X + _bounds.Size.Width / 4 - emptySize.X / 2, 
+                _bottomRightPanel.Y + _bounds.Size.Height / 4 - 15), 
+                24f, 1f, Color.BLACK);
         }
         
         _joinWatcherButton.Update();

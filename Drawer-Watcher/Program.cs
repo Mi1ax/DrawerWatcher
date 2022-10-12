@@ -16,6 +16,8 @@ internal class Sandbox : Application
         
         NetworkManager.Initialize();
         GameLogic.Initialize();
+        
+        AssetManager.LoadFont("RobotoMono-Regular", "Assets/Fonts/RobotoMono-Regular.ttf");
     }
     
     protected override void Update()
