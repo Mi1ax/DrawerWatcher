@@ -3,6 +3,7 @@ using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens;
 using ImGuiNET;
 using Riptide;
@@ -109,6 +110,23 @@ public class Player
         ClientManager.Client!.Send(message);
     }
 
+    public static void SendMessageInChat(ushort senderID, string text)
+    {
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
+        message.AddUShort(senderID);
+        message.AddString(text);
+        ClientManager.Client!.Send(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void ReceiveChatMessageHadler(Message message)
+    {
+        // Get data from Server to Client
+        var senderID = message.GetUShort();
+        var text = message.GetString();
+        ChatPanel.AddMessage(senderID, text);
+    }
+
     [MessageHandler((ushort) MessageID.SendPainting)]
     private static void ReceivePaintingHadler(Message message)
     {
@@ -184,6 +202,13 @@ public class Player
     private static void ReceiveAllClearHandler(ushort fromClientID, Message message)
     {
         if (!GameManager.Players[fromClientID]._isDrawer) return;
+        // Receive data from Client and use in Server 
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void ReceiveChatMessageHandler(ushort fromClientID, Message message)
+    {
         // Receive data from Client and use in Server 
         ServerManager.Server.SendToAll(message);
     }

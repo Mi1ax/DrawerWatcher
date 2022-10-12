@@ -10,7 +10,7 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace CouscousEngine.GUI;
 
-public class InputBox
+public class InputBox : IDisposable
 {
     public Vector2 Position
     {
@@ -29,6 +29,8 @@ public class InputBox
         get => _text;
         set => _text = value;
     }
+
+    public Font Font => _font;
     
     private const int _maxCharInBox = 26;
     private const int _maxCharInInput = 32;
@@ -68,7 +70,7 @@ public class InputBox
                 _font = _rl.LoadFontEx("Assets/Fonts/RobotoMono-Regular.ttf", 24, codepoints, 512);
             }
         }
-        
+
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
         
         _text = "";
@@ -170,5 +172,11 @@ public class InputBox
 
         if (Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
             _allSelected = true;
+    }
+
+    public void Dispose()
+    {
+        _rl.UnloadFont(_font);
+        GC.SuppressFinalize(this);
     }
 }

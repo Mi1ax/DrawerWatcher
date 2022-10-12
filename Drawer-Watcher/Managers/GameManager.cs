@@ -18,7 +18,9 @@ public enum MessageID : ushort
     SendPainting = 1,
     SendPosition,
     DrawerChanged,
-    AllClear
+    AllClear,
+    
+    ChatMessage
 }
 
 public struct GameData : IDisposable

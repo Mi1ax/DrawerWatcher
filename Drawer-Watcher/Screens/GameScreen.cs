@@ -99,6 +99,7 @@ public class GameScreen : Screen
     public override void Dispose()
     {
         _toolPanel.Dispose();
+        _chatPanel.Dispose();
         GC.SuppressFinalize(this);
     }
 }

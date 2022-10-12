@@ -30,7 +30,7 @@ internal class Sandbox : Application
             ScreenManager.UpdateImGui();
             rlImGui.End();
 
-            Renderer.DrawFPS();
+            //Renderer.DrawFPS();
         }
         Renderer.EndDrawing();
     }
