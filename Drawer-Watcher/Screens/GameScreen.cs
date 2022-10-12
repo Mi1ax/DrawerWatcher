@@ -4,14 +4,11 @@ using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
-using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
 public class GameScreen : Screen
 {
-    public static Vector2 MousePositionOnPainting = Vector2.Zero;
-    
     private readonly Rectangle _drawingPanel;
     private readonly ChatPanel _chatPanel;
     private readonly ToolPanel _toolPanel;
@@ -36,7 +33,6 @@ public class GameScreen : Screen
     public override void OnUpdate()
     {
         if (!NetworkManager.IsConnectedToServer || GameManager.Players.Count == 0) return;
-        MousePositionOnPainting = Input.GetMousePosition();
             
         foreach (var player in GameManager.Players.Values)
             player.Update();
@@ -50,47 +46,7 @@ public class GameScreen : Screen
 
     public override void OnImGuiUpdate()
     {
-        if (NetworkManager.IsHost)
-        {
-            ImGui.Begin("Players");
-            if (ImGui.Button("Clear all"))
-                Player.SendAllClear();
-            
-            foreach (var (id, player) in GameManager.Players)
-            {
-                ImGui.Text($"Player {player.IsApplicationOwner}: {id}");
-                var isDrawer = player.IsDrawer;
-                ImGui.Checkbox($"Drawer##{id}", ref isDrawer);
-                if (player.IsDrawer != isDrawer)
-                {
-                    foreach (var otherPlayers in GameManager.Players.Values)
-                        otherPlayers.IsDrawer = false;
-                    player.IsDrawer = isDrawer;
-                }
-                ImGui.Separator();
-            }
-            ImGui.End();
-        }
-
-        if (Player.ApplicationOwner != null)
-        {
-            var brush = Player.ApplicationOwner.CurrentBrush;
-            
-            ImGui.Begin($"Player: {Player.ApplicationOwner.ID}");
-            ImGui.Text("Brush");
-            // Color
-            var playerBrushColor = brush.Color;
-            ImGui.ColorEdit3("Color", ref playerBrushColor);
-            if (playerBrushColor != brush.Color)
-                Player.ApplicationOwner.CurrentBrush.Color = playerBrushColor;
-            
-            // Thickness
-            var thickness = brush.Thickness;
-            ImGui.DragFloat("Thickness", ref thickness, 1f, 2f, 32f);
-            Player.ApplicationOwner.CurrentBrush.Thickness = thickness;
-            
-            ImGui.End();
-        }
+        
     }
 
     public override void Dispose()

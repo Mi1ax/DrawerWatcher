@@ -13,16 +13,6 @@ public static class ConnectionInfo
     public const int MaxConnection = 4;
 }
 
-public enum MessageID : ushort
-{
-    SendPainting = 1,
-    SendPosition,
-    DrawerChanged,
-    AllClear,
-    
-    ChatMessage
-}
-
 public struct GameData : IDisposable
 {
     public static readonly Color ClearColor = Color.WHITE;

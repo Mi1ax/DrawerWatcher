@@ -73,7 +73,7 @@ public class Player
     {
         if (!IsDrawer || !CanDraw) return;
 
-        _currPoint = GameScreen.MousePositionOnPainting;
+        _currPoint = Input.GetMousePosition();
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {

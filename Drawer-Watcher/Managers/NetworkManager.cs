@@ -1,6 +1,20 @@
 ﻿using CouscousEngine.Networking;
+using Drawer_Watcher.Screens;
+using Riptide;
 
 namespace Drawer_Watcher.Managers;
+
+public enum MessageID : ushort
+{
+    SendPainting = 1,
+    SendPosition,
+    DrawerChanged,
+    AllClear,
+    
+    ChatMessage,
+    
+    StartGame
+}
 
 public static class NetworkManager
 {
@@ -64,6 +78,26 @@ public static class NetworkManager
     }
     
     #endregion
+
+    public static void StartGame()
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.StartGame);
+        ClientManager.Client!.Send(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void ReceiveDrawerChangedHandler(Message message)
+    {
+        // Get data from Server to Client
+        ScreenManager.NavigateTo(new GameScreen());
+    }
+    
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void ReceiveDrawerChangedHandler(ushort fromClientID, Message message)
+    {
+        // Receive data from Client and use in Server 
+        ServerManager.Server.SendToAll(message);
+    }
     
     public static void Update()
     {

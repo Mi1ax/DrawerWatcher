@@ -19,6 +19,7 @@ public class LobbyScreen : Screen
 
     private readonly Button _joinDrawerButton;
     private readonly Button _joinWatcherButton;
+    private readonly Button _startGameButton;
 
     private readonly Vector2 _topRightPanel;
     private readonly Vector2 _bottomRightPanel;
@@ -39,7 +40,21 @@ public class LobbyScreen : Screen
             _bounds.Position.X + _bounds.Size.Width / 2, 
             _bounds.Position.Y + _bounds.Size.Height / 2
             );
+        
+        _startGameButton = new Button("Start", 
+            new Size(145, 45), 
+            new Vector2(
+                _bounds.Position.X + _bounds.Size.Width / 4 - 145 / 2f,
+                _bounds.Position.Y + _bounds.Size.Height / 2 - 45 - 25
+            ),
+            () =>
+            {
+                if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
 
+                NetworkManager.StartGame();
+            }
+        );
+        
         _joinDrawerButton = new Button("Join", 
             new Size(145, 45), 
             new Vector2(
@@ -70,6 +85,22 @@ public class LobbyScreen : Screen
                     Player.ApplicationOwner.IsDrawer = false;
             }
         );
+    }
+
+    private void DrawSettingsPanel()
+    {
+        var textSize = _rl.MeasureTextEx(
+            AssetManager.GetFont("RobotoMono-Regular"), 
+            "Settings", 24f, 1f
+        );
+        
+        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Settings", 
+            new Vector2(
+                _bounds.Position.X + _bounds.Size.Width / 4 - textSize.X / 2,
+                _bounds.Position.Y + 25
+                ), 24f, 1f, Color.BLACK);
+        
+        _startGameButton.Update();
     }
 
     private void DrawDrawerPanel()
@@ -156,23 +187,28 @@ public class LobbyScreen : Screen
         
         _joinWatcherButton.Update();
     }
+
+    private void DrawLines()
+    {
+        _rl.DrawLineV(
+            _topRightPanel,
+            new Vector2(_bounds.Position.X + _bounds.Size.Width / 2, _bounds.Position.Y + _bounds.Size.Height),
+            Color.BLACK
+        );
+        _rl.DrawLineV(
+            new Vector2(_bounds.Position.X + _bounds.Size.Width / 2, _bounds.Position.Y + _bounds.Size.Height / 2),
+            new Vector2(_bounds.Position.X + _bounds.Size.Width, _bounds.Position.Y + _bounds.Size.Height / 2),
+            Color.BLACK
+        );
+    }
     
     public override void OnUpdate()
     {
         _bounds.Update();
         Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
-        
-        _rl.DrawLineV(
-            _topRightPanel,
-            new Vector2(_bounds.Position.X + _bounds.Size.Width / 2, _bounds.Position.Y + _bounds.Size.Height),
-            Color.BLACK
-            );
-        _rl.DrawLineV(
-            new Vector2(_bounds.Position.X + _bounds.Size.Width / 2, _bounds.Position.Y + _bounds.Size.Height / 2),
-            new Vector2(_bounds.Position.X + _bounds.Size.Width, _bounds.Position.Y + _bounds.Size.Height / 2),
-            Color.BLACK
-            );
-        
+
+        DrawSettingsPanel();
+        DrawLines();
         DrawDrawerPanel();
         DrawWatchersPanel();
     }
