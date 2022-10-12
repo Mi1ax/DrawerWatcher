@@ -22,7 +22,7 @@ public class CreatingGameScreen : Screen
             {
                 NetworkManager.IsHost = true;
                 NetworkManager.Connect();
-                ScreenManager.NavigateTo(new GameScreen());
+                ScreenManager.NavigateTo(new LobbyScreen());
             }
         }
         ImGui.End();

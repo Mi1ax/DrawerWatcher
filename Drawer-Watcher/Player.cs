@@ -27,8 +27,8 @@ public class Player
         {
             if (_isDrawer == value) return;
             _isDrawer = value;
-            if (NetworkManager.IsHost)
-                SendDrawerChanged(value);
+            //if (NetworkManager.IsHost)
+            SendDrawerChanged(value);
         }
     }
 
@@ -89,6 +89,15 @@ public class Player
 
     #region Client
 
+    private void SendDrawerChanged(bool value)
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.DrawerChanged);
+        message.AddUShort(ID);
+        message.AddBool(value);
+        //ServerManager.Server.SendToAll(message);
+        ClientManager.Client!.Send(message);
+    }
+    
     private void SendDrawingData(Vector2 start, Vector2 end, Color color)
     {
         // Send from Client to Server
@@ -172,14 +181,6 @@ public class Player
     #endregion
     
     #region Server
-
-    private void SendDrawerChanged(bool value)
-    {
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.DrawerChanged);
-        message.AddUShort(ID);
-        message.AddBool(value);
-        ServerManager.Server.SendToAll(message);
-    }
     
     private Message CreateNewConnectionMessage()
     {
@@ -187,6 +188,13 @@ public class Player
         message.AddUShort(ID);
         message.AddBool(IsDrawer);
         return message;
+    }
+    
+    [MessageHandler((ushort) MessageID.DrawerChanged)]
+    private static void ReceiveDrawerChangedHandler(ushort fromClientID, Message message)
+    {
+        // Receive data from Client and use in Server 
+        ServerManager.Server.SendToAll(message);
     }
     
     [MessageHandler((ushort) MessageID.SendPainting)]

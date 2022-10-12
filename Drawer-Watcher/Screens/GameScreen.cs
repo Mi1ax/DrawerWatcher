@@ -43,9 +43,6 @@ public class GameScreen : Screen
             
         Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
-        
-        // TODO: Move somewhere
-        _rl.DrawLine(930, 720 - 144, 930, 720, Color.BLACK);
 
         _chatPanel.OnUpdate();
         _toolPanel.OnUpdate();

@@ -97,7 +97,6 @@ public class ToolPanel : IDisposable
         {
             if (_colors[colorIndex].A == 0) continue;
             
-            // ReSharper disable once PossibleLossOfFraction
             position.X += _colorSize + 25;
 
             if (_rl.CheckCollisionPointCircle(

@@ -13,8 +13,9 @@ internal class Sandbox : Application
     {
         //BIG TODO: Set server on different thread
         ScreenManager.NavigateTo(new MenuScreen());
-
+        
         NetworkManager.Initialize();
+        GameLogic.Initialize();
     }
     
     protected override void Update()

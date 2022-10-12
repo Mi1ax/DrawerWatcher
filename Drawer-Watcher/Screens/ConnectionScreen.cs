@@ -1,5 +1,3 @@
-using CouscousEngine.Core;
-using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -21,7 +19,7 @@ public class ConnectionScreen : Screen
             if (ImGui.Button("Connect"))
             {
                 NetworkManager.Connect();
-                ScreenManager.NavigateTo(new GameScreen());
+                ScreenManager.NavigateTo(new LobbyScreen());
             }
         }
         ImGui.End();
