@@ -15,7 +15,7 @@ internal static class Program
     {
         private string _text;
 
-        private Font _font;
+        private readonly Font _font;
         
         public Sandbox() 
             : base("Sandbox")

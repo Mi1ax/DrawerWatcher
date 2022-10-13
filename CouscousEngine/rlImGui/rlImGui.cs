@@ -9,7 +9,7 @@ using static RlGl;
 
 public static class rlImGui
 {
-    internal static IntPtr ImGuiContext = IntPtr.Zero;
+    private static IntPtr ImGuiContext = IntPtr.Zero;
 
     private static ImGuiMouseCursor CurrentMouseCursor = ImGuiMouseCursor.COUNT;
     private static Dictionary<ImGuiMouseCursor, MouseCursor>? MouseCursorMap;
@@ -68,8 +68,8 @@ public static class rlImGui
         colors[(int)ImGuiCol.TitleBgActive] = new Vector4( 0.15f, 0.1505f, 0.151f, 1.0f );
         colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4( 0.15f, 0.1505f, 0.151f, 1.0f );
     }
-    
-    public static void BeginInitImGui()
+
+    private static void BeginInitImGui()
     {
         ImGuiContext = ImGui.CreateContext();
         ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
@@ -90,7 +90,7 @@ public static class rlImGui
         MouseCursorMap[ImGuiMouseCursor.NotAllowed] = MouseCursor.MOUSE_CURSOR_NOT_ALLOWED;
     }
 
-    public static unsafe void ReloadFonts()
+    private static unsafe void ReloadFonts()
     {
         ImGui.SetCurrentContext(ImGuiContext);
         var io = ImGui.GetIO();
@@ -111,7 +111,7 @@ public static class rlImGui
         io.Fonts.SetTexID(new IntPtr(FontTexture.id));
     }
 
-    public static void EndInitImGui()
+    private static void EndInitImGui()
     {
         SetupMouseCursors();
 
@@ -235,6 +235,7 @@ public static class rlImGui
 
     private static void EnableScissor(float x, float y, float width, float height)
     {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
         rlEnableScissorTest();
         rlScissor((int)x, Raylib.GetScreenHeight() - (int)(y + height), (int)width, (int)height);
     }
@@ -261,7 +262,7 @@ public static class rlImGui
         rlBegin(RL_TRIANGLES);
         rlSetTexture(textureId);
 
-        for (int i = 0; i <= (count - 3); i += 3)
+        for (var i = 0; i <= (count - 3); i += 3)
         {
             if (rlCheckRenderBatchLimit(3))
             {
