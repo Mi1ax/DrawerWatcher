@@ -9,7 +9,9 @@ namespace Drawer_Watcher.Panels;
 
 public class ChatPanel : IDisposable
 {
-    private static List<string> _chat = new();
+    public bool DisableInput = false;
+    
+    private static readonly List<string> _chat = new();
 
     private readonly Rectangle _bounds;
     private readonly InputBox _inputBox;
@@ -32,6 +34,16 @@ public class ChatPanel : IDisposable
         });
     }
 
+    public static KeyValuePair<ushort, string> GetLastMessage()
+    {
+        if (_chat.Count == 0) return new KeyValuePair<ushort, string>(0, "");
+        var lastStr = _chat.Last().Split(':');
+        return new KeyValuePair<ushort, string>(
+            Convert.ToUInt16(lastStr[1]), 
+            lastStr[0]
+            );
+    }
+
     public static void AddMessage(ushort senderID, string text)
     {
         _chat.Add($"{text}: {senderID}");
@@ -41,8 +53,9 @@ public class ChatPanel : IDisposable
     {
         Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
         _rl.DrawLine(930, 720 - 144, 930, 720, Color.BLACK);
-        _inputBox.OnUpdate();
-
+        if (!DisableInput)
+            _inputBox.OnUpdate();
+        
         for (var i = 0; i < _chat.Count; i++)
         {
             var textSize = _rl.MeasureTextEx(_inputBox.Font, _chat[i], 24f, 1f);

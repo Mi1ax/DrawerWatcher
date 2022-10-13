@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
+using CouscousEngine.Core;
+using CouscousEngine.Utils;
 
 namespace Drawer_Watcher.Managers;
 
@@ -18,22 +21,23 @@ public static class GameLogic
         EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n");
         _random = new Random(DateTime.Now.GetHashCode());
     }
-
-    public static void NewGame()
-    {
-        
-    }
-
+    
     public static void StartRound()
     {
         _stopwatch = Stopwatch.StartNew();
+        if (Player.ApplicationOwner is not {IsDrawer: true}) return;
         if (EnglishWords != null && _random != null)
             CurrentWord = EnglishWords[_random.Next(0, EnglishWords.Length)];
     }
 
-    public static void StopRound()
+    public static void StopRound(ushort guesedID)
     {
         FinishedTime = _stopwatch!.Elapsed;
+        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), $"{guesedID} guessed right", 
+            new Vector2(
+                
+            ), 
+            48f, 1f, Color.BLACK);
         _stopwatch.Stop();
     }
 }

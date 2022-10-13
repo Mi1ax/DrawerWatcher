@@ -215,24 +215,7 @@ public class LobbyScreen : Screen
 
     public override void OnImGuiUpdate()
     {
-        if (!NetworkManager.IsHost) return;
-
-        ImGui.Begin("Lobby");
-        if (ImGui.Button("Start Round"))
-            GameLogic.StartRound();
-        if (ImGui.Button("Stop Round"))
-            GameLogic.StopRound();
-        ImGui.Text($"Timer: {GameLogic.Timer.Minutes}:{GameLogic.Timer.Seconds}");
-        ImGui.Text($"Finished: {GameLogic.FinishedTime.Minutes}:{GameLogic.FinishedTime.Seconds}");
-        ImGui.Text($"Word: {GameLogic.CurrentWord}");
-        ImGui.Separator();
-        foreach (var (id, player) in GameManager.Players)
-        {
-            ImGui.Text($"Player: {id}, Drawer: {player.IsDrawer}");
-            ImGui.Separator();
-        }
-        ImGui.End();
-
+        
     }
 
     public override void Dispose()

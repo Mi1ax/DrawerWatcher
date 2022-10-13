@@ -13,7 +13,8 @@ public enum MessageID : ushort
     
     ChatMessage,
     
-    StartGame
+    StartGame,
+    SendWord
 }
 
 public static class NetworkManager
@@ -81,19 +82,22 @@ public static class NetworkManager
 
     public static void StartGame()
     {
+        // Send from Client to Server
         var message = Message.Create(MessageSendMode.Reliable, MessageID.StartGame);
+        message.AddString(GameLogic.CurrentWord);
         ClientManager.Client!.Send(message);
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]
-    private static void ReceiveDrawerChangedHandler(Message message)
+    private static void ReceiveStartGameHandler(Message message)
     {
         // Get data from Server to Client
+        GameLogic.CurrentWord = message.GetString();
         ScreenManager.NavigateTo(new GameScreen());
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]
-    private static void ReceiveDrawerChangedHandler(ushort fromClientID, Message message)
+    private static void ReceiveStartGameHandler(ushort fromClientID, Message message)
     {
         // Receive data from Client and use in Server 
         ServerManager.Server.SendToAll(message);

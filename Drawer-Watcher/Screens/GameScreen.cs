@@ -28,6 +28,9 @@ public class GameScreen : Screen
         });
         
         GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
+        GameLogic.StartRound();
+        if (Player.ApplicationOwner is {IsDrawer: true})
+            _chatPanel.DisableInput = true;
     }
 
     public override void OnUpdate()
@@ -42,6 +45,26 @@ public class GameScreen : Screen
 
         _chatPanel.OnUpdate();
         _toolPanel.OnUpdate();
+
+        var (key, value) = ChatPanel.GetLastMessage();
+        if (value != "" && value == GameLogic.CurrentWord)
+            GameLogic.StopRound(key);
+        
+        if (Player.ApplicationOwner is {IsDrawer: true})
+        {
+            var textSize = _rl.MeasureTextEx(
+                AssetManager.GetFont("RobotoMono-Regular"), 
+                GameLogic.CurrentWord, 48f, 1f
+            );
+        
+            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+                GameLogic.CurrentWord, 
+                new Vector2(
+                    _drawingPanel.Size.Width / 2 - textSize.X,
+                    25
+                ), 
+                48f, 1f, Color.BLACK);
+        }
     }
 
     public override void OnImGuiUpdate()
