@@ -30,7 +30,9 @@ public static class GameLogic
         {
             var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
             if (word.Contains('\r'))
-                CurrentWord = word.Remove('\r');
+                CurrentWord = word.Remove(word.Length - 1, 1);
+            else
+                CurrentWord = word;
         }
     }
 
