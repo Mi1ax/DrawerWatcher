@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Numerics;
+﻿using System.Numerics;
 using CouscousEngine.Core;
-using CouscousEngine.rlImGui;
-using ImGuiNET;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using KeyboardKey = CouscousEngine.Core.KeyboardKey;

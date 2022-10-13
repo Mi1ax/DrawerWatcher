@@ -27,7 +27,11 @@ public static class GameLogic
         _stopwatch = Stopwatch.StartNew();
         if (Player.ApplicationOwner is not {IsDrawer: true}) return;
         if (EnglishWords != null && _random != null)
-            CurrentWord = EnglishWords[_random.Next(0, EnglishWords.Length)];
+        {
+            var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
+            if (word.Contains('\r'))
+                CurrentWord = word.Remove('\r');
+        }
     }
 
     public static void StopRound(ushort guesedID)
