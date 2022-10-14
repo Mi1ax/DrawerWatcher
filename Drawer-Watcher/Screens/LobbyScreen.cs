@@ -100,7 +100,8 @@ public class LobbyScreen : Screen
                 _bounds.Position.Y + 25
                 ), 24f, 1f, Color.BLACK);
         
-        _startGameButton.Update();
+        if (NetworkManager.IsHost)
+            _startGameButton.Update();
     }
 
     private void DrawDrawerPanel()

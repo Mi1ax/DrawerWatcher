@@ -64,7 +64,7 @@ public class ToolPanel : IDisposable
         ));
     }
 
-    public Vector2 DrawBrushes(Vector2 position)
+    private Vector2 DrawBrushes(Vector2 position)
     {
         for (var brushSizeIndex = 0; brushSizeIndex < _brushesSize.Length; brushSizeIndex++)
         {
@@ -90,8 +90,8 @@ public class ToolPanel : IDisposable
 
         return position;
     }
-    
-    public Vector2 DrawColors(Vector2 position)
+
+    private Vector2 DrawColors(Vector2 position)
     {
         for (var colorIndex = 0; colorIndex < _colors.Length; colorIndex++)
         {
@@ -119,7 +119,7 @@ public class ToolPanel : IDisposable
         return position;
     }
 
-    public static void DrawTool(Texture texture, Vector2 position)
+    private static void DrawTool(Texture texture, Vector2 position)
     {
         if (_rl.CheckCollisionPointRec(Input.GetMousePosition(),
                 new Raylib_CsLo.Rectangle(position.X, position.Y, texture.width, texture.height)))

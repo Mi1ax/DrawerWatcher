@@ -11,5 +11,5 @@ public struct Brush
 
     public static Color ClearColor => GameData.ClearColor;
 
-    public static readonly Brush Default = new() {Color = Vector3.Zero, Thickness = 16f};
+    public static readonly Brush Default = new() {Color = Vector3.Zero, Thickness = 8f};
 }
