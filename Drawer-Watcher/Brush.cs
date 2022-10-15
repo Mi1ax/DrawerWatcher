@@ -1,6 +1,7 @@
-﻿using System.Numerics;
-using CouscousEngine.Utils;
+﻿using System.Drawing;
+using System.Numerics;
 using Drawer_Watcher.Managers;
+using Color = CouscousEngine.Utils.Color;
 
 namespace Drawer_Watcher;
 
@@ -11,5 +12,9 @@ public struct Brush
 
     public static Color ClearColor => GameData.ClearColor;
 
-    public static readonly Brush Default = new() {Color = Vector3.Zero, Thickness = 8f};
+    public static readonly Brush Default = new()
+    {
+        Color = (Color)ColorTranslator.FromHtml("#414042"), 
+        Thickness = 8f
+    };
 }

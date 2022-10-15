@@ -14,7 +14,6 @@ namespace Drawer_Watcher.Managers;
 public enum MessageID : ushort
 {
     SendPainting = 1,
-    SendPosition,
     ChatMessage,
     
     StartGame,
@@ -53,237 +52,220 @@ public static class NetworkLogger
 }
 
 // ReSharper disable once UnusedType.Local
-    public static class MessageHandlers 
+public static class MessageHandlers 
+{
+    private static void Log(string functionName, string enumName, LogType type = LogType.Info)
     {
-        private static void Log(string functionName, string enumName, LogType type = LogType.Info)
-        {
-            RiptideLogger.Log(type, nameof(MessageHandlers), $"{enumName}: {functionName}");
-        }
-
-        private static void Log(string message, LogType type = LogType.Info)
-        {
-            RiptideLogger.Log(type, message);
-        }
-        
-        #region Receive data from Server and handle on Client side
-
-        [MessageHandler((ushort) MessageID.SendPainting)]
-        private static void ReceivePainting(Message message)
-        {
-            Log(nameof(ReceivePainting), nameof(MessageID.SendPainting));
-            Renderer.BeginTextureMode(GameData.Painting!.Value);
-            Renderer.MouseDrawing(message.GetVector2(), message.GetVector2(), message.GetFloat(), message.GetColor());
-            //Renderer.DrawCircle(message.GetVector2(), message.GetFloat(), message.GetColor());
-            Renderer.EndTextureMode();
-        }
-        
-        [MessageHandler((ushort) MessageID.SendPosition)]
-        private static void ReceiveNewConnnection(Message message)
-        {
-            if (NetworkManager.IsHost) return;
-            Log(nameof(ReceiveNewConnnection), nameof(MessageID.SendPosition));
-
-            var id = message.GetUShort();
-            var isDrawer = message.GetBool();
-
-            NetworkManager.Players.Add(id, new Player(id, isDrawer));
-        }
-        
-        [MessageHandler((ushort) MessageID.ChatMessage)]
-        private static void ReceiveChatMessage(Message message)
-        {
-            Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
-            var senderID = message.GetUShort();
-            var text = message.GetString();
-            ChatPanel.AddMessage(senderID, text);
-        }
-        
-        [MessageHandler((ushort) MessageID.StartGame)]
-        private static void ReceiveStartGame(Message message)
-        {
-            GameLogic.CurrentWord = message.GetString();
-            Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
-            ScreenManager.NavigateTo(new GameScreen());
-        }
-        
-        [MessageHandler((ushort) MessageID.SendWinning)]
-        private static void ReceiveWinning(Message message)
-        {
-            Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
-            var guesser = message.GetUShort();
-            GameLogic.Winner = guesser;
-        }
-
-        #endregion
-
-        #region Receive data from Client and use in Server 
-
-        [MessageHandler((ushort) MessageID.SendPainting)]
-        private static void ReceivePainting(ushort fromClientID, Message message)
-        {
-            Log(nameof(ReceivePainting), nameof(MessageID.SendPainting));
-            if (!NetworkManager.Players[fromClientID].IsDrawer) return;
-            ServerManager.Server.SendToAll(message);
-        }
-        
-        [MessageHandler((ushort) MessageID.StartGame)]
-        private static void ReceiveStartGame(ushort fromClientID, Message message)
-        {
-            Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
-            ServerManager.Server.SendToAll(message);
-        }
-
-        [MessageHandler((ushort) MessageID.ChatMessage)]
-        private static void ReceiveChatMessage(ushort fromClientID, Message message)
-        {
-            Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
-            ServerManager.Server.SendToAll(message);
-        }
-        
-        [MessageHandler((ushort) MessageID.SendWinning)]
-        private static void ReceiveWinning(ushort fromClientID, Message message)
-        {
-            Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
-            ServerManager.Server.SendToAll(message);
-        }
-
-        #endregion
-
-        #region Send data from Client to Server
-
-        public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
-        {
-            // Send from Client to Server
-            if (ImGui.GetIO().WantCaptureMouse) return;
-        
-            var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
-            message.AddVector2(start);
-            message.AddVector2(end);
-            message.AddFloat(thickness);
-            message.AddColor(color);
-        
-            ClientManager.Client!.Send(message);
-        }
-        
-        public static void SendMessageInChat(ushort senderID, string text)
-        {
-            var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
-            message.AddUShort(senderID);
-            message.AddString(text);
-            RiptideLogger.Log(LogType.Info, GameLogic.CurrentWord);
-            if (text == GameLogic.CurrentWord)
-            {
-                var winningMessage = Message.Create(MessageSendMode.Reliable, MessageID.SendWinning);
-                winningMessage.AddUShort(senderID);
-                ClientManager.Client!.Send(winningMessage);
-            }
-            ClientManager.Client!.Send(message);
-        }
-
-        #endregion
-
-        /*******************************************************/
-        
-        #region Send data from Client to the Server
-
-        public static void SetDrawer(ushort clientID, bool value)
-        {
-            Log("(To Server) New drawer value");
-            NetworkManager.Players[clientID].SetDrawer(value);
-            var message = Message.Create(MessageSendMode.Reliable, MessageID.DrawerStatus);
-            message.AddUShort(clientID);
-            message.AddBool(value);
-            ClientManager.Client!.Send(message);
-        }
-        
-        public static void ClearPainting()
-        {
-            Log("(To Server) Wanna clear painting");
-            var message = Message.Create(MessageSendMode.Unreliable, MessageID.AllClear);
-            ClientManager.Client!.Send(message);
-        }
-
-        #endregion
-
-        #region Send data from Server to the Client/Clients
-
-        public static void SendOtherPlayersInfo(ushort toClientId)
-        {
-            Log($"(To Client) Send {toClientId} other players info");
-            var message = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
-            message.AddInt(NetworkManager.Players.Count);
-            foreach (var (id, player) in NetworkManager.Players)
-            {
-                message.AddUShort(id);
-                message.AddBool(player.IsDrawer);
-            }
-            ServerManager.Server.Send(message, toClientId);
-
-            var newPlayer = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
-            newPlayer.AddInt(1);
-            newPlayer.AddUShort(toClientId);
-            newPlayer.AddBool(false);
-            ServerManager.Server.SendToAll(message, toClientId);
-        }
-        
-        [MessageHandler((ushort) MessageID.DrawerStatus)]
-        private static void HandleDrawerMessage(ushort fromClientID, Message message)
-        {
-            Log("(To all Clients) Drawer status");
-            ServerManager.Server.SendToAll(message, fromClientID);
-        }
-        
-        [MessageHandler((ushort) MessageID.AllClear)]
-        private static void HandleAllClear(ushort fromClientID, Message message)
-        {
-            if (!NetworkManager.Players[fromClientID].IsDrawer) return;
-            Log("(To all Clients) Clear painting");
-            ServerManager.Server.SendToAll(message);
-        }
-
-        #endregion
-
-        #region Handle Server messages on Client Size
-
-        [MessageHandler((ushort) MessageID.ConnectionInfo)]
-        private static void HandleConnectionInfo(Message message)
-        {
-            var playersCount = message.GetInt();
-            Log($"(From Server) Get data about {playersCount} other players!");
-            for (var _ = 0; _ < playersCount; _++)
-            {
-                var id = message.GetUShort();
-                var player = new Player(id, message.GetBool())
-                {
-                    CanDraw = false,
-                    CurrentBrush = default
-                };
-                if (!NetworkManager.Players.ContainsKey(id))
-                    NetworkManager.Players.Add(id, player);
-            }
-        }
-        
-        [MessageHandler((ushort) MessageID.DrawerStatus)]
-        private static void HandleDrawerStatus(Message message)
-        {
-            var clientID = message.GetUShort();
-            var value = message.GetBool();
-            var msg = value ? "is drawer" : "is not a drawer";
-            Log($"(From Server) {clientID}: {msg}");
-            NetworkManager.Players[clientID].SetDrawer(value);
-        }
-        
-        [MessageHandler((ushort) MessageID.AllClear)]
-        private static void HandleAllClear(Message _)
-        {
-            Log("(From Server) Clear canvas");
-            Renderer.BeginTextureMode(GameData.Painting!.Value);
-            Renderer.ClearBackground(GameData.ClearColor);
-            Renderer.EndTextureMode();
-        }
-
-        #endregion
+        RiptideLogger.Log(type, nameof(MessageHandlers), $"{enumName}: {functionName}");
     }
+
+    private static void Log(string message, LogType type = LogType.Info)
+    {
+        RiptideLogger.Log(type, message);
+    }
+    
+    #region Receive data from Server and handle on Client side
+
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void ReceiveChatMessage(Message message)
+    {
+        Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
+        var senderID = message.GetUShort();
+        var text = message.GetString();
+        ChatPanel.AddMessage(senderID, text);
+    }
+    
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void ReceiveStartGame(Message message)
+    {
+        GameLogic.CurrentWord = message.GetString();
+        Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
+        ScreenManager.NavigateTo(new GameScreen());
+    }
+    
+    [MessageHandler((ushort) MessageID.SendWinning)]
+    private static void ReceiveWinning(Message message)
+    {
+        Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
+        var guesser = message.GetUShort();
+        GameLogic.Winner = guesser;
+    }
+
+    #endregion
+
+    #region Receive data from Client and use in Server
+
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void ReceiveStartGame(ushort fromClientID, Message message)
+    {
+        Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
+        ServerManager.Server.SendToAll(message);
+    }
+
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void ReceiveChatMessage(ushort fromClientID, Message message)
+    {
+        Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.SendWinning)]
+    private static void ReceiveWinning(ushort fromClientID, Message message)
+    {
+        Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
+        ServerManager.Server.SendToAll(message);
+    }
+
+    #endregion
+
+    #region Send data from Client to Server
+
+    public static void SendMessageInChat(ushort senderID, string text)
+    {
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
+        message.AddUShort(senderID);
+        message.AddString(text);
+        RiptideLogger.Log(LogType.Info, GameLogic.CurrentWord);
+        if (text == GameLogic.CurrentWord)
+        {
+            var winningMessage = Message.Create(MessageSendMode.Reliable, MessageID.SendWinning);
+            winningMessage.AddUShort(senderID);
+            ClientManager.Client!.Send(winningMessage);
+        }
+        ClientManager.Client!.Send(message);
+    }
+
+    #endregion
+
+    /*******************************************************/
+    
+    #region Send data from Client to the Server
+
+    public static void SetDrawer(ushort clientID, bool value)
+    {
+        Log("(To Server) New drawer value");
+        NetworkManager.Players[clientID].SetDrawer(value);
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.DrawerStatus);
+        message.AddUShort(clientID);
+        message.AddBool(value);
+        ClientManager.Client!.Send(message);
+    }
+    
+    public static void ClearPainting()
+    {
+        Log("(To Server) Wanna clear painting");
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.AllClear);
+        ClientManager.Client!.Send(message);
+    }
+    
+    public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
+    {
+        // Send from Client to Server
+        if (ImGui.GetIO().WantCaptureMouse) return;
+    
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
+        message.AddVector2(start);
+        message.AddVector2(end);
+        message.AddFloat(thickness);
+        message.AddColor(color);
+    
+        ClientManager.Client!.Send(message);
+    }
+
+    #endregion
+
+    #region Send data from Server to the Client/Clients
+
+    public static void SendOtherPlayersInfo(ushort toClientId)
+    {
+        Log($"(To Client) Send {toClientId} other players info");
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        message.AddInt(NetworkManager.Players.Count);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            message.AddUShort(id);
+            message.AddBool(player.IsDrawer);
+        }
+        ServerManager.Server.Send(message, toClientId);
+
+        var newPlayer = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        newPlayer.AddInt(1);
+        newPlayer.AddUShort(toClientId);
+        newPlayer.AddBool(false);
+        ServerManager.Server.SendToAll(message, toClientId);
+    }
+    
+    [MessageHandler((ushort) MessageID.DrawerStatus)]
+    private static void HandleDrawerMessage(ushort fromClientID, Message message)
+    {
+        Log("(To all Clients) Drawer status");
+        ServerManager.Server.SendToAll(message, fromClientID);
+    }
+    
+    [MessageHandler((ushort) MessageID.AllClear)]
+    private static void HandleAllClear(ushort fromClientID, Message message)
+    {
+        if (!NetworkManager.Players[fromClientID].IsDrawer) return;
+        Log("(To all Clients) Clear painting");
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.SendPainting)]
+    private static void HandlePainting(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message);
+    }
+
+    #endregion
+
+    #region Handle Server messages on Client Side
+
+    [MessageHandler((ushort) MessageID.ConnectionInfo)]
+    private static void HandleConnectionInfo(Message message)
+    {
+        var playersCount = message.GetInt();
+        Log($"(From Server) Get data about {playersCount} other players!");
+        for (var _ = 0; _ < playersCount; _++)
+        {
+            var id = message.GetUShort();
+            var player = new Player(id, message.GetBool());
+            if (!NetworkManager.Players.ContainsKey(id))
+                NetworkManager.Players.Add(id, player);
+        }
+    }
+    
+    [MessageHandler((ushort) MessageID.DrawerStatus)]
+    private static void HandleDrawerStatus(Message message)
+    {
+        var clientID = message.GetUShort();
+        var value = message.GetBool();
+        var msg = value ? "is drawer" : "is not a drawer";
+        Log($"(From Server) {clientID}: {msg}");
+        NetworkManager.Players[clientID].SetDrawer(value);
+    }
+    
+    [MessageHandler((ushort) MessageID.AllClear)]
+    private static void HandleAllClear(Message _)
+    {
+        Renderer.BeginTextureMode(GameData.Painting!.Value);
+        Renderer.ClearBackground(GameData.ClearColor);
+        Renderer.EndTextureMode();
+    }
+    
+    [MessageHandler((ushort) MessageID.SendPainting)]
+    private static void HandlePainting(Message message)
+    {
+        Renderer.BeginTextureMode(GameData.Painting!.Value);
+        var start = message.GetVector2();
+        var end = message.GetVector2();
+        var thickness = message.GetFloat();
+        var color = message.GetColor();
+        Renderer.MouseDrawing(start, end, thickness, color);
+        Renderer.EndTextureMode();
+    }
+    
+    #endregion
+}
 
 public static class NetworkManager
 {
@@ -335,11 +317,7 @@ public static class NetworkManager
             ServerManager.Initialize(
                 (_, e) =>
                 {
-                    var player = new Player(e.Client.Id, false)
-                    {
-                        CanDraw = false,
-                        CurrentBrush = default
-                    };
+                    var player = new Player(e.Client.Id, false);
                     Players.Add(e.Client.Id, player);
                     MessageHandlers.SendOtherPlayersInfo(e.Client.Id);
                 },

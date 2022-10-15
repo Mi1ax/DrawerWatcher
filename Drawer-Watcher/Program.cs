@@ -22,14 +22,14 @@ internal class Sandbox : Application
     }
     
     protected override void Update()
-    { 
+    {
         NetworkManager.Update();
-        
+
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);
         {
             ScreenManager.Update();
-            
+
             rlImGui.Begin();
             NetworkLogger.UpdateImGuiConsole();
             ScreenManager.UpdateImGui();

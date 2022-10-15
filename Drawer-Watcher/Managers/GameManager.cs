@@ -28,7 +28,6 @@ public struct GameData : IDisposable
 
     public static RenderTexture? Painting = null;
 
-
     public void Dispose()
     {
         if (Painting != null) 
