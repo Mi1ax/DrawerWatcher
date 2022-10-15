@@ -5,21 +5,12 @@ using Color = CouscousEngine.Utils.Color;
 
 namespace Drawer_Watcher.Managers;
 
-public struct ConnectionInfo
+public static class ConnectionInfo
 {
-    public string Ip;
-    public int Port;
+    public static string Ip = "127.0.0.1";
+    public static int Port = 34827;
 
-    public ConnectionInfo(string ip, int port)
-    {
-        Ip = ip;
-        Port = port;
-    }
-    
     public const int MaxConnection = 4;
-
-    public static readonly ConnectionInfo Default = new("46.138.252.180", 34827);
-    public static readonly ConnectionInfo Local = new("127.0.0.1", 34827);
 }
 
 public struct GameData : IDisposable
@@ -34,4 +25,9 @@ public struct GameData : IDisposable
         if (Painting != null) 
             Renderer.UnloadRenderTexture(Painting.Value);
     }
+}
+
+public static class GameManager
+{
+    public static readonly Dictionary<ushort, Player> Players = new();
 }
