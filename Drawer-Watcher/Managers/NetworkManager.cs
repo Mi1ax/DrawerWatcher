@@ -1,6 +1,7 @@
 ﻿using CouscousEngine.Networking;
 using Drawer_Watcher.Screens;
 using Riptide;
+using Riptide.Utils;
 
 namespace Drawer_Watcher.Managers;
 
@@ -14,7 +15,8 @@ public enum MessageID : ushort
     ChatMessage,
     
     StartGame,
-    SendWord
+    SendWord,
+    SendWinning
 }
 
 public static class NetworkManager
@@ -93,13 +95,35 @@ public static class NetworkManager
     {
         // Get data from Server to Client
         GameLogic.CurrentWord = message.GetString();
+        RiptideLogger.Log(
+            LogType.Info, 
+            $"Recieve start from server to client: {GameLogic.CurrentWord}"
+            );
         ScreenManager.NavigateTo(new GameScreen());
+    }
+    
+    [MessageHandler((ushort) MessageID.SendWinning)]
+    private static void ReceiveWinningHandler(Message message)
+    {
+        // Get data from Server to Client
+        RiptideLogger.Log(LogType.Info, "Get from server to client");
+        var guesser = message.GetUShort();
+        GameLogic.Winner = guesser;
+    }
+    
+    [MessageHandler((ushort) MessageID.SendWinning)]
+    private static void ReceiveWinningHandler(ushort fromClientID, Message message)
+    {
+        RiptideLogger.Log(LogType.Info, "Get from client to server");
+        // Receive data from Client and use in Server 
+        ServerManager.Server.SendToAll(message);
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]
     private static void ReceiveStartGameHandler(ushort fromClientID, Message message)
     {
         // Receive data from Client and use in Server 
+        RiptideLogger.Log(LogType.Info, nameof(ReceiveStartGameHandler));
         ServerManager.Server.SendToAll(message);
     }
     

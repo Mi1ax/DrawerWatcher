@@ -12,7 +12,8 @@ public static class GameLogic
     public static TimeSpan FinishedTime { get; private set; }
     public static TimeSpan Timer => _stopwatch?.Elapsed ?? TimeSpan.Zero;
     public static string CurrentWord = "";
-    
+    public static ushort Winner = 0;
+
     private static Stopwatch? _stopwatch;
     private static Random? _random;
 
@@ -26,24 +27,15 @@ public static class GameLogic
     {
         _stopwatch = Stopwatch.StartNew();
         if (Player.ApplicationOwner is not {IsDrawer: true}) return;
-        if (EnglishWords != null && _random != null)
-        {
-            var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
-            if (word.Contains('\r'))
-                CurrentWord = word.Remove(word.Length - 1, 1);
-            else
-                CurrentWord = word;
-        }
+        if (EnglishWords == null || _random == null) return;
+        
+        var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
+        CurrentWord = word.Contains('\r') ? word.Remove(word.Length - 1, 1) : word;
     }
 
-    public static void StopRound(ushort guesedID)
+    public static void StopRound()
     {
         FinishedTime = _stopwatch!.Elapsed;
-        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), $"{guesedID} guessed right", 
-            new Vector2(
-                
-            ), 
-            48f, 1f, Color.BLACK);
         _stopwatch.Stop();
     }
 }

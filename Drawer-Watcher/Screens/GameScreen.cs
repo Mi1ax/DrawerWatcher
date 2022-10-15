@@ -44,12 +44,20 @@ public class GameScreen : Screen
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
 
         _chatPanel.OnUpdate();
-        _toolPanel.OnUpdate();
-
-        var (key, value) = ChatPanel.GetLastMessage();
-        if (value != "" && value == GameLogic.CurrentWord)
-            GameLogic.StopRound(key);
         
+        if (Player.ApplicationOwner is {IsDrawer: true})
+            _toolPanel.OnUpdate();
+
+        if (GameLogic.Winner != 0)
+        {
+            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+                $"{GameLogic.Winner} guessed right!", 
+                new Vector2(
+                    
+                ), 
+                48f, 1f, Color.BLACK);
+        }
+
         if (Player.ApplicationOwner is {IsDrawer: true})
         {
             var textSize = _rl.MeasureTextEx(

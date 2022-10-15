@@ -7,6 +7,7 @@ using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens;
 using ImGuiNET;
 using Riptide;
+using Riptide.Utils;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
 
@@ -124,6 +125,13 @@ public class Player
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
         message.AddUShort(senderID);
         message.AddString(text);
+        RiptideLogger.Log(LogType.Info, GameLogic.CurrentWord);
+        if (text == GameLogic.CurrentWord)
+        {
+            var winningMessage = Message.Create(MessageSendMode.Reliable, MessageID.SendWinning);
+            winningMessage.AddUShort(senderID);
+            ClientManager.Client!.Send(winningMessage);
+        }
         ClientManager.Client!.Send(message);
     }
     

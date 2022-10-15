@@ -7,7 +7,7 @@ namespace Drawer_Watcher.Managers;
 
 public static class ConnectionInfo
 {
-    public static string Ip = "46.138.252.180";
+    public static string Ip = "127.0.0.1";
     public static int Port = 34827;
 
     public const int MaxConnection = 4;
