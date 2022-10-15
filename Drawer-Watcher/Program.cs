@@ -12,12 +12,13 @@ internal class Sandbox : Application
         : base("Drawer Watcher")
     {
         //BIG TODO: Set server on different thread
-        ScreenManager.NavigateTo(new MenuScreen());
-        
+        NetworkLogger.Init();
         NetworkManager.Initialize();
         GameLogic.Initialize();
         
         AssetManager.LoadFont("RobotoMono-Regular", "Assets/Fonts/RobotoMono-Regular.ttf");
+        
+        ScreenManager.NavigateTo(new MenuScreen());
     }
     
     protected override void Update()
@@ -30,6 +31,7 @@ internal class Sandbox : Application
             ScreenManager.Update();
             
             rlImGui.Begin();
+            NetworkLogger.UpdateImGuiConsole();
             ScreenManager.UpdateImGui();
             rlImGui.End();
 

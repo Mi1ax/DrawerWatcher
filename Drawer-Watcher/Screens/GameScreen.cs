@@ -35,9 +35,9 @@ public class GameScreen : Screen
 
     public override void OnUpdate()
     {
-        if (!NetworkManager.IsConnectedToServer || GameManager.Players.Count == 0) return;
+        if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
             
-        foreach (var player in GameManager.Players.Values)
+        foreach (var player in NetworkManager.Players.Values)
             player.Update();
             
         Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);

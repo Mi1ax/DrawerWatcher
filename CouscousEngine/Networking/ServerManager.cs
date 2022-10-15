@@ -9,7 +9,7 @@ namespace CouscousEngine.Networking;
 public static class ServerManager
 {
     private static Server? _server;
-    private static RiptideLogger.LogMethod? LogMethod = null;
+    private static RiptideLogger.LogMethod? LogMethod;
 
     public static Server Server
     {

@@ -50,10 +50,10 @@ public class Player
 
         if (!NetworkManager.IsHost) return;
 
-        foreach (var otherPlayer in GameManager.Players.Values)
+        foreach (var otherPlayer in NetworkManager.Players.Values)
             ServerManager.Server.Send(otherPlayer.CreateNewConnectionMessage(), ID);
             
-        GameManager.Players.Add(clientId, this);
+        NetworkManager.Players.Add(clientId, this);
         ServerManager.Server.SendToAll(CreateNewConnectionMessage());
     }
 
@@ -89,6 +89,14 @@ public class Player
     }
 
     #region Client
+    
+    private Message CreateNewConnectionMessage()
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.SendPosition);
+        message.AddUShort(ID);
+        message.AddBool(IsDrawer);
+        return message;
+    }
 
     private void SendDrawerChanged(bool value)
     {
@@ -172,7 +180,7 @@ public class Player
         var id = message.GetUShort();
         var isDrawer = message.GetBool();
 
-        GameManager.Players.Add(id, new Player(id) { IsDrawer = isDrawer });
+        NetworkManager.Players.Add(id, new Player(id) { IsDrawer = isDrawer });
     }
     
     [MessageHandler((ushort) MessageID.DrawerChanged)]
@@ -183,50 +191,7 @@ public class Player
         var id = message.GetUShort();
         var isDrawer = message.GetBool();
 
-        GameManager.Players[id]._isDrawer = isDrawer;
-    }
-
-    #endregion
-    
-    #region Server
-    
-    private Message CreateNewConnectionMessage()
-    {
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.SendPosition);
-        message.AddUShort(ID);
-        message.AddBool(IsDrawer);
-        return message;
-    }
-    
-    [MessageHandler((ushort) MessageID.DrawerChanged)]
-    private static void ReceiveDrawerChangedHandler(ushort fromClientID, Message message)
-    {
-        // Receive data from Client and use in Server 
-        ServerManager.Server.SendToAll(message);
-    }
-    
-    [MessageHandler((ushort) MessageID.SendPainting)]
-    private static void ReceivePaintingHandler(ushort fromClientID, Message message)
-    {
-        if (!GameManager.Players[fromClientID]._isDrawer) return;
-        // Receive data from Client and use in Server 
-        ServerManager.Server.SendToAll(message);
-    }
-    
-    
-    [MessageHandler((ushort) MessageID.AllClear)]
-    private static void ReceiveAllClearHandler(ushort fromClientID, Message message)
-    {
-        if (!GameManager.Players[fromClientID]._isDrawer) return;
-        // Receive data from Client and use in Server 
-        ServerManager.Server.SendToAll(message);
-    }
-    
-    [MessageHandler((ushort) MessageID.ChatMessage)]
-    private static void ReceiveChatMessageHandler(ushort fromClientID, Message message)
-    {
-        // Receive data from Client and use in Server 
-        ServerManager.Server.SendToAll(message);
+        NetworkManager.Players[id]._isDrawer = isDrawer;
     }
 
     #endregion
