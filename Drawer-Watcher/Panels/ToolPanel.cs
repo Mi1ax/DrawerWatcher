@@ -132,7 +132,7 @@ public class ToolPanel : IDisposable
 
             if (Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
-                MessageHandlers.SendAllClear();
+                MessageHandlers.ClearPainting();
             }
         } else
             _rl.DrawTexture(texture, 

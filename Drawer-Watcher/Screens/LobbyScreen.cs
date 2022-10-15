@@ -65,7 +65,7 @@ public class LobbyScreen : Screen
                 if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
                     return;
                 
-                Player.ApplicationOwner.IsDrawer = true;
+                Player.ApplicationOwner.SetDrawerWithNotifyngServer(true);
             }
         );
         
@@ -80,7 +80,7 @@ public class LobbyScreen : Screen
                 if (Player.ApplicationOwner == null) return;
 
                 if (Player.ApplicationOwner.IsDrawer)
-                    Player.ApplicationOwner.IsDrawer = false;
+                    Player.ApplicationOwner.SetDrawerWithNotifyngServer(false);
             }
         );
     }

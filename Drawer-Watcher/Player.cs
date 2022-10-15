@@ -13,19 +13,16 @@ public class Player
     
     public ushort ID { get; }
 
-    private bool _isDrawer;
+    public bool IsDrawer { get; private set; }
 
-    public bool IsDrawer 
+    public void SetDrawerWithNotifyngServer(bool value)
     {
-        get => _isDrawer;
-        set
-        {
-            if (_isDrawer == value) return;
-            _isDrawer = value;
-            //if (NetworkManager.IsHost)
-            MessageHandlers.SendDrawerChanged(ID, value);
-        }
+        IsDrawer = value;
+        MessageHandlers.SetDrawer(ID, value);
     }
+
+    public void SetDrawer(bool value)
+        => IsDrawer = value;
 
     public bool CanDraw = true;
     public bool IsApplicationOwner => ClientManager.Client?.Id == ID;
@@ -35,22 +32,13 @@ public class Player
     private Vector2 _prevPoint = Vector2.Zero;
     private Vector2 _currPoint = Vector2.Zero;
 
-    public Player(ushort clientId)
+    public Player(ushort clientId, bool isDrawer)
     {
         ID = clientId;
+        IsDrawer = isDrawer;
         if (IsApplicationOwner)
             ApplicationOwner = this;
         CurrentBrush = Brush.Default;
-
-        if (!NetworkManager.IsHost) return;
-
-        foreach (var otherPlayer in NetworkManager.Players.Values)
-            ServerManager.Server.Send(
-                MessageHandlers.CreateNewConnection(otherPlayer.ID, otherPlayer._isDrawer), 
-                ID);
-            
-        NetworkManager.Players.Add(clientId, this);
-        ServerManager.Server.SendToAll(MessageHandlers.CreateNewConnection(ID, _isDrawer));
     }
 
     public void Update()
