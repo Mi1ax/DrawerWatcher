@@ -3,8 +3,6 @@ using CouscousEngine.Core;
 using CouscousEngine.GUI;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
-using ImGuiNET;
-using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using Rectangle = CouscousEngine.Shapes.Rectangle;
 
@@ -64,7 +62,7 @@ public class LobbyScreen : Screen
             () =>
             {
                 if (Player.ApplicationOwner == null) return;
-                if (GameManager.Players.Values.Any(player => player.IsDrawer))
+                if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
                     return;
                 
                 Player.ApplicationOwner.IsDrawer = true;
@@ -116,7 +114,7 @@ public class LobbyScreen : Screen
             _topRightPanel.Y + 25), 
             24f, 1f, Color.BLACK);
 
-        foreach (var (id, player) in GameManager.Players)
+        foreach (var (id, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {
@@ -146,7 +144,7 @@ public class LobbyScreen : Screen
             _bottomRightPanel.Y + 25),
             24f, 1f, Color.BLACK);
         
-        foreach (var (id, player) in GameManager.Players)
+        foreach (var (id, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {

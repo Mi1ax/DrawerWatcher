@@ -11,6 +11,19 @@ public static class Renderer
     public static void BeginDrawing() => _rl.BeginDrawing();
     public static void EndDrawing() => _rl.EndDrawing();
 
+    public static void MouseDrawing(Vector2 start, Vector2 end, float thickness, Color color)
+    {
+        var dx = end.X - start.X;
+        var dy = end.Y - start.Y;
+        var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+        for (var i = 0; i < distance; i++)
+        {
+            var x = (int)(start.X + i / distance * dx);
+            var y = (int)(start.Y + i / distance * dy);
+            _rl.DrawCircleV(new Vector2(x, y), thickness, color);
+        }
+    }
+    
     #region RenderTexture
 
     public static RenderTexture LoadRenderTexture(int width, int height) 
