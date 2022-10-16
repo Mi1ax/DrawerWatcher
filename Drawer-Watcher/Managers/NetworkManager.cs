@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Reflection;
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using CouscousEngine.Utils;
@@ -17,7 +16,6 @@ public enum MessageID : ushort
     ChatMessage,
     
     StartGame,
-    SendWinning,
     
     ConnectionInfo,
     DrawerStatus,
@@ -64,81 +62,6 @@ public static class MessageHandlers
         RiptideLogger.Log(type, message);
     }
     
-    #region Receive data from Server and handle on Client side
-
-    [MessageHandler((ushort) MessageID.ChatMessage)]
-    private static void ReceiveChatMessage(Message message)
-    {
-        Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
-        var senderID = message.GetUShort();
-        var text = message.GetString();
-        ChatPanel.AddMessage(senderID, text);
-    }
-    
-    [MessageHandler((ushort) MessageID.StartGame)]
-    private static void ReceiveStartGame(Message message)
-    {
-        GameLogic.CurrentWord = message.GetString();
-        Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
-        ScreenManager.NavigateTo(new GameScreen());
-    }
-    
-    [MessageHandler((ushort) MessageID.SendWinning)]
-    private static void ReceiveWinning(Message message)
-    {
-        Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
-        var guesser = message.GetUShort();
-        GameLogic.Winner = guesser;
-    }
-
-    #endregion
-
-    #region Receive data from Client and use in Server
-
-    [MessageHandler((ushort) MessageID.StartGame)]
-    private static void ReceiveStartGame(ushort fromClientID, Message message)
-    {
-        Log(nameof(ReceiveStartGame), nameof(MessageID.StartGame));
-        ServerManager.Server.SendToAll(message);
-    }
-
-    [MessageHandler((ushort) MessageID.ChatMessage)]
-    private static void ReceiveChatMessage(ushort fromClientID, Message message)
-    {
-        Log(nameof(ReceiveChatMessage), nameof(MessageID.ChatMessage));
-        ServerManager.Server.SendToAll(message);
-    }
-    
-    [MessageHandler((ushort) MessageID.SendWinning)]
-    private static void ReceiveWinning(ushort fromClientID, Message message)
-    {
-        Log(nameof(ReceiveWinning), nameof(MessageID.SendWinning));
-        ServerManager.Server.SendToAll(message);
-    }
-
-    #endregion
-
-    #region Send data from Client to Server
-
-    public static void SendMessageInChat(ushort senderID, string text)
-    {
-        var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
-        message.AddUShort(senderID);
-        message.AddString(text);
-        RiptideLogger.Log(LogType.Info, GameLogic.CurrentWord);
-        if (text == GameLogic.CurrentWord)
-        {
-            var winningMessage = Message.Create(MessageSendMode.Reliable, MessageID.SendWinning);
-            winningMessage.AddUShort(senderID);
-            ClientManager.Client!.Send(winningMessage);
-        }
-        ClientManager.Client!.Send(message);
-    }
-
-    #endregion
-
-    /*******************************************************/
-    
     #region Send data from Client to the Server
 
     public static void SetDrawer(ushort clientID, bool value)
@@ -169,6 +92,14 @@ public static class MessageHandlers
         message.AddFloat(thickness);
         message.AddColor(color);
     
+        ClientManager.Client!.Send(message);
+    }
+    
+    public static void SendMessageInChat(ushort senderID, string text)
+    {
+        var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
+        message.AddUShort(senderID);
+        message.AddString(text);
         ClientManager.Client!.Send(message);
     }
 
@@ -212,6 +143,18 @@ public static class MessageHandlers
     
     [MessageHandler((ushort) MessageID.SendPainting)]
     private static void HandlePainting(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void HandleStartGame(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message);
+    }
+
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void HandleChatMessage(ushort fromClientID, Message message)
     {
         ServerManager.Server.SendToAll(message);
     }
@@ -262,6 +205,22 @@ public static class MessageHandlers
         var color = message.GetColor();
         Renderer.MouseDrawing(start, end, thickness, color);
         Renderer.EndTextureMode();
+    }
+    
+    [MessageHandler((ushort) MessageID.ChatMessage)]
+    private static void HandleChatMessage(Message message)
+    {
+        var senderID = message.GetUShort();
+        var text = message.GetString();
+        ChatPanel.AddMessage(senderID, text);
+    }
+    
+    [MessageHandler((ushort) MessageID.StartGame)]
+    private static void HandleStartGame(Message message)
+    {
+        Log("(From Server) Starting game");
+        GameLogic.CurrentWord = message.GetString();
+        ScreenManager.NavigateTo(new GameScreen());
     }
     
     #endregion

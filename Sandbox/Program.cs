@@ -62,7 +62,6 @@ internal static class Program
             
         }
     }
-
     private static void Main()
     {
         using var sandbox = new Sandbox();

@@ -2,7 +2,6 @@
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
-using Riptide;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
 
@@ -10,8 +9,11 @@ namespace Drawer_Watcher;
 
 public class Player
 {
-    public static Player? ApplicationOwner;
-    
+    public static Player? ApplicationOwner => 
+        ClientManager.Client == null 
+            ? null 
+            : NetworkManager.Players[ClientManager.Client.Id];
+
     public ushort ID { get; }
 
     public bool IsDrawer { get; private set; }
@@ -25,9 +27,6 @@ public class Player
     public void SetDrawer(bool value)
         => IsDrawer = value;
 
-    public bool CanDraw = true;
-    public bool IsApplicationOwner => ClientManager.Client?.Id == ID;
-
     public Brush CurrentBrush;
     
     private Vector2 _prevPoint = Vector2.Zero;
@@ -37,14 +36,12 @@ public class Player
     {
         ID = clientId;
         IsDrawer = isDrawer;
-        if (IsApplicationOwner)
-            ApplicationOwner = this;
         CurrentBrush = Brush.Default;
     }
 
     public void Update()
     {
-        if (!IsDrawer || !CanDraw) return;
+        if (!IsDrawer) return;
 
         _currPoint = Input.GetMousePosition();
         

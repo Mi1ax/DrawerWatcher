@@ -4,6 +4,7 @@ using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
+using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
@@ -47,16 +48,6 @@ public class GameScreen : Screen
         
         if (Player.ApplicationOwner is {IsDrawer: true})
             _toolPanel.OnUpdate();
-
-        if (GameLogic.Winner != 0)
-        {
-            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
-                $"{GameLogic.Winner} guessed right!", 
-                new Vector2(
-                    
-                ), 
-                48f, 1f, Color.BLACK);
-        }
 
         if (Player.ApplicationOwner is {IsDrawer: true})
         {

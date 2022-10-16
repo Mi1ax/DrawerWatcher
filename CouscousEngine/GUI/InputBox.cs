@@ -49,7 +49,6 @@ public class InputBox : IDisposable
     private float _backspaceDownTime;
     private float _eraseTime;
 
-    // TODO: Move to asset manager
     private readonly Font _font;
 
     private Action? OnEnterPressed;
@@ -59,17 +58,7 @@ public class InputBox : IDisposable
         _bounds = bounds;
         _bounds.Color = Color.GRAY;
 
-        unsafe
-        {
-            fixed (int* codepoints = new int[512])
-            {
-                for (var i = 0; i < 95; i++) 
-                    codepoints[i] = 32 + i;   // Basic ASCII characters
-                for (var i = 0; i < 255; i++) 
-                    codepoints[96 + i] = 0x400 + i;   // Cyrillic characters
-                _font = _rl.LoadFontEx("Assets/Fonts/RobotoMono-Regular.ttf", 24, codepoints, 512);
-            }
-        }
+        _font = AssetManager.GetFont("RobotoMono-Regular");
 
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
         
