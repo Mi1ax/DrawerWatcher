@@ -3,8 +3,6 @@ using CouscousEngine.Core;
 using CouscousEngine.GUI;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
-using ImGuiNET;
-using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using Rectangle = CouscousEngine.Shapes.Rectangle;
 
@@ -64,10 +62,10 @@ public class LobbyScreen : Screen
             () =>
             {
                 if (Player.ApplicationOwner == null) return;
-                if (GameManager.Players.Values.Any(player => player.IsDrawer))
+                if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
                     return;
                 
-                Player.ApplicationOwner.IsDrawer = true;
+                Player.ApplicationOwner.SetDrawerWithNotifyngServer(true);
             }
         );
         
@@ -82,7 +80,7 @@ public class LobbyScreen : Screen
                 if (Player.ApplicationOwner == null) return;
 
                 if (Player.ApplicationOwner.IsDrawer)
-                    Player.ApplicationOwner.IsDrawer = false;
+                    Player.ApplicationOwner.SetDrawerWithNotifyngServer(false);
             }
         );
     }
@@ -90,11 +88,11 @@ public class LobbyScreen : Screen
     private void DrawSettingsPanel()
     {
         var textSize = _rl.MeasureTextEx(
-            AssetManager.GetFont("RobotoMono-Regular"), 
+            AssetManager.GetDefaultFont(24), 
             "Settings", 24f, 1f
         );
         
-        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Settings", 
+        _rl.DrawTextEx(AssetManager.GetDefaultFont(24), "Settings", 
             new Vector2(
                 _bounds.Position.X + _bounds.Size.Width / 4 - textSize.X / 2,
                 _bounds.Position.Y + 25
@@ -107,16 +105,16 @@ public class LobbyScreen : Screen
     private void DrawDrawerPanel()
     {
         var textSize = _rl.MeasureTextEx(
-            AssetManager.GetFont("RobotoMono-Regular"), 
+            AssetManager.GetDefaultFont(24), 
             "Drawer", 24f, 1f
             );
         
-        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Drawer", 
+        _rl.DrawTextEx(AssetManager.GetDefaultFont(24), "Drawer", 
             new Vector2(_topRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2, 
             _topRightPanel.Y + 25), 
             24f, 1f, Color.BLACK);
 
-        foreach (var (id, player) in GameManager.Players)
+        foreach (var (id, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {
@@ -127,9 +125,9 @@ public class LobbyScreen : Screen
             _drawerName = "Empty";
         }
         
-        var nameSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), _drawerName, 24f, 1f);
+        var nameSize = _rl.MeasureTextEx(AssetManager.GetDefaultFont(24), _drawerName, 24f, 1f);
 
-        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), _drawerName, 
+        _rl.DrawTextEx(AssetManager.GetDefaultFont(24), _drawerName, 
             new Vector2(_topRightPanel.X + _bounds.Size.Width / 4 - nameSize.X / 2, 
             _topRightPanel.Y + _bounds.Size.Height / 4 - 15), 
             24f, 1f, Color.BLACK);
@@ -139,14 +137,14 @@ public class LobbyScreen : Screen
 
     private void DrawWatchersPanel()
     {
-        var textSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Watchers", 24f, 1f);
+        var textSize = _rl.MeasureTextEx(AssetManager.GetDefaultFont(24), "Watchers", 24f, 1f);
 
-        _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Watchers",
+        _rl.DrawTextEx(AssetManager.GetDefaultFont(24), "Watchers",
             new Vector2(_bottomRightPanel.X + _bounds.Size.Width / 4 - textSize.X / 2,
             _bottomRightPanel.Y + 25),
             24f, 1f, Color.BLACK);
         
-        foreach (var (id, player) in GameManager.Players)
+        foreach (var (id, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {
@@ -167,9 +165,9 @@ public class LobbyScreen : Screen
             {
                 for (var i = 0; i < _watchersNames.Count; i++)
                 {
-                    var nameSize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+                    var nameSize = _rl.MeasureTextEx(AssetManager.GetDefaultFont(24), 
                         longestName, 24f, 1f);
-                    _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), _watchersNames[i], 
+                    _rl.DrawTextEx(AssetManager.GetDefaultFont(24), _watchersNames[i], 
                         new Vector2(_bottomRightPanel.X + 25 + (nameSize.X + 15) * (i % 3), 
                         // ReSharper disable once PossibleLossOfFraction
                         _bottomRightPanel.Y + 50 + textSize.Y + textSize.Y * (i / 3)), 
@@ -179,8 +177,8 @@ public class LobbyScreen : Screen
         }
         else
         {
-            var emptySize = _rl.MeasureTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Empty", 24f, 1f);
-            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), "Empty", 
+            var emptySize = _rl.MeasureTextEx(AssetManager.GetDefaultFont(24), "Empty", 24f, 1f);
+            _rl.DrawTextEx(AssetManager.GetDefaultFont(24), "Empty", 
                 new Vector2(_bottomRightPanel.X + _bounds.Size.Width / 4 - emptySize.X / 2, 
                 _bottomRightPanel.Y + _bounds.Size.Height / 4 - 15), 
                 24f, 1f, Color.BLACK);

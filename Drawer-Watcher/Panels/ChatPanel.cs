@@ -2,6 +2,7 @@
 using CouscousEngine.Core;
 using CouscousEngine.GUI;
 using CouscousEngine.Utils;
+using Drawer_Watcher.Managers;
 using Color = CouscousEngine.Utils.Color;
 using Rectangle = CouscousEngine.Shapes.Rectangle;
 
@@ -29,7 +30,7 @@ public class ChatPanel : IDisposable
         _inputBox.SetAction(() =>
         {
             if (Player.ApplicationOwner == null) return;
-            Player.SendMessageInChat(Player.ApplicationOwner.ID, _inputBox.Text);
+            MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _inputBox.Text);
             _inputBox.Text = "";
         });
     }

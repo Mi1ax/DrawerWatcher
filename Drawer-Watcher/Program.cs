@@ -2,7 +2,6 @@
 using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
-using ImGuiNET;
 
 namespace Drawer_Watcher;
 
@@ -12,24 +11,30 @@ internal class Sandbox : Application
         : base("Drawer Watcher")
     {
         //BIG TODO: Set server on different thread
-        ScreenManager.NavigateTo(new MenuScreen());
-        
+        NetworkLogger.Init();
         NetworkManager.Initialize();
         GameLogic.Initialize();
         
-        AssetManager.LoadFont("RobotoMono-Regular", "Assets/Fonts/RobotoMono-Regular.ttf");
+        var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
+        var font48 = AssetManager.LoadFont("RobotoMono-Regular-48", "Assets/Fonts/RobotoMono-Regular.ttf", 48);
+        
+        AssetManager.SetDefaultFont(font24!.Value, 24);
+        AssetManager.SetDefaultFont(font48!.Value, 48);
+        
+        ScreenManager.NavigateTo(new MenuScreen());
     }
     
     protected override void Update()
-    { 
+    {
         NetworkManager.Update();
-        
+
         Renderer.BeginDrawing();
         Renderer.ClearBackground(GameData.ClearColor);
         {
             ScreenManager.Update();
-            
+
             rlImGui.Begin();
+            NetworkLogger.UpdateImGuiConsole();
             ScreenManager.UpdateImGui();
             rlImGui.End();
 

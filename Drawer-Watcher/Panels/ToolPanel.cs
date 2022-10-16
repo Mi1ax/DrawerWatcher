@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using CouscousEngine.Core;
+using Drawer_Watcher.Managers;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
@@ -131,7 +132,7 @@ public class ToolPanel : IDisposable
 
             if (Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
-                Player.SendAllClear();
+                MessageHandlers.ClearPainting();
             }
         } else
             _rl.DrawTexture(texture, 

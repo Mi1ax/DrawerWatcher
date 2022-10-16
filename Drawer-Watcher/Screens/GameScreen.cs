@@ -4,6 +4,7 @@ using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
+using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
@@ -35,9 +36,9 @@ public class GameScreen : Screen
 
     public override void OnUpdate()
     {
-        if (!NetworkManager.IsConnectedToServer || GameManager.Players.Count == 0) return;
+        if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
             
-        foreach (var player in GameManager.Players.Values)
+        foreach (var player in NetworkManager.Players.Values)
             player.Update();
             
         Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
@@ -46,26 +47,15 @@ public class GameScreen : Screen
         _chatPanel.OnUpdate();
         
         if (Player.ApplicationOwner is {IsDrawer: true})
+        {
             _toolPanel.OnUpdate();
-
-        if (GameLogic.Winner != 0)
-        {
-            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
-                $"{GameLogic.Winner} guessed right!", 
-                new Vector2(
-                    
-                ), 
-                48f, 1f, Color.BLACK);
-        }
-
-        if (Player.ApplicationOwner is {IsDrawer: true})
-        {
+            
             var textSize = _rl.MeasureTextEx(
-                AssetManager.GetFont("RobotoMono-Regular"), 
+                AssetManager.GetDefaultFont(48), 
                 GameLogic.CurrentWord, 48f, 1f
             );
         
-            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+            _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
                 GameLogic.CurrentWord, 
                 new Vector2(
                     _drawingPanel.Size.Width / 2 - textSize.X,
