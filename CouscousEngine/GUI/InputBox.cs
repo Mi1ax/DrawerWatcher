@@ -32,7 +32,7 @@ public class InputBox : IDisposable
 
     public Font Font => _font;
     
-    private const int _maxCharInBox = 26;
+    private readonly int _maxCharInBox;
     private const int _maxCharInInput = 32;
     
     private const float _eraseSpeed = 0.005f;
@@ -57,6 +57,9 @@ public class InputBox : IDisposable
     {
         _bounds = bounds;
         _bounds.Color = Color.GRAY;
+
+        var charCount = (int)(_bounds.Size.Width - 27) / 10;
+        _maxCharInBox = (int)(_bounds.Size.Width - 27 - charCount) / 10 + 1; 
 
         _font = AssetManager.GetDefaultFont(24);
 
@@ -105,11 +108,9 @@ public class InputBox : IDisposable
             ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
             : _text;
         
-        var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
-        
         _rl.DrawTextEx(_font, _displayText, 
             new Vector2(
-                _bounds.Position.X + _bounds.Size.Width - 12 - textSize.X, 
+                _bounds.Position.X + 12, 
                 _bounds.Position.Y + _separatorSize.Y / 2.5f), 24f, 1f, Color.BLACK);
     }
 
@@ -140,8 +141,10 @@ public class InputBox : IDisposable
         
         _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
 
+        var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
+
         _rl.DrawText("|", 
-            _bounds.Position.X + _bounds.Size.Width - 10, 
+            _bounds.Position.X + textSize.X + 15, 
             _bounds.Position.Y + _separatorSize.Y / 2f, 24f, 
             Color.BLACK
         );
