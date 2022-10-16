@@ -28,7 +28,7 @@ public class ToolPanel : IDisposable
     {
         _bounds = bounds;
 
-        _bombTexture = AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
+        _bombTexture = AssetManager.GetTexture("Bomb");
         _bombTexture.width = 64;
         _bombTexture.height = 64;
 

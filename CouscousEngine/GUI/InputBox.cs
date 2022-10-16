@@ -168,7 +168,7 @@ public class InputBox : IDisposable
 
     public void Dispose()
     {
-        _rl.UnloadFont(_font);
+        _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
         GC.SuppressFinalize(this);
     }
 }

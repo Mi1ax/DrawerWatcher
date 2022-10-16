@@ -14,6 +14,8 @@ internal class Sandbox : Application
         NetworkLogger.Init();
         NetworkManager.Initialize();
         
+        AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
+        
         var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
         var font48 = AssetManager.LoadFont("RobotoMono-Regular-48", "Assets/Fonts/RobotoMono-Regular.ttf", 48);
         

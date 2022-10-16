@@ -324,18 +324,33 @@ public static class NetworkManager
         
         public static void Init()
         {
-            ClientManager.Initialize((_, e) =>
-                {
-                    var message = Message.Create(MessageSendMode.Reliable, MessageID.ClientInfo);
-                    message.AddUShort(ClientManager.Client!.Id);
-                    message.AddString(_clientNickname);
-                    ClientManager.Client.Send(message);
-                }, 
-                (_, e) => 
-                {
-                    Players.Remove(e.Id);
-                }
-                );
+            ClientManager.Initialize(OnServerConnected, OnServerDisconnected, OnClientDisconnected);
+        }
+
+        private static void OnServerConnected(
+            object? sender, 
+            EventArgs args)
+        {
+            var message = Message.Create(MessageSendMode.Reliable, MessageID.ClientInfo);
+            message.AddUShort(ClientManager.Client!.Id);
+            message.AddString(_clientNickname);
+            ClientManager.Client.Send(message);
+        }
+        
+        private static void OnServerDisconnected(
+            object? sender, 
+            DisconnectedEventArgs args)
+        {
+            Players.Clear();
+            IsConnected = false;
+            ScreenManager.NavigateTo(new MenuScreen());
+        }
+        
+        private static void OnClientDisconnected(
+            object? sender, 
+            ClientDisconnectedEventArgs args)
+        {
+            Players.Remove(args.Id);
         }
 
         public static void Connect(ConnectionInfo info, string nickname)

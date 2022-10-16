@@ -45,8 +45,8 @@ public abstract class Application : IDisposable
     {
         OnExit();
         AssetManager.Deinitialize();
-        Window.Dispose();
         ClientManager.Client?.Disconnect();
+        Window.Dispose();
         GC.SuppressFinalize(this);
     }
 }
