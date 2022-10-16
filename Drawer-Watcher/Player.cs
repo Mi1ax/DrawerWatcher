@@ -14,6 +14,8 @@ public class Player
             ? null 
             : NetworkManager.Players[ClientManager.Client.Id];
 
+    public bool IsAppOwner => ApplicationOwner!.ID == ID;
+
     public ushort ID { get; }
 
     public bool IsDrawer { get; private set; }
@@ -41,7 +43,7 @@ public class Player
 
     public void Update()
     {
-        if (!IsDrawer) return;
+        if (!IsDrawer || !IsAppOwner) return;
 
         _currPoint = Input.GetMousePosition();
         
