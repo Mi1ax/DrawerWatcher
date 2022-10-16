@@ -15,7 +15,11 @@ internal class Sandbox : Application
         NetworkManager.Initialize();
         GameLogic.Initialize();
         
-        AssetManager.LoadFont("RobotoMono-Regular", "Assets/Fonts/RobotoMono-Regular.ttf");
+        var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
+        var font48 = AssetManager.LoadFont("RobotoMono-Regular-48", "Assets/Fonts/RobotoMono-Regular.ttf", 48);
+        
+        AssetManager.SetDefaultFont(font24!.Value, 24);
+        AssetManager.SetDefaultFont(font48!.Value, 48);
         
         ScreenManager.NavigateTo(new MenuScreen());
     }

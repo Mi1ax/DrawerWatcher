@@ -47,16 +47,15 @@ public class GameScreen : Screen
         _chatPanel.OnUpdate();
         
         if (Player.ApplicationOwner is {IsDrawer: true})
-            _toolPanel.OnUpdate();
-
-        if (Player.ApplicationOwner is {IsDrawer: true})
         {
+            _toolPanel.OnUpdate();
+            
             var textSize = _rl.MeasureTextEx(
-                AssetManager.GetFont("RobotoMono-Regular"), 
+                AssetManager.GetDefaultFont(48), 
                 GameLogic.CurrentWord, 48f, 1f
             );
         
-            _rl.DrawTextEx(AssetManager.GetFont("RobotoMono-Regular"), 
+            _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
                 GameLogic.CurrentWord, 
                 new Vector2(
                     _drawingPanel.Size.Width / 2 - textSize.X,

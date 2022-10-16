@@ -58,7 +58,7 @@ public class InputBox : IDisposable
         _bounds = bounds;
         _bounds.Color = Color.GRAY;
 
-        _font = AssetManager.GetFont("RobotoMono-Regular");
+        _font = AssetManager.GetDefaultFont(24);
 
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
         

@@ -25,7 +25,6 @@ public abstract class Application : IDisposable
             height)
         );
         rlImGui.rlImGui.Setup();
-        AssetManager.Initialize();
     }
 
     protected abstract void Update();
