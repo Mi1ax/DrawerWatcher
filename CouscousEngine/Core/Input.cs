@@ -115,7 +115,7 @@ public enum KeyboardKey
     RIGHT_CONTROL = 345, // 0x00000159
     RIGHT_ALT = 346, // 0x0000015A
     RIGHT_SUPER = 347, // 0x0000015B
-    KB_MENU = 348, // 0x0000015C
+    KB_MENU = 348 // 0x0000015C
 }
 
 public enum MouseButton
@@ -126,7 +126,7 @@ public enum MouseButton
     SIDE,
     EXTRA,
     FORWARD,
-    BACK,
+    BACK
 }
 
 public static class Input

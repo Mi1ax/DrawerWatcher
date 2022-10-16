@@ -4,7 +4,7 @@ using CouscousEngine.Utils;
 
 namespace CouscousEngine.Shapes;
 
-public class Rectangle : Shape
+public sealed class Rectangle : Shape
 {
     public Size Size { get; set; }
 
@@ -25,7 +25,7 @@ public class Rectangle : Shape
         Size = size;
     }
 
-    public override void Update()
+    public void Update()
     {
         Renderer.DrawRectangle(Size, Position, Color);
     }

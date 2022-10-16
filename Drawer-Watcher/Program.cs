@@ -35,7 +35,7 @@ internal class Sandbox : Application
             ScreenManager.Update();
 
             rlImGui.Begin();
-            NetworkLogger.UpdateImGuiConsole();
+            //NetworkLogger.UpdateImGuiConsole();
             ScreenManager.UpdateImGui();
             rlImGui.End();
 

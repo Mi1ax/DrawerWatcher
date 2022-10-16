@@ -15,8 +15,8 @@ public class MenuScreen : Screen
 
         var buttonSize = new Size(125, 55);
         var screenCenter = new Vector2(
-            Application.Instance.GetSize().Width / 2f - buttonSize.Width / 2f,
-            Application.Instance.GetSize().Height / 2f);
+            Application.Instance.WindowSize.Width / 2f - buttonSize.Width / 2f,
+            Application.Instance.WindowSize.Height / 2f);
         
         _buttons[0] = new Button(
             "Join Game",

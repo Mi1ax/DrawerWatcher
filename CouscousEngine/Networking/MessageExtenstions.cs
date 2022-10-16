@@ -26,6 +26,7 @@ public static class MessageExtensions
     public static Message Add(this Message message, Vector2 value) => AddVector2(message, value);
 
     /// <summary>Adds a <see cref="Vector2"/> to the message.</summary>
+    /// <param name="message">Current message</param>
     /// <param name="value">The <see cref="Vector2"/> to add.</param>
     /// <returns>The message that the <see cref="Vector2"/> was added to.</returns>
     public static Message AddVector2(this Message message, Vector2 value)
@@ -47,6 +48,7 @@ public static class MessageExtensions
     public static Message Add(this Message message, Vector3 value) => AddVector3(message, value);
 
     /// <summary>Adds a <see cref="Vector3"/> to the message.</summary>
+    /// <param name="message">Current message</param>
     /// <param name="value">The <see cref="Vector3"/> to add.</param>
     /// <returns>The message that the <see cref="Vector3"/> was added to.</returns>
     public static Message AddVector3(this Message message, Vector3 value)
@@ -68,6 +70,7 @@ public static class MessageExtensions
     public static Message Add(this Message message, Quaternion value) => AddQuaternion(message, value);
 
     /// <summary>Adds a <see cref="Quaternion"/> to the message.</summary>
+    /// <param name="message">Current message</param>
     /// <param name="value">The <see cref="Quaternion"/> to add.</param>
     /// <returns>The message that the <see cref="Quaternion"/> was added to.</returns>
     public static Message AddQuaternion(this Message message, Quaternion value)

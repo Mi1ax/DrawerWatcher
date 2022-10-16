@@ -17,8 +17,4 @@
       <ProjectReference Include="..\Riptide\RiptideNetworking.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ECS\Components" />
-    </ItemGroup>
-
 </Project>

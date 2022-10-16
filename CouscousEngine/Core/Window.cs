@@ -1,6 +1,4 @@
-﻿using CouscousEngine.Utils;
-using Raylib_CsLo;
-using rl = Raylib_CsLo.Raylib;
+﻿using Raylib_CsLo;
 
 namespace CouscousEngine.Core;
 
@@ -27,19 +25,19 @@ public class Window : IDisposable
     public Window(WindowData data)
     {
         _data = data;
-        rl.SetConfigFlags(ConfigFlags.FLAG_VSYNC_HINT);
-        rl.InitWindow(_data.Width, _data.Height, _data.Title);
+        _rl.SetConfigFlags(ConfigFlags.FLAG_VSYNC_HINT);
+        _rl.InitWindow(_data.Width, _data.Height, _data.Title);
     }
 
     public int Width => _data.Width;
     public int Height => _data.Height;
 
-    public static bool IsRunning() => !rl.WindowShouldClose();
-    public static void SetTargetFPS(int fps) => rl.SetTargetFPS(fps);
+    public static bool IsRunning() => !_rl.WindowShouldClose();
+    public static void SetTargetFPS(int fps) => _rl.SetTargetFPS(fps);
     
     public void Dispose()
     {
-        rl.CloseWindow();
+        _rl.CloseWindow();
         GC.SuppressFinalize(this);
     }
 }

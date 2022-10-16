@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using CouscousEngine.Core;
+﻿using CouscousEngine.Core;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 

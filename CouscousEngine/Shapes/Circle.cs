@@ -19,7 +19,7 @@ public class Circle : Shape
         Radius = radius;
     }
     
-    public override void Update()
+    public virtual void Update()
     {
         Renderer.DrawCircle(Position, Radius, Color);
     }

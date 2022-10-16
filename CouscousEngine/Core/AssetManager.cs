@@ -4,18 +4,10 @@ namespace CouscousEngine.Core;
 
 public static class AssetManager
 {
-    private static readonly Dictionary<string, Texture> _textures = new();
+    #region Font
+
     private static readonly Dictionary<string, Font> _fonts = new();
-
     private static readonly Dictionary<int, Font> _defaultFonts = new();
-
-    public static void SetDefaultFont(Font font, int fontSize)
-    {
-        _defaultFonts.Add(fontSize, font);
-    }
-
-    public static Font GetDefaultFont(int fontSize)
-        => _defaultFonts[fontSize];
 
     public static Font? LoadFont(string name, string filePath, int fontSize = 24)
     {
@@ -36,6 +28,18 @@ public static class AssetManager
 
     public static Font GetFont(string name)
         => _fonts[name];
+    
+    public static void SetDefaultFont(Font font, int fontSize)
+        => _defaultFonts.Add(fontSize, font);
+    
+    public static Font GetDefaultFont(int fontSize)
+        => _defaultFonts[fontSize];
+    
+    #endregion
+
+    #region Texture
+
+    private static readonly Dictionary<string, Texture> _textures = new();
 
     public static Texture LoadTexture(string name, string filePath)
     {
@@ -45,6 +49,8 @@ public static class AssetManager
 
     public static Texture GetTexture(string name)
         => _textures[name];
+
+    #endregion
 
     public static void Deinitialize()
     {

@@ -24,7 +24,7 @@ public class LobbyScreen : Screen
     
     public LobbyScreen()
     {
-        var screenSize = Application.Instance.GetSize();
+        var screenSize = Application.Instance.WindowSize;
         _bounds = new Rectangle(
             new Size(screenSize.Width / 2, screenSize.Height - 220), 
             new Vector2(screenSize.Width / 2 - screenSize.Width / 4, 120)
@@ -114,7 +114,7 @@ public class LobbyScreen : Screen
             _topRightPanel.Y + 25), 
             24f, 1f, Color.BLACK);
 
-        foreach (var (id, player) in NetworkManager.Players)
+        foreach (var (_, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {
@@ -144,7 +144,7 @@ public class LobbyScreen : Screen
             _bottomRightPanel.Y + 25),
             24f, 1f, Color.BLACK);
         
-        foreach (var (id, player) in NetworkManager.Players)
+        foreach (var (_, player) in NetworkManager.Players)
         {
             if (player.IsDrawer)
             {

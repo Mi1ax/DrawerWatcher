@@ -19,8 +19,6 @@ public abstract class Shape : ICloneable
         Position = position;
         Color = color;
     }
-    
-    public abstract void Update();
 
     public Vector2 GetPosition() => Position;
     public Color GetColor() => Color;

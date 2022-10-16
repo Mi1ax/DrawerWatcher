@@ -5,12 +5,18 @@ namespace CouscousEngine.Core;
 
 public abstract class Application : IDisposable
 {
+    #region Instance
+
     private static Application? _instance;
 
     public static Application Instance =>
         _instance ?? throw new NullReferenceException("Application is null");
+
+    #endregion
     
     protected readonly Window Window;
+
+    public Size WindowSize => new (Window.Width, Window.Height);
 
     protected Application(
         string title, 
@@ -33,8 +39,6 @@ public abstract class Application : IDisposable
 
     public void Exit() => Dispose();
     
-    public Size GetSize() => new (Window.Width, Window.Height);
-    
     public void Run()
     {
         while (Window.IsRunning())
@@ -44,8 +48,10 @@ public abstract class Application : IDisposable
     public void Dispose()
     {
         OnExit();
+        
         AssetManager.Deinitialize();
         ClientManager.Client?.Disconnect();
+        
         Window.Dispose();
         GC.SuppressFinalize(this);
     }

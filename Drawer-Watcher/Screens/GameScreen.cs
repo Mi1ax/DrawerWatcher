@@ -5,7 +5,6 @@ using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
-using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 

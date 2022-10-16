@@ -11,10 +11,10 @@ public struct Color
     public static readonly Color GRAY = new(130, 130, 130);
     public static readonly Color GREEN = new(0, 255, 0);
     
-    public byte R;
-    public byte G;
-    public byte B;
-    public byte A;
+    public readonly byte R;
+    public readonly byte G;
+    public readonly byte B;
+    public readonly byte A;
 
     public Color(byte r, byte g, byte b, byte a = 255)
     {
