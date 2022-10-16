@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
+using CouscousEngine.GUI;
 using CouscousEngine.Shapes;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
@@ -13,6 +14,8 @@ public class GameScreen : Screen
     private readonly Rectangle _drawingPanel;
     private readonly ChatPanel _chatPanel;
     private readonly ToolPanel _toolPanel;
+
+    private readonly Button _button;
 
     public GameScreen()
     {
@@ -29,40 +32,80 @@ public class GameScreen : Screen
         });
         
         GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
-        GameLogic.StartRound();
         if (Player.ApplicationOwner is {IsDrawer: true})
             _chatPanel.DisableInput = true;
+        
+        if (Player.ApplicationOwner is {IsDrawer: true})
+            NewWord();
+        
+        _button = new Button("New Word", new Size(125, 55), 
+            new Vector2(
+                _drawingPanel.Position.X + _drawingPanel.Size.Width / 2 - 125 / 2f,
+                _drawingPanel.Position.Y + _drawingPanel.Size.Height / 2 - 55 / 2f
+                ), 
+            NewWord);
+    }
+
+    private static void NewWord()
+    {
+        MessageHandlers.GetNewWord();
+        MessageHandlers.ClearPainting();
+        GameManager.Guesser = 0;
     }
 
     public override void OnUpdate()
     {
         if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
-            
-        foreach (var player in NetworkManager.Players.Values)
-            player.Update();
-            
-        Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
-        Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
 
-        _chatPanel.OnUpdate();
+        Vector2 textSize;
+
+        Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
         
-        if (Player.ApplicationOwner is {IsDrawer: true})
+        if (GameManager.Guesser == 0)
         {
-            _toolPanel.OnUpdate();
-            
-            var textSize = _rl.MeasureTextEx(
+            foreach (var player in NetworkManager.Players.Values)
+                        player.Update();
+                    
+            Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
+
+            if (Player.ApplicationOwner is {IsDrawer: true})
+            {
+                _toolPanel.OnUpdate();
+        
+                textSize = _rl.MeasureTextEx(
+                    AssetManager.GetDefaultFont(48), 
+                    GameManager.CurrentWord, 48f, 1f
+                );
+        
+                _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
+                    GameManager.CurrentWord, 
+                    new Vector2(
+                        _drawingPanel.Size.Width / 2 - textSize.X,
+                        25
+                    ), 
+                    48f, 1f, Color.BLACK);
+            }
+        }
+        else
+        {
+            textSize = _rl.MeasureTextEx(
                 AssetManager.GetDefaultFont(48), 
-                GameLogic.CurrentWord, 48f, 1f
+                $"{GameManager.Guesser} guessed right", 48f, 1f
             );
         
             _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                GameLogic.CurrentWord, 
+                $"{GameManager.Guesser} guessed right", 
                 new Vector2(
                     _drawingPanel.Size.Width / 2 - textSize.X,
                     25
                 ), 
                 48f, 1f, Color.BLACK);
+            
+            if (Player.ApplicationOwner is {IsDrawer: true})
+                _button.Update();
         }
+
+        _chatPanel.OnUpdate();
     }
 
     public override void OnImGuiUpdate()

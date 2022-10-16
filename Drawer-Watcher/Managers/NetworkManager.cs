@@ -16,6 +16,8 @@ public enum MessageID : ushort
     ChatMessage,
     
     StartGame,
+    NewWord,
+    Winner,
     
     ConnectionInfo,
     DrawerStatus,
@@ -103,6 +105,13 @@ public static class MessageHandlers
         ClientManager.Client!.Send(message);
     }
 
+    public static void GetNewWord()
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.NewWord);
+        message.AddString(GameManager.GetRandomWord());
+        ClientManager.Client!.Send(message);
+    }
+
     #endregion
 
     #region Send data from Server to the Client/Clients
@@ -155,6 +164,18 @@ public static class MessageHandlers
 
     [MessageHandler((ushort) MessageID.ChatMessage)]
     private static void HandleChatMessage(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.Winner)]
+    private static void HandleWinner(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message, fromClientID);
+    }
+    
+    [MessageHandler((ushort) MessageID.NewWord)]
+    private static void HandleNewWord(ushort fromClientID, Message message)
     {
         ServerManager.Server.SendToAll(message);
     }
@@ -212,14 +233,38 @@ public static class MessageHandlers
     {
         var senderID = message.GetUShort();
         var text = message.GetString();
+        if (text == GameManager.CurrentWord)
+        {
+            GameManager.Guesser = senderID;
+            var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageID.Winner);
+            winnerMessage.AddUShort(senderID);
+            ClientManager.Client!.Send(winnerMessage);
+        }
+
         ChatPanel.AddMessage(senderID, text);
+    }
+    
+    [MessageHandler((ushort) MessageID.Winner)]
+    private static void HandleWinner(Message message)
+    {
+        var senderID = message.GetUShort();
+        Log($"(From Server) Winner is {senderID}");
+        GameManager.Guesser = senderID;
+    }
+    
+    [MessageHandler((ushort) MessageID.NewWord)]
+    private static void HandleNewWord(Message message)
+    {
+        var newWord = message.GetString();
+        Log($"(From Server) Getting new word {newWord}");
+        GameManager.CurrentWord = newWord;
+        GameManager.Guesser = 0;
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]
     private static void HandleStartGame(Message message)
     {
         Log("(From Server) Starting game");
-        GameLogic.CurrentWord = message.GetString();
         ScreenManager.NavigateTo(new GameScreen());
     }
     
@@ -311,7 +356,6 @@ public static class NetworkManager
     {
         // Send from Client to Server
         var message = Message.Create(MessageSendMode.Reliable, MessageID.StartGame);
-        message.AddString(GameLogic.CurrentWord);
         ClientManager.Client!.Send(message);
     }
 

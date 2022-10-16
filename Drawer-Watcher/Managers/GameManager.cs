@@ -34,3 +34,18 @@ public struct GameData : IDisposable
             Renderer.UnloadRenderTexture(Painting.Value);
     }
 }
+
+public static class GameManager
+{
+    public static string CurrentWord = "";
+    public static ushort Guesser = 0;
+
+    private static readonly Random _random = new(DateTime.Now.GetHashCode());
+    private static readonly string[] EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n");
+    
+    public static string GetRandomWord()
+    {
+        var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
+        return word.Contains('\r') ? word.Remove(word.Length - 1, 1) : word;
+    }
+}
