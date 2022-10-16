@@ -30,6 +30,8 @@ public class InputBox : IDisposable
         set => _text = value;
     }
 
+    public bool IsEnable { get; set; } = true;
+
     public Font Font => _font;
     
     private readonly int _maxCharInBox;
@@ -39,7 +41,7 @@ public class InputBox : IDisposable
 
     private readonly Rectangle _bounds;
     private readonly Vector2 _separatorSize;
-
+    
     private bool _isUsed;
     private bool _allSelected;
 
@@ -158,6 +160,8 @@ public class InputBox : IDisposable
         _bounds.Update();
         Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
 
+        if (!IsEnable) return;
+        
         CheckActivity();
         TextEntering();
         DisplayText();

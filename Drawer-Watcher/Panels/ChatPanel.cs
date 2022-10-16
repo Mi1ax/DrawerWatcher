@@ -44,8 +44,10 @@ public class ChatPanel : IDisposable
     {
         Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
         _rl.DrawLine(930, 0, 930, 720, Color.BLACK);
-        if (!DisableInput)
-            _inputBox.OnUpdate();
+
+        _inputBox.IsEnable = !DisableInput;
+        
+        _inputBox.OnUpdate();
         
         for (var i = 0; i < _chat.Count; i++)
         {

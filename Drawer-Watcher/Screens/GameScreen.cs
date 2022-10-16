@@ -88,15 +88,17 @@ public class GameScreen : Screen
         }
         else
         {
+            var nickname = NetworkManager.Players[GameManager.Guesser].Nickname;
+            
             textSize = _rl.MeasureTextEx(
                 AssetManager.GetDefaultFont(48), 
-                $"{GameManager.Guesser} guessed right", 48f, 1f
+                $"{nickname} guessed right", 48f, 1f
             );
         
             _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                $"{GameManager.Guesser} guessed right", 
+                $"{nickname} guessed right", 
                 new Vector2(
-                    _drawingPanel.Size.Width / 2 - textSize.X,
+                    _drawingPanel.Size.Width / 2 - textSize.X / 2,
                     25
                 ), 
                 48f, 1f, Color.BLACK);
