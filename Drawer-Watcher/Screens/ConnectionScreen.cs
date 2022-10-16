@@ -6,6 +6,7 @@ namespace Drawer_Watcher.Screens;
 public class ConnectionScreen : Screen
 {
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
+    private string _nickname = "Player";
     
     public override void OnUpdate()
     {
@@ -16,17 +17,18 @@ public class ConnectionScreen : Screen
     {
         ImGui.Begin("Connection");
         {
+            ImGui.InputText("Nickname", ref _nickname, 32);
             ImGui.InputText("IP", ref _connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref _connectionInfo.Port, 6);
             if (ImGui.Button("Connect"))
             {
-                NetworkManager.ConnectToServer(_connectionInfo);
+                NetworkManager.ConnectToServer(_connectionInfo, _nickname);
                 ScreenManager.NavigateTo(new LobbyScreen());
             }
 
             if (ImGui.Button("Connect local"))
             {
-                NetworkManager.ConnectToServer(ConnectionInfo.Local);
+                NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
                 ScreenManager.NavigateTo(new LobbyScreen());
             }
         }

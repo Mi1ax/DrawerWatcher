@@ -12,11 +12,14 @@ public static class ClientManager
     public static void SetLogger(RiptideLogger.LogMethod logMethod)
         => LogMethod = logMethod;
 
-    public static void Initialize(EventHandler<ClientDisconnectedEventArgs> onClientDisconnected)
+    public static void Initialize(
+        EventHandler onConnected,
+        EventHandler<ClientDisconnectedEventArgs> onClientDisconnected) 
     {
         RiptideLogger.Initialize(LogMethod ??= Console.WriteLine, true);
         Client = new Client();
         Client.ChangeTransport(new UdpClient(SocketMode.IPv4Only));
+        Client.Connected += onConnected;
         Client.ClientDisconnected += onClientDisconnected;
     }
 

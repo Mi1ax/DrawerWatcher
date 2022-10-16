@@ -118,7 +118,7 @@ public class LobbyScreen : Screen
         {
             if (player.IsDrawer)
             {
-                _drawerName = id.ToString();
+                _drawerName = player.Nickname;
                 break;
             }
 
@@ -148,12 +148,12 @@ public class LobbyScreen : Screen
         {
             if (player.IsDrawer)
             {
-                if (_watchersNames.Contains(id.ToString()))
-                    _watchersNames.Remove(id.ToString());
+                if (_watchersNames.Contains(player.Nickname))
+                    _watchersNames.Remove(player.Nickname);
                 continue;
             }
-            if (!_watchersNames.Contains(id.ToString()))
-                _watchersNames.Add(id.ToString());
+            if (!_watchersNames.Contains(player.Nickname))
+                _watchersNames.Add(player.Nickname);
         }
 
         if (_watchersNames.Count != 0)

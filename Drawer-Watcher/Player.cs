@@ -20,6 +20,8 @@ public class Player
 
     public bool IsDrawer { get; private set; }
 
+    public string Nickname { get; set; }
+    
     public void SetDrawerWithNotifyngServer(bool value)
     {
         IsDrawer = value;
@@ -39,6 +41,7 @@ public class Player
         ID = clientId;
         IsDrawer = isDrawer;
         CurrentBrush = Brush.Default;
+        Nickname = "DefaultNickname";
     }
 
     public void Update()

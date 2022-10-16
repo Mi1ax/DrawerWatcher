@@ -35,25 +35,15 @@ public class ChatPanel : IDisposable
         });
     }
 
-    public static KeyValuePair<ushort, string> GetLastMessage()
+    public static void AddMessage(string nickname, string text)
     {
-        if (_chat.Count == 0) return new KeyValuePair<ushort, string>(0, "");
-        var lastStr = _chat.Last().Split(':');
-        return new KeyValuePair<ushort, string>(
-            Convert.ToUInt16(lastStr[1]), 
-            lastStr[0]
-            );
-    }
-
-    public static void AddMessage(ushort senderID, string text)
-    {
-        _chat.Add($"{text}: {senderID}");
+        _chat.Add($"{nickname}: {text}");
     }
     
     public void OnUpdate()
     {
         Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
-        _rl.DrawLine(930, 720 - 144, 930, 720, Color.BLACK);
+        _rl.DrawLine(930, 0, 930, 720, Color.BLACK);
         if (!DisableInput)
             _inputBox.OnUpdate();
         
@@ -61,7 +51,7 @@ public class ChatPanel : IDisposable
         {
             var textSize = _rl.MeasureTextEx(_inputBox.Font, _chat[i], 24f, 1f);
             var position = new Vector2(
-                _inputBox.Position.X + _inputBox.Size.Width - textSize.X, 
+                _inputBox.Position.X, 
                 _inputBox.Position.Y + textSize.Y * i - textSize.Y * _chat.Count - 5
             );
             

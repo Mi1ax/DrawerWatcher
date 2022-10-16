@@ -20,6 +20,8 @@ public enum MessageID : ushort
     Winner,
     
     ConnectionInfo,
+    ClientInfo,
+    
     DrawerStatus,
     AllClear,
 }
@@ -101,6 +103,7 @@ public static class MessageHandlers
     {
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
         message.AddUShort(senderID);
+        message.AddString(NetworkManager.Players[senderID].Nickname);
         message.AddString(text);
         ClientManager.Client!.Send(message);
     }
@@ -124,6 +127,7 @@ public static class MessageHandlers
         foreach (var (id, player) in NetworkManager.Players)
         {
             message.AddUShort(id);
+            message.AddString(player.Nickname);
             message.AddBool(player.IsDrawer);
         }
         ServerManager.Server.Send(message, toClientId);
@@ -131,8 +135,16 @@ public static class MessageHandlers
         var newPlayer = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
         newPlayer.AddInt(1);
         newPlayer.AddUShort(toClientId);
+        newPlayer.AddString(NetworkManager.Players[toClientId].Nickname);
         newPlayer.AddBool(false);
         ServerManager.Server.SendToAll(message, toClientId);
+    }
+    
+    [MessageHandler((ushort) MessageID.ClientInfo)]
+    private static void HandleClientInfo(ushort fromClientID, Message message)
+    {
+        Log("(To all Clients) New client info");
+        ServerManager.Server.SendToAll(message);
     }
     
     [MessageHandler((ushort) MessageID.DrawerStatus)]
@@ -192,10 +204,23 @@ public static class MessageHandlers
         for (var _ = 0; _ < playersCount; _++)
         {
             var id = message.GetUShort();
-            var player = new Player(id, message.GetBool());
+            var nickname = message.GetString();
+            var player = new Player(id, message.GetBool())
+            {
+                Nickname = nickname
+            };
             if (!NetworkManager.Players.ContainsKey(id))
                 NetworkManager.Players.Add(id, player);
         }
+    }
+    
+    [MessageHandler((ushort) MessageID.ClientInfo)]
+    private static void HandleNewClientInfo(Message message)
+    {
+        var clientID = message.GetUShort();
+        var clientNick = message.GetString();
+        Log($"(From Server) Get nick from {clientID}: {clientNick}");
+        NetworkManager.Players[clientID].Nickname = clientNick;
     }
     
     [MessageHandler((ushort) MessageID.DrawerStatus)]
@@ -232,6 +257,7 @@ public static class MessageHandlers
     private static void HandleChatMessage(Message message)
     {
         var senderID = message.GetUShort();
+        var nickname = message.GetString();
         var text = message.GetString();
         if (text == GameManager.CurrentWord)
         {
@@ -241,7 +267,7 @@ public static class MessageHandlers
             ClientManager.Client!.Send(winnerMessage);
         }
 
-        ChatPanel.AddMessage(senderID, text);
+        ChatPanel.AddMessage(nickname, text);
     }
     
     [MessageHandler((ushort) MessageID.Winner)]
@@ -275,7 +301,7 @@ public static class NetworkManager
 {
     public static readonly Dictionary<ushort, Player> Players = new();
     
-    public static bool IsHost
+    public static bool IsHost 
     {
         get => Server.IsHosted;
         set
@@ -293,17 +319,28 @@ public static class NetworkManager
     private static class Client 
     {
         public static bool IsConnected;
+
+        private static string _clientNickname = "DefaultNickname";
         
         public static void Init()
         {
             ClientManager.Initialize((_, e) =>
-            {
-                Players.Remove(e.Id);
-            });
+                {
+                    var message = Message.Create(MessageSendMode.Reliable, MessageID.ClientInfo);
+                    message.AddUShort(ClientManager.Client!.Id);
+                    message.AddString(_clientNickname);
+                    ClientManager.Client.Send(message);
+                }, 
+                (_, e) => 
+                {
+                    Players.Remove(e.Id);
+                }
+                );
         }
 
-        public static void Connect(ConnectionInfo info)
+        public static void Connect(ConnectionInfo info, string nickname)
         {
+            _clientNickname = nickname;
             IsConnected = ClientManager.Connect(info.Ip, (ushort)info.Port);
         }
         
@@ -351,7 +388,6 @@ public static class NetworkManager
         Client.Init();
     }
     
-    [Obsolete("Will be deleted", false)]
     public static void StartGame()
     {
         // Send from Client to Server
@@ -365,9 +401,9 @@ public static class NetworkManager
         IsHost = true;
     }
     
-    public static void ConnectToServer(ConnectionInfo info)
+    public static void ConnectToServer(ConnectionInfo info, string nickname)
     {
-        Client.Connect(info);
+        Client.Connect(info, nickname);
     }
 
     public static void Update()
