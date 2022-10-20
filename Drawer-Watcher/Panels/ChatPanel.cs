@@ -15,24 +15,25 @@ public class ChatPanel : IDisposable
     private static readonly List<string> _chat = new();
 
     private readonly Rectangle _bounds;
-    private readonly InputBox _inputBox;
+    private readonly Entry _inputBox;
     
     public ChatPanel(Rectangle bounds)
     {
         _bounds = bounds;
-        _inputBox = new InputBox(new Rectangle(
+        _inputBox = new Entry(new Rectangle(
             new Size(_bounds.Size.Width - 55, 45), 
             new Vector2(
                 _bounds.Position.X + _bounds.Size.Width / 2 - (_bounds.Size.Width - 55) / 2, 
                 _bounds.Size.Height - 60
-            )));
-        
-        _inputBox.SetAction(() =>
+            )))
         {
-            if (Player.ApplicationOwner == null) return;
-            MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _inputBox.Text);
-            _inputBox.Text = "";
-        });
+            OnEnterPressed = (sender, args) =>
+            {
+                if (Player.ApplicationOwner == null) return;
+                MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _inputBox.Text);
+                _inputBox.Text = "";
+            }
+        };
     }
 
     public static void AddMessage(string nickname, string text)
@@ -52,10 +53,7 @@ public class ChatPanel : IDisposable
         for (var i = 0; i < _chat.Count; i++)
         {
             var textSize = _rl.MeasureTextEx(_inputBox.Font, _chat[i], 24f, 1f);
-            var position = new Vector2(
-                _inputBox.Position.X, 
-                _inputBox.Position.Y + textSize.Y * i - textSize.Y * _chat.Count - 5
-            );
+            var position = _inputBox.Position with { Y = _inputBox.Position.Y + textSize.Y * i - textSize.Y * _chat.Count - 5 };
             
             _rl.DrawTextEx(_inputBox.Font, _chat[i], position, 24f, 1f, Color.BLACK);
         }
@@ -63,7 +61,6 @@ public class ChatPanel : IDisposable
 
     public void Dispose()
     {
-        _inputBox.Dispose();
         GC.SuppressFinalize(this);
     }
 }

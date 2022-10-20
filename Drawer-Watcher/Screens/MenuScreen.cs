@@ -37,7 +37,7 @@ public class MenuScreen : Screen
             Color = ColorTranslator.FromHtml("#15BAFE"),
             OnButtonClick = (sender, args) =>
             {
-                ScreenManager.NavigateTo(new ConnectionScreen());
+                ScreenManager.NavigateTo(new CreatingGameScreen());
             }
         };
         
@@ -56,7 +56,7 @@ public class MenuScreen : Screen
             Color = ColorTranslator.FromHtml("#FFBF00"),
             OnButtonClick = (sender, args) =>
             {
-                ScreenManager.NavigateTo(new CreatingGameScreen());
+                ScreenManager.NavigateTo(new ConnectionScreen());
             }
         };
     }

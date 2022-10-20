@@ -1,8 +1,7 @@
-﻿using System.Drawing;
-using CouscousEngine.Core;
+﻿using CouscousEngine.Core;
 using CouscousEngine.GUI;
+using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
-using Rectangle = Raylib_CsLo.Rectangle;
 
 namespace Sandbox;
 
@@ -10,28 +9,20 @@ internal static class Program
 {
     private class Sandbox : Application
     {
-        private readonly Button _button;
-        
+        private readonly Entry _entry;
+
         public Sandbox() 
             : base("Sandbox")
         {
-            AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
-
-            _button = new Button(new Rectangle(50, 50, 125, 35))
+            var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
+            AssetManager.SetDefaultFont(font24!.Value, 24);
+            
+            _entry = new Entry(new Rectangle(50, 50, 180, 45))
             {
-                Text = "Connect",
-                FontSize = 24,
-                FontColor = Color.BLACK,
-
-                CornerRadius = 0.65f,
-                BorderThickness = 3f,
                 BorderColor = Color.BLACK,
-
-                Color = ColorTranslator.FromHtml("#FFBF00"),
-                OnButtonClick = (sender, args) =>
-                {
-                    Console.WriteLine("Connect");
-                }
+                BordeThickness = 2f,
+                Color = Color.WHITE,
+                CornerRadius = 0.65f
             };
         }
 
@@ -40,7 +31,7 @@ internal static class Program
             Renderer.BeginDrawing();
             Renderer.ClearBackground(Color.WHITE);
 
-            _button.OnUpdate();
+            _entry.OnUpdate();
             
             Renderer.EndDrawing();
         }

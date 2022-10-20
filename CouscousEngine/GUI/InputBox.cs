@@ -10,72 +10,142 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace CouscousEngine.GUI;
 
-public class InputBox : IDisposable
+public class Entry
 {
-    public Vector2 Position
+    public Vector2 Position 
     {
-        get => _bounds.Position;
-        set => _bounds.Position = value;
+        get => new (_bounds.x, _bounds.y);
+        set
+        {
+            _bounds.x = value.X;
+            _bounds.y = value.Y;
+        }
     }
 
-    public Size Size
+    public Size Size 
     {
-        get => _bounds.Size;
-        set => _bounds.Size = value;
+        get => new (_bounds.width, _bounds.height);
+        set
+        {
+            _bounds.width = value.Width;
+            _bounds.height = value.Height;
+        }
     }
+
+    #region Text
+
+    private readonly Font _font;
+    private string _text;
+    private string _displayText;
+    private int _fontSize = 24;
+    
+    private Vector2 _textSize;
+    private readonly Vector2 _separatorSize;
+
+    public Font Font => _font;
+    public Color FontColor = Color.BLACK;
 
     public string Text
     {
         get => _text;
-        set => _text = value;
+        set
+        {
+            _textSize = _rl.MeasureTextEx(_font, value, TextSize, 1f);
+            _text = value;
+        }
+    }
+    
+    private int TextSize
+    {
+        get => _fontSize;
+        set
+        {
+            _textSize = _rl.MeasureTextEx(_font, Text, value, 1f);
+            _fontSize = value;
+        }
     }
 
-    public bool IsEnable { get; set; } = true;
+    #endregion
 
-    public Font Font => _font;
+    #region Border
+
+    public float BordeThickness = 1f;
+    public Color BorderColor = Color.BLACK;
+
+    #endregion
     
+    #region Entry Fields
+
     private readonly int _maxCharInBox;
     private const int _maxCharInInput = 32;
     
     private const float _eraseSpeed = 0.005f;
-
-    private readonly Rectangle _bounds;
-    private readonly Vector2 _separatorSize;
     
     private bool _isUsed;
     private bool _allSelected;
-
-    private string _text;
-    private string _displayText;
-
+    
     private float _backspaceDownTime;
     private float _eraseTime;
 
-    private readonly Font _font;
+    #endregion
+    
+    public bool IsEnable { get; set; } = true;
+    public Color Color { get; set; }
+    public EventHandler? OnEnterPressed = null;
+    
+    private Raylib_CsLo.Rectangle _bounds;
+    
+    public float CornerRadius = 0;
 
-    private Action? OnEnterPressed;
-
-    public InputBox(Rectangle bounds)
+    public Entry(Raylib_CsLo.Rectangle bounds)
     {
+        // TODO: Application.GetDefaultFont()
+        _font = AssetManager.GetFont("RobotoMono-Regular-24");
+        _text = "";
+        _displayText = "";
         _bounds = bounds;
-        _bounds.Color = Color.GRAY;
-
-        var charCount = (int)(_bounds.Size.Width - 27) / 10;
-        _maxCharInBox = (int)(_bounds.Size.Width - 27 - charCount) / 10 + 1; 
+        Text = _text;
+        
+        Color = Color.WHITE;
+        FontColor = Color.BLACK;
+        
+        var charCount = (int)(_bounds.width - 27) / 10;
+        _maxCharInBox = (int)(_bounds.width - 27 - charCount) / 10 + 1; 
 
         _font = AssetManager.GetDefaultFont(24);
 
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
-        
-        _text = "";
-        _displayText = "";
 
         _separatorSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "|", 24f, 1f);
     }
 
-    public void SetAction(Action action) => OnEnterPressed = action;
+    public void OnUpdate() 
+    {
+        if (CornerRadius != 0)
+        {
+            _rl.DrawRectangleRounded(_bounds, CornerRadius, 15, Color);
+            _rl.DrawRectangleRoundedLines(
+                _bounds, CornerRadius, 
+                15, BordeThickness, BorderColor
+            );
+        }
+        else
+        {
+            _rl.DrawRectangleRec(_bounds, Color);
+            _rl.DrawRectangleLinesEx(_bounds, BordeThickness, BorderColor);
+        }
 
-    public void TextEntering() 
+        if (!IsEnable) return;
+        
+        CheckActivity();
+        TextEntering();
+        DisplayText();
+
+        if (Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
+            _allSelected = true;
+    }
+    
+    private void TextEntering() 
     {
         if (_text.Length <= _maxCharInInput)
             Input.GetAsciiKeyPressed(ref _text);
@@ -104,7 +174,7 @@ public class InputBox : IDisposable
         else _eraseTime = 0;
     }
 
-    public void DisplayText() 
+    private void DisplayText() 
     {
         _displayText = _text.Length > _maxCharInBox
             ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
@@ -112,17 +182,16 @@ public class InputBox : IDisposable
         
         _rl.DrawTextEx(_font, _displayText, 
             new Vector2(
-                _bounds.Position.X + 12, 
-                _bounds.Position.Y + _separatorSize.Y / 2.5f), 24f, 1f, Color.BLACK);
+                _bounds.X + 12, 
+                _bounds.Y + _separatorSize.Y / 2.5f), 24f, 1f, FontColor);
     }
 
-    public void CheckActivity() 
+    private void CheckActivity() 
     {
         if (_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds))
         {
-            _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
-            _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_IBEAM);
-            
+            Color = (Color)_rl.Fade(Color, 0.8f);
+
             if (Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
                 _isUsed = true;
@@ -135,44 +204,22 @@ public class InputBox : IDisposable
         }
         else
         {
-            _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-            _bounds.Color = Color.GRAY;
+            Color = (Color)_rl.Fade(Color, 1f);
         }
 
         if (!_isUsed) return;
         
-        _bounds.Color = (Color)_rl.Fade(Color.GRAY, 0.8f);
+        Color = (Color)_rl.Fade(Color, 0.8f);
 
         var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
 
         _rl.DrawText("|", 
-            _bounds.Position.X + textSize.X + 15, 
-            _bounds.Position.Y + _separatorSize.Y / 2f, 24f, 
-            Color.BLACK
+            _bounds.X + textSize.X + 15, 
+            _bounds.Y + _separatorSize.Y / 2f, 24f, 
+            FontColor
         );
         
         if (Input.IsKeyPressed(KeyboardKey.ENTER))
-            OnEnterPressed?.Invoke();
-    }
-    
-    public void OnUpdate()
-    {
-        _bounds.Update();
-        Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
-
-        if (!IsEnable) return;
-        
-        CheckActivity();
-        TextEntering();
-        DisplayText();
-
-        if (Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
-            _allSelected = true;
-    }
-
-    public void Dispose()
-    {
-        _rl.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-        GC.SuppressFinalize(this);
+            OnEnterPressed?.Invoke(this, EventArgs.Empty);
     }
 }
