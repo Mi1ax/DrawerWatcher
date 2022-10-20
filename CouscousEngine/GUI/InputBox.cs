@@ -43,9 +43,9 @@ public class Entry
     private readonly Vector2 _separatorSize;
 
     public Font Font => _font;
-    public Color FontColor = Color.BLACK;
+    public Color FontColor;
 
-    public string Text
+    public string Text 
     {
         get => _text;
         set
@@ -54,8 +54,9 @@ public class Entry
             _text = value;
         }
     }
-    
-    private int TextSize
+
+    public string Placeholder;
+    private int TextSize 
     {
         get => _fontSize;
         set
@@ -104,8 +105,9 @@ public class Entry
         _text = "";
         _displayText = "";
         _bounds = bounds;
-        Text = _text;
         
+        Text = _text;
+        Placeholder = "";
         Color = Color.WHITE;
         FontColor = Color.BLACK;
         
@@ -176,14 +178,34 @@ public class Entry
 
     private void DisplayText() 
     {
-        _displayText = _text.Length > _maxCharInBox
-            ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
-            : _text;
+        if (_text != "")
+        {
+            _displayText = _text.Length > _maxCharInBox
+                ? _text.Substring(_text.Length - _maxCharInBox, _maxCharInBox) 
+                : _text;
         
-        _rl.DrawTextEx(_font, _displayText, 
-            new Vector2(
-                _bounds.X + 12, 
-                _bounds.Y + _separatorSize.Y / 2.5f), 24f, 1f, FontColor);
+            _rl.DrawTextEx(_font, _displayText, 
+                new Vector2(
+                    _bounds.X + 12, 
+                    _bounds.Y + _separatorSize.Y / 2.5f), 24f, 1f, FontColor);
+        }
+        else if (!_isUsed)
+        {
+            _rl.DrawTextEx(_font, Placeholder, 
+                new Vector2(
+                    _bounds.X + 12, 
+                    _bounds.Y + _separatorSize.Y / 2.5f),
+                24f, 1f, Color.GRAY);
+        }
+
+        if (!_isUsed) return;
+        
+        var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
+        _rl.DrawText("|", 
+            _bounds.X + (_text == "" ? 0 : textSize.X) + 15, 
+            _bounds.Y + _separatorSize.Y / 2f, 24f, 
+            FontColor
+        );
     }
 
     private void CheckActivity() 
@@ -211,14 +233,6 @@ public class Entry
         
         Color = (Color)_rl.Fade(Color, 0.8f);
 
-        var textSize = _rl.MeasureTextEx(_font, _displayText, 24f, 1f);
-
-        _rl.DrawText("|", 
-            _bounds.X + textSize.X + 15, 
-            _bounds.Y + _separatorSize.Y / 2f, 24f, 
-            FontColor
-        );
-        
         if (Input.IsKeyPressed(KeyboardKey.ENTER))
             OnEnterPressed?.Invoke(this, EventArgs.Empty);
     }

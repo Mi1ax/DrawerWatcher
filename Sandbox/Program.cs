@@ -22,7 +22,9 @@ internal static class Program
                 BorderColor = Color.BLACK,
                 BordeThickness = 2f,
                 Color = Color.WHITE,
-                CornerRadius = 0.65f
+                CornerRadius = 0.65f,
+                
+                Placeholder = "Nick"
             };
         }
 
