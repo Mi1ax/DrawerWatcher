@@ -36,13 +36,17 @@ public class GameScreen : Screen
         
         if (Player.ApplicationOwner is {IsDrawer: true})
             NewWord();
-        
-        _button = new Button("New Word", new Size(125, 55), 
-            new Vector2(
-                _drawingPanel.Position.X + _drawingPanel.Size.Width / 2 - 125 / 2f,
-                _drawingPanel.Position.Y + _drawingPanel.Size.Height / 2 - 55 / 2f
-                ), 
-            NewWord);
+
+        _button = new Button(new Raylib_CsLo.Rectangle(
+            _drawingPanel.Position.X + _drawingPanel.Size.Width / 2 - 125 / 2f,
+            _drawingPanel.Position.Y + _drawingPanel.Size.Height / 2 - 55 / 2f,
+            125, 55), "New Word")
+        {
+            OnButtonClick = (sender, args) =>
+            {
+                NewWord();
+            }
+        };
     }
 
     private static void NewWord()
@@ -103,7 +107,7 @@ public class GameScreen : Screen
                 48f, 1f, Color.BLACK);
             
             if (Player.ApplicationOwner is {IsDrawer: true})
-                _button.Update();
+                _button.OnUpdate();
         }
 
         _chatPanel.OnUpdate();

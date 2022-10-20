@@ -38,28 +38,28 @@ public class LobbyScreen : Screen
             _bounds.Position.X + _bounds.Size.Width / 2, 
             _bounds.Position.Y + _bounds.Size.Height / 2
             );
-        
-        _startGameButton = new Button("Start", 
-            new Size(145, 45), 
-            new Vector2(
-                _bounds.Position.X + _bounds.Size.Width / 4 - 145 / 2f,
-                _bounds.Position.Y + _bounds.Size.Height / 2 - 45 - 25
-            ),
-            () =>
+
+        _startGameButton = new Button(new Raylib_CsLo.Rectangle(
+            _bounds.Position.X + _bounds.Size.Width / 4 - 145 / 2f,
+            _bounds.Position.Y + _bounds.Size.Height / 2 - 45 - 25,
+            145, 45))
+        {
+            Text = "Start",
+            OnButtonClick = (sender, args) =>
             {
                 if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
 
                 NetworkManager.StartGame();
             }
-        );
+        };
         
-        _joinDrawerButton = new Button("Join", 
-            new Size(145, 45), 
-            new Vector2(
-                _topRightPanel.X + _bounds.Size.Width / 4 - 145 / 2f,
-                _topRightPanel.Y + _bounds.Size.Height / 2 - 45 - 25
-            ),
-            () =>
+        _joinDrawerButton = new Button(new Raylib_CsLo.Rectangle(
+            _topRightPanel.X + _bounds.Size.Width / 4 - 145 / 2f,
+            _topRightPanel.Y + _bounds.Size.Height / 2 - 45 - 25,
+            145, 45))
+        {
+            Text = "Join",
+            OnButtonClick = (sender, args) =>
             {
                 if (Player.ApplicationOwner == null) return;
                 if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
@@ -67,22 +67,22 @@ public class LobbyScreen : Screen
                 
                 Player.ApplicationOwner.SetDrawerWithNotifyngServer(true);
             }
-        );
+        };
         
-        _joinWatcherButton = new Button("Join", 
-            new Size(145, 45), 
-            new Vector2(
-                _bottomRightPanel.X + _bounds.Size.Width / 4 - 145 / 2f,
-                _bottomRightPanel.Y + _bounds.Size.Height / 2 - 45 - 25
-            ),
-            () =>
+        _joinWatcherButton = new Button(new Raylib_CsLo.Rectangle(
+            _bottomRightPanel.X + _bounds.Size.Width / 4 - 145 / 2f,
+            _bottomRightPanel.Y + _bounds.Size.Height / 2 - 45 - 25,
+            145, 45))
+        {
+            Text = "Join",
+            OnButtonClick = (sender, args) =>
             {
                 if (Player.ApplicationOwner == null) return;
 
                 if (Player.ApplicationOwner.IsDrawer)
                     Player.ApplicationOwner.SetDrawerWithNotifyngServer(false);
             }
-        );
+        };
     }
 
     private void DrawSettingsPanel()
@@ -99,7 +99,7 @@ public class LobbyScreen : Screen
                 ), 24f, 1f, Color.BLACK);
         
         if (NetworkManager.IsHost)
-            _startGameButton.Update();
+            _startGameButton.OnUpdate();
     }
 
     private void DrawDrawerPanel()
@@ -132,7 +132,7 @@ public class LobbyScreen : Screen
             _topRightPanel.Y + _bounds.Size.Height / 4 - 15), 
             24f, 1f, Color.BLACK);
 
-        _joinDrawerButton.Update();
+        _joinDrawerButton.OnUpdate();
     }
 
     private void DrawWatchersPanel()
@@ -184,7 +184,7 @@ public class LobbyScreen : Screen
                 24f, 1f, Color.BLACK);
         }
         
-        _joinWatcherButton.Update();
+        _joinWatcherButton.OnUpdate();
     }
 
     private void DrawLines()

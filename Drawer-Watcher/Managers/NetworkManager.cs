@@ -28,7 +28,7 @@ public enum MessageID : ushort
 
 public static class NetworkLogger
 {
-    public static readonly List<string> LoggerMessages = new();
+    private static readonly List<string> LoggerMessages = new();
 
     public static void Init()
     {
@@ -36,7 +36,7 @@ public static class NetworkLogger
         ClientManager.SetLogger(Log);
     }
 
-    public static void Log(string fmt)
+    private static void Log(string fmt)
     {
         LoggerMessages.Add(fmt);
     }
@@ -304,7 +304,7 @@ public static class NetworkManager
     public static bool IsHost 
     {
         get => Server.IsHosted;
-        set
+        private set
         {
             Server.IsHosted = value;
             if (Server.IsHosted) 
