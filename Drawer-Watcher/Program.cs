@@ -1,4 +1,5 @@
-﻿using CouscousEngine.Core;
+﻿using System.Drawing;
+using CouscousEngine.Core;
 using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
@@ -30,7 +31,7 @@ internal class Sandbox : Application
         NetworkManager.Update();
 
         Renderer.BeginDrawing();
-        Renderer.ClearBackground(GameData.ClearColor);
+        Renderer.ClearBackground(ColorTranslator.FromHtml("#085EFB"));
         {
             ScreenManager.Update();
 
