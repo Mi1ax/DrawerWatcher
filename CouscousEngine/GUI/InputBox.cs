@@ -6,7 +6,6 @@ using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using KeyboardKey = CouscousEngine.Core.KeyboardKey;
 using MouseButton = CouscousEngine.Core.MouseButton;
-using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace CouscousEngine.GUI;
 
@@ -89,6 +88,26 @@ public class Entry
     private float _eraseTime;
 
     #endregion
+
+    #region Label
+
+    public string Label
+    {
+        get => _label;
+        set
+        {
+            _labelSize = _rl.MeasureTextEx(LabelFont, value, LabelFontSize, 1f);
+            _label = value;
+        }
+    }
+
+    public int LabelFontSize = 24;
+    public Font LabelFont;
+    
+    private string _label = "";
+    private Vector2 _labelSize;
+
+    #endregion
     
     public bool IsEnable { get; set; } = true;
     public Color Color { get; set; }
@@ -98,12 +117,13 @@ public class Entry
     
     public float CornerRadius = 0;
 
-    public Entry(Raylib_CsLo.Rectangle bounds)
+    public Entry(Raylib_CsLo.Rectangle bounds) 
     {
         // TODO: Application.GetDefaultFont()
         _font = AssetManager.GetFont("RobotoMono-Regular-24");
         _text = "";
         _displayText = "";
+        _isUsed = false;
         _bounds = bounds;
         
         Text = _text;
@@ -115,6 +135,7 @@ public class Entry
         _maxCharInBox = (int)(_bounds.width - 27 - charCount) / 10 + 1; 
 
         _font = AssetManager.GetDefaultFont(24);
+        LabelFont = AssetManager.GetDefaultFont(32);
 
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
 
@@ -149,6 +170,7 @@ public class Entry
     
     private void TextEntering() 
     {
+        if (!_isUsed) return;
         if (_text.Length <= _maxCharInInput)
             Input.GetAsciiKeyPressed(ref _text);
 
@@ -178,6 +200,15 @@ public class Entry
 
     private void DisplayText() 
     {
+        if (Label != "")
+        {
+            _rl.DrawTextEx(LabelFont, _label,
+                new Vector2(
+                    _bounds.x - _labelSize.X - 45,
+                    _bounds.y + _labelSize.Y / 4
+                    ), LabelFontSize, 1f, Color.BLACK);
+        }
+        
         if (_text != "")
         {
             _displayText = _text.Length > _maxCharInBox

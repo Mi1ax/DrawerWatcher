@@ -18,9 +18,11 @@ internal class Sandbox : Application
         AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
         
         var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
+        var font32 = AssetManager.LoadFont("RobotoMono-Regular-32", "Assets/Fonts/RobotoMono-Regular.ttf", 32);
         var font48 = AssetManager.LoadFont("RobotoMono-Regular-48", "Assets/Fonts/RobotoMono-Regular.ttf", 48);
         
         AssetManager.SetDefaultFont(font24!.Value, 24);
+        AssetManager.SetDefaultFont(font32!.Value, 32);
         AssetManager.SetDefaultFont(font48!.Value, 48);
         
         ScreenManager.NavigateTo(new MenuScreen());
