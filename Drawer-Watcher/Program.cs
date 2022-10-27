@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
+using System.Timers;
 using CouscousEngine.Core;
 using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
+using Timer = System.Timers.Timer;
 
 namespace Drawer_Watcher;
 

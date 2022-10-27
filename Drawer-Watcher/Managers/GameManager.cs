@@ -1,4 +1,5 @@
-﻿using CouscousEngine.Core;
+﻿using System.Timers;
+using CouscousEngine.Core;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 
@@ -46,5 +47,42 @@ public static class GameManager
     {
         var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
         return word.Contains('\r') ? word.Remove(word.Length - 1, 1) : word;
+    }
+
+    public static class Timer
+    {
+        private static TimeSpan _time;
+        private static System.Timers.Timer _timer;
+
+        public static bool Enable
+        {
+            get => _timer.Enabled;
+            set => _timer.Enabled = value;
+        }
+
+        public static string CurrentTime = "0:00";
+        
+        public static void Init()
+        {
+            _timer = new System.Timers.Timer
+            {
+                Enabled = false,
+                Interval = 1000
+            };
+        }
+
+        public static void Start(TimeSpan time, Action onTimerEnds)
+        {
+            _time = time;
+            _timer.Elapsed += (sender, args) =>
+            {
+                _time -= TimeSpan.FromSeconds(1);
+                CurrentTime = $"{_time.Minutes}:{_time.Seconds}";
+                if (_time != TimeSpan.Zero) return;
+                _timer.Enabled = false;
+                onTimerEnds.Invoke();
+            };
+            Enable = true;
+        }
     }
 }

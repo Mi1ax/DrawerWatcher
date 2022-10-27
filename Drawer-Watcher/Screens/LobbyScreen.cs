@@ -47,7 +47,8 @@ public class LobbyScreen : Screen
             Text = "Start",
             OnButtonClick = (sender, args) =>
             {
-                if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
+                // TODO: Temp
+                //if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
 
                 NetworkManager.StartGame();
             }

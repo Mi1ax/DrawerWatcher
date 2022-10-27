@@ -18,6 +18,12 @@ public class GameScreen : Screen
 
     public GameScreen()
     {
+        GameManager.Timer.Init();
+        GameManager.Timer.Start(new TimeSpan(0, 0, 10), () =>
+        {
+            
+        });
+
         _chatPanel = new ChatPanel(new Rectangle(new Size(350, 720), new Vector2(930, 0))
         {
             Color = new Color(193, 193, 193)
@@ -63,43 +69,77 @@ public class GameScreen : Screen
         Vector2 textSize;
 
         Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
-        
-        if (GameManager.Guesser == 0)
-        {
-            foreach (var player in NetworkManager.Players.Values)
-                        player.Update();
-                    
-            Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
 
-            if (Player.ApplicationOwner is {IsDrawer: true})
+        if (GameManager.Timer.Enable)
+        {
+            if (GameManager.Guesser == 0)
             {
-                _toolPanel.OnUpdate();
-        
+                foreach (var player in NetworkManager.Players.Values)
+                    player.Update();
+                    
+                Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
+
                 textSize = _rl.MeasureTextEx(
                     AssetManager.GetDefaultFont(48), 
-                    GameManager.CurrentWord, 48f, 1f
+                    GameManager.Timer.CurrentTime, 48f, 1f
+                );
+
+                _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
+                    GameManager.Timer.CurrentTime, 
+                    new Vector2(
+                        _drawingPanel.Size.Width / 2 - textSize.X,
+                        75
+                    ), 
+                    48f, 1f, Color.BLACK);
+                
+                if (Player.ApplicationOwner is {IsDrawer: true})
+                {
+                    _toolPanel.OnUpdate();
+        
+                    textSize = _rl.MeasureTextEx(
+                        AssetManager.GetDefaultFont(48), 
+                        GameManager.CurrentWord, 48f, 1f
+                    );
+        
+                    _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
+                        GameManager.CurrentWord, 
+                        new Vector2(
+                            _drawingPanel.Size.Width / 2 - textSize.X,
+                            25
+                        ), 
+                        48f, 1f, Color.BLACK);
+                }
+            }
+            else
+            {
+                var nickname = NetworkManager.Players[GameManager.Guesser].Nickname;
+            
+                textSize = _rl.MeasureTextEx(
+                    AssetManager.GetDefaultFont(48), 
+                    $"{nickname} guessed right", 48f, 1f
                 );
         
                 _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                    GameManager.CurrentWord, 
+                    $"{nickname} guessed right", 
                     new Vector2(
-                        _drawingPanel.Size.Width / 2 - textSize.X,
+                        _drawingPanel.Size.Width / 2 - textSize.X / 2,
                         25
                     ), 
                     48f, 1f, Color.BLACK);
+            
+                if (Player.ApplicationOwner is {IsDrawer: true})
+                    _button.OnUpdate();
             }
         }
         else
         {
-            var nickname = NetworkManager.Players[GameManager.Guesser].Nickname;
-            
             textSize = _rl.MeasureTextEx(
                 AssetManager.GetDefaultFont(48), 
-                $"{nickname} guessed right", 48f, 1f
+                "Round ends", 48f, 1f
             );
         
             _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                $"{nickname} guessed right", 
+                "Round ends", 
                 new Vector2(
                     _drawingPanel.Size.Width / 2 - textSize.X / 2,
                     25

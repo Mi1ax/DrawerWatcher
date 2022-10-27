@@ -50,6 +50,9 @@ public class Player
 
         _currPoint = Input.GetMousePosition();
         
+        if (_prevPoint == Vector2.Zero)
+            _prevPoint = Input.GetMousePosition();
+        
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
             MessageHandlers.SendDrawingData(_prevPoint, _currPoint, CurrentBrush.Thickness, (Color)CurrentBrush.Color);
