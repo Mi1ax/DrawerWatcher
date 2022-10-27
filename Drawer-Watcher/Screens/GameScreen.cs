@@ -33,9 +33,7 @@ public class GameScreen : Screen
         GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
         if (Player.ApplicationOwner is {IsDrawer: true})
             _chatPanel.DisableInput = true;
-        
-        InitTimer();
-        
+
         if (Player.ApplicationOwner is {IsDrawer: true})
             NewWord();
 
@@ -47,12 +45,11 @@ public class GameScreen : Screen
             OnButtonClick = (sender, args) =>
             {
                 NewWord();
-                InitTimer();
             }
         };
     }
 
-    private void InitTimer()
+    public static void InitTimer()
     {
         GameManager.Timer.Init();
         GameManager.Timer.Start(new TimeSpan(0, 0, 10), () =>
@@ -119,7 +116,7 @@ public class GameScreen : Screen
                 {
                     Font = AssetManager.GetDefaultFont(48),
                     FontSize = 48f,
-                    Value = $"{nickname} guessed right. The word is {GameManager.CurrentWord}",
+                    Value = $"{nickname} guessed right.\nThe word is {GameManager.CurrentWord}",
                     FontColor = Color.BLACK
                 };
                 Renderer.DrawText(text, 
@@ -135,7 +132,7 @@ public class GameScreen : Screen
             {
                 Font = AssetManager.GetDefaultFont(48),
                 FontSize = 48f,
-                Value = $"Round ends. The word is {GameManager.CurrentWord}",
+                Value = $"Round ends.\nThe word is {GameManager.CurrentWord}",
                 FontColor = Color.BLACK
             };
             Renderer.DrawText(text, 

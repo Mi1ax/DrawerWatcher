@@ -275,6 +275,7 @@ public static class MessageHandlers
     {
         var senderID = message.GetUShort();
         Log($"(From Server) Winner is {senderID}");
+        NetworkManager.Players[senderID].Score++;
         GameManager.Guesser = senderID;
     }
     
@@ -285,6 +286,7 @@ public static class MessageHandlers
         Log($"(From Server) Getting new word {newWord}");
         GameManager.CurrentWord = newWord;
         GameManager.Guesser = 0;
+        GameScreen.InitTimer();
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]

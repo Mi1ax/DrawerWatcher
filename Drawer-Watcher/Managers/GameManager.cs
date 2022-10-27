@@ -52,12 +52,16 @@ public static class GameManager
     public static class Timer
     {
         private static TimeSpan _time;
-        private static System.Timers.Timer _timer;
+        private static System.Timers.Timer? _timer;
 
         public static bool Enable
         {
-            get => _timer.Enabled;
-            set => _timer.Enabled = value;
+            get => _timer is { Enabled: true };
+            private set
+            {
+                if (_timer != null) 
+                    _timer.Enabled = value;
+            }
         }
 
         public static string CurrentTime = "0:00";

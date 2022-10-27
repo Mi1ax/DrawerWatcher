@@ -18,6 +18,8 @@ public class Player
 
     public ushort ID { get; }
 
+    public uint Score { get; set; }
+
     public bool IsDrawer { get; private set; }
 
     public string Nickname { get; set; }

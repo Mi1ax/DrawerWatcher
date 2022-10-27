@@ -36,10 +36,14 @@ internal class Sandbox : Application
         Renderer.ClearBackground(ColorTranslator.FromHtml("#085EFB"));
         {
             ScreenManager.Update();
+            ScreenManager.MenuUpdate();
 
             rlImGui.Begin();
             ScreenManager.UpdateImGui();
             rlImGui.End();
+            
+            if (Input.IsKeyPressed(KeyboardKey.ESCAPE))
+                ScreenManager.OpenMenu();
 
             //Renderer.DrawFPS();
         }

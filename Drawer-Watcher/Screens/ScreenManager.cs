@@ -10,7 +10,11 @@ public static class ScreenManager
         _currentScreen = newScreen;
     }
 
+    public static void OpenMenu()
+        => _currentScreen?.OnEscPressed();
+    
     public static void UpdateImGui() => _currentScreen?.OnImGuiUpdate();
 
     public static void Update() => _currentScreen?.OnUpdate();
+    public static void MenuUpdate() => _currentScreen?.OnMenuUpdate();
 }

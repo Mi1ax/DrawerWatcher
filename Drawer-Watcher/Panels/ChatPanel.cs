@@ -47,7 +47,24 @@ public class ChatPanel : IDisposable
         _rl.DrawLine(930, 0, 930, 720, Color.BLACK);
 
         _inputBox.IsEnable = !DisableInput;
-        
+
+        var count = 0;
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            var text = new Text
+            {
+                Font = AssetManager.GetDefaultFont(24),
+                FontColor = Color.BLACK,
+                FontSize = 24,
+                Value = $"{player.Nickname}: {player.Score}"
+            };
+            Renderer.DrawText(text, new Vector2(
+                _bounds.Position.X + 10,
+                _bounds.Position.Y + 32 * count
+                ));
+            count++;
+        }
+
         _inputBox.OnUpdate();
         
         for (var i = 0; i < _chat.Count; i++)
