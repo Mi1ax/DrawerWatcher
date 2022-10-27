@@ -74,10 +74,11 @@ public static class GameManager
         public static void Start(TimeSpan time, Action onTimerEnds)
         {
             _time = time;
+            CurrentTime = $"{_time.Minutes:0}:{_time.Seconds:00}";
             _timer.Elapsed += (sender, args) =>
             {
                 _time -= TimeSpan.FromSeconds(1);
-                CurrentTime = $"{_time.Minutes}:{_time.Seconds}";
+                CurrentTime = $"{_time.Minutes:0}:{_time.Seconds:00}";
                 if (_time != TimeSpan.Zero) return;
                 _timer.Enabled = false;
                 onTimerEnds.Invoke();

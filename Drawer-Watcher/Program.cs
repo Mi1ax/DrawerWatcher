@@ -1,10 +1,8 @@
 ﻿using System.Drawing;
-using System.Timers;
 using CouscousEngine.Core;
 using CouscousEngine.rlImGui;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
-using Timer = System.Timers.Timer;
 
 namespace Drawer_Watcher;
 
@@ -40,7 +38,6 @@ internal class Sandbox : Application
             ScreenManager.Update();
 
             rlImGui.Begin();
-            //NetworkLogger.UpdateImGuiConsole();
             ScreenManager.UpdateImGui();
             rlImGui.End();
 

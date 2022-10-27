@@ -44,6 +44,11 @@ public class Player
         Nickname = "DefaultNickname";
     }
 
+    public void Reset()
+    {
+        _prevPoint = Vector2.Zero;
+    }
+
     public void Update()
     {
         if (!IsDrawer || !IsAppOwner) return;

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using CouscousEngine.GUI;
 using CouscousEngine.Utils;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
@@ -63,4 +64,14 @@ public static class Renderer
     
     public static void DrawFPS(int x = 15, int y = 15)
         => _rl.DrawFPS(x, y);
+
+    public static void DrawText(Text text, Vector2 position)
+        => _rl.DrawTextEx(
+            text.Font, 
+            text.Value, 
+            position, 
+            text.FontSize, 
+            1f, 
+            text.FontColor
+            );
 }

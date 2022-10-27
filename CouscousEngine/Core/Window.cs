@@ -27,6 +27,7 @@ public class Window : IDisposable
         _data = data;
         _rl.SetConfigFlags(ConfigFlags.FLAG_VSYNC_HINT);
         _rl.InitWindow(_data.Width, _data.Height, _data.Title);
+        _rl.SetExitKey(0);
     }
 
     public int Width => _data.Width;
