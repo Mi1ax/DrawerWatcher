@@ -8,6 +8,11 @@ public class CreatingGameScreen : Screen
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
     private string _nickname = "Host";
 
+    public CreatingGameScreen(string nickname)
+    {
+        _nickname = nickname;
+    }
+    
     public override void OnUpdate()
     {
         

@@ -59,12 +59,12 @@ public class Button
 
     public EventHandler? OnButtonClick = null;
     
-    public Button(Rectangle bounds, string text = "Button")
+    public Button(Rectangle bounds)
     {
         // TODO: Application.GetDefaultFont()
         _font = AssetManager.GetFont("RobotoMono-Regular-24");
         _text = "";
-        Text = text;
+        Text = "Button";
         BorderThickness = 1f;
         _bounds = bounds;
     }
