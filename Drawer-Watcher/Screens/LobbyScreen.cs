@@ -8,6 +8,40 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace Drawer_Watcher.Screens;
 
+public class NewLobbyScreen : Screen
+{
+    private readonly Raylib_CsLo.Rectangle _frame;
+
+    private readonly Raylib_CsLo.Rectangle _settingsFrame;
+    private readonly Raylib_CsLo.Rectangle _lobbyFrame;
+    
+    public NewLobbyScreen()
+    {
+        // TODO: Temp positions/sizes
+        _frame = new Raylib_CsLo.Rectangle(215, 85, 850, 550);
+
+        _settingsFrame = new Raylib_CsLo.Rectangle(242, 110, 390, 500);
+        _lobbyFrame = new Raylib_CsLo.Rectangle(649, 110, 390, 500);
+    }
+    
+    public override void OnUpdate()
+    {
+        _rl.DrawRectangleRounded(_frame, 0.1f, 15, Color.WHITE);
+        _rl.DrawRectangleRoundedLines(_settingsFrame, 0.1f, 15, 1f, Color.BLACK);
+        _rl.DrawRectangleRoundedLines(_lobbyFrame, 0.1f, 15, 1f, Color.BLACK);
+    }
+
+    public override void OnImGuiUpdate()
+    {
+        
+    }
+
+    public override void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+}
+
 public class LobbyScreen : Screen
 {
     private readonly Rectangle _bounds;

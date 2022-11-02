@@ -21,7 +21,7 @@ public class MenuScreen : Screen
     public MenuScreen()
     {
         // TODO: Temp positions/sizes
-        _frame = new Rectangle(215, 70, 850, 550);
+        _frame = new Rectangle(215, 85, 850, 550);
 
         _avatar = new Circle(new Vector2(640, 237), 75, Color.GRAY);
         
@@ -51,7 +51,7 @@ public class MenuScreen : Screen
             Color = ColorTranslator.FromHtml("#15BAFE"),
             OnButtonClick = (sender, args) =>
             {
-                ScreenManager.NavigateTo(new CreatingGameScreen());
+                ScreenManager.NavigateTo(new CreatingGameScreen(_entries[0].Text));
             }
         };
         
@@ -70,7 +70,7 @@ public class MenuScreen : Screen
             Color = ColorTranslator.FromHtml("#FFBF00"),
             OnButtonClick = (sender, args) =>
             {
-                ScreenManager.NavigateTo(new ConnectionScreen());
+                ScreenManager.NavigateTo(new ConnectionScreen(_entries[0].Text));
             }
         };
     }

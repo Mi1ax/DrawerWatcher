@@ -40,8 +40,9 @@ public class GameScreen : Screen
         _button = new Button(new Raylib_CsLo.Rectangle(
             _drawingPanel.Position.X + _drawingPanel.Size.Width / 2 - 125 / 2f,
             _drawingPanel.Position.Y + _drawingPanel.Size.Height / 2 - 55 / 2f,
-            125, 55), "New Word")
+            125, 55))
         {
+            Text = "New Word",
             OnButtonClick = (sender, args) =>
             {
                 NewWord();
