@@ -1,4 +1,6 @@
 ﻿using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
+using ImGuiNET;
 using Raylib_CsLo;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
@@ -46,6 +48,11 @@ internal static class Program
         public override void OnUpdate(float deltaTime)
         {
             _rl.DrawRectangleRec(_rectangle, _color);
+        }
+
+        public override void OnImGuiUpdate()
+        {
+            ImGui.ShowDemoWindow();
         }
 
         public override bool OnEvent()

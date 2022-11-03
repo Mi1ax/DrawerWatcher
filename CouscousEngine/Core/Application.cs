@@ -1,4 +1,5 @@
 ﻿using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
 
 namespace CouscousEngine.Core;
@@ -33,7 +34,7 @@ public abstract class Application : IDisposable
             width, 
             height)
         );
-        rlImGui.rlImGui.Setup();
+        PushLayer(new ImGuiLayer());
     }
 
     protected virtual void OnExit() {}
@@ -52,18 +53,25 @@ public abstract class Application : IDisposable
         {
             Renderer.BeginDrawing();
             Renderer.ClearBackground(Color.WHITE);
+            for (var i = _layerStack.Layers.Count - 1; i >= 0; i--)
+            {
+                _layerStack.Layers[i].OnUpdate(_rl.GetFrameTime());
+            }
+            
+            rlImGui.rlImGui.Begin();
             foreach (var layer in _layerStack.Layers)
             {
                 layer.OnImGuiUpdate();
-                layer.OnUpdate(_rl.GetFrameTime());
             }
-            Renderer.EndDrawing();
-
-            for (var i = _layerStack.Layers.Count - 1; i >= 0; i--)
+            rlImGui.rlImGui.End();
+            
+            for (var i = 0; i < _layerStack.Layers.Count; i++)
             {
                 if (_layerStack.Layers[i].OnEvent())
                     break;
             }
+
+            Renderer.EndDrawing();
         }
     }
 

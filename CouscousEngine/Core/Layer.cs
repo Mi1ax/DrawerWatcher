@@ -13,7 +13,7 @@ public abstract class Layer
 
     public virtual void OnAttach() {}
     public virtual void OnDetach() {}
-    public virtual void OnUpdate(float deltaTime) {}
+    public abstract void OnUpdate(float deltaTime);
     public abstract bool OnEvent();
     public virtual void OnImGuiUpdate() {}
 }
