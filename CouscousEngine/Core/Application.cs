@@ -52,7 +52,7 @@ public abstract class Application : IDisposable
         while (Window.IsRunning())
         {
             Renderer.BeginDrawing();
-            Renderer.ClearBackground(Color.WHITE);
+            Renderer.ClearBackground(Renderer.ClearColor);
             for (var i = _layerStack.Layers.Count - 1; i >= 0; i--)
             {
                 _layerStack.Layers[i].OnUpdate(_rl.GetFrameTime());
