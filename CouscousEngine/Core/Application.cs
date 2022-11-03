@@ -16,6 +16,7 @@ public abstract class Application : IDisposable
     #endregion
 
     private readonly LayerStack _layerStack;
+    private bool _isRunning = true;
 
     public readonly Window Window;
 
@@ -39,8 +40,8 @@ public abstract class Application : IDisposable
 
     protected virtual void OnExit() {}
 
-    public void Exit() => Dispose();
-
+    public void Close() => _isRunning = false;
+    
     protected void PushLayer(Layer layer)
     {
         _layerStack.PushLayer(layer);
@@ -49,7 +50,7 @@ public abstract class Application : IDisposable
     
     public void Run()
     {
-        while (Window.IsRunning())
+        while (Window.IsRunning() && _isRunning)
         {
             Renderer.BeginDrawing();
             Renderer.ClearBackground(Renderer.ClearColor);

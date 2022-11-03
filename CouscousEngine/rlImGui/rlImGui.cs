@@ -300,8 +300,7 @@ public static class rlImGui
 
                 var clipOff = data.DisplayPos;
                 var clipScale = _rl.GetWindowScaleDPI();
-
-                var fbWidth = data.DisplaySize.X * clipScale.X;
+                
                 var fbHeight = data.DisplaySize.Y * clipScale.Y;
 
                 var clipMin = new Vector2(
