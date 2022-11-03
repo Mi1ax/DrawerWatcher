@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Numerics;
-using CouscousEngine.Core;
 using CouscousEngine.GUI;
 using CouscousEngine.Shapes;
 using Color = CouscousEngine.Utils.Color;
@@ -12,8 +11,6 @@ namespace Drawer_Watcher.Screens;
 public class MenuScreen : Screen
 {
     private readonly Rectangle _frame;
-
-    private readonly Circle _avatar;
     
     private readonly Entry[] _entries;
     private readonly Button[] _buttons;
@@ -23,8 +20,6 @@ public class MenuScreen : Screen
         // TODO: Temp positions/sizes
         _frame = new Rectangle(215, 85, 850, 550);
 
-        _avatar = new Circle(new Vector2(640, 237), 75, Color.GRAY);
-        
         _buttons = new Button[2];
         ButtonsInit();
 
@@ -110,26 +105,22 @@ public class MenuScreen : Screen
         };
     }
     
-    public override void OnUpdate()
+    public override void OnUpdate(float deltaTime)
     {
         _rl.DrawRectangleRounded(_frame, 0.1f, 15, Color.WHITE);
 
         foreach (var button in _buttons)
-            button.OnUpdate();
+            button.OnUpdate(deltaTime);
 
         foreach (var entry in _entries)
-            entry.OnUpdate();
+            entry.OnUpdate(deltaTime);
         
-        _avatar.Update();
+        _rl.DrawCircleV(new Vector2(640, 237), 75, Color.GRAY);
     }
 
-    public override void OnImGuiUpdate()
+    public override bool OnEvent()
     {
-        
-    }
-
-    public override void Dispose()
-    {
-        GC.SuppressFinalize(this);
+        return _entries.Any(entry => entry.OnEvent()) || 
+               _buttons.Any(entry => entry.OnEvent());
     }
 }

@@ -9,7 +9,7 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace Drawer_Watcher.Panels;
 
-public class ToolPanel : IDisposable
+public class ToolPanel
 {
     private const int _colorPerLine = 10;
     private const float _colorSize = 16f;
@@ -139,10 +139,5 @@ public class ToolPanel : IDisposable
                 (int)position.X, 
                 (int)position.Y, 
                 Color.WHITE);
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
     }
 }

@@ -31,18 +31,18 @@ public class GameLayer : Layer
 
     public override void OnImGuiUpdate()
     {
-        ScreenManager.UpdateImGui();
+        ScreenManager.OnUpdateImGui();
     }
 
     public override void OnUpdate(float deltaTime)
     {
         NetworkManager.Update();
-        ScreenManager.Update();
+        ScreenManager.OnUpdate(deltaTime);
     }
 
     public override bool OnEvent()
     {
-        return false;
+        return ScreenManager.OnEvent();
     }
 }
 

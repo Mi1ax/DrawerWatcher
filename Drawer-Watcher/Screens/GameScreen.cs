@@ -57,7 +57,7 @@ public class GameScreen : Screen
         GameManager.Guesser = 0;
     }
 
-    public override void OnUpdate()
+    public override void OnUpdate(float deltaTime)
     {
         if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
 
@@ -108,21 +108,14 @@ public class GameScreen : Screen
                 48f, 1f, Color.BLACK);
             
             if (Player.ApplicationOwner is {IsDrawer: true})
-                _button.OnUpdate();
+                _button.OnUpdate(deltaTime);
         }
 
-        _chatPanel.OnUpdate();
+        _chatPanel.OnUpdate(deltaTime);
     }
 
-    public override void OnImGuiUpdate()
+    public override bool OnEvent()
     {
-        
-    }
-
-    public override void Dispose()
-    {
-        _toolPanel.Dispose();
-        _chatPanel.Dispose();
-        GC.SuppressFinalize(this);
+        return _button.OnEvent();
     }
 }

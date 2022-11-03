@@ -6,14 +6,14 @@ namespace Drawer_Watcher.Screens;
 public class CreatingGameScreen : Screen
 {
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
-    private string _nickname = "Host";
+    private string _nickname;
 
     public CreatingGameScreen(string nickname)
     {
         _nickname = nickname;
     }
     
-    public override void OnUpdate()
+    public override void OnUpdate(float deltaTime)
     {
         
     }
@@ -42,8 +42,8 @@ public class CreatingGameScreen : Screen
         ImGui.End();
     }
 
-    public override void Dispose()
+    public override bool OnEvent()
     {
-        GC.SuppressFinalize(this);
+        return false;
     }
 }
