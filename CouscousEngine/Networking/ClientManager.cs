@@ -19,7 +19,10 @@ public static class ClientManager
         EventHandler<ClientDisconnectedEventArgs> onClientDisconnected) 
     {
         RiptideLogger.Initialize(LogMethod ??= Console.WriteLine, true);
-        Client = new Client();
+        Client = new Client
+        {
+            HeartbeatInterval = ushort.MaxValue
+        };
         Client.ChangeTransport(new UdpClient(SocketMode.IPv4Only));
         Client.Connected += onServerConnected;
         Client.Disconnected += onServerDisconnected;

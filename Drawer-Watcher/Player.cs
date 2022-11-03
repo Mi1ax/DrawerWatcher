@@ -49,6 +49,8 @@ public class Player
         if (!IsDrawer || !IsAppOwner) return;
 
         _currPoint = Input.GetMousePosition();
+        if (_prevPoint == Vector2.Zero)
+            _prevPoint = _currPoint;
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
