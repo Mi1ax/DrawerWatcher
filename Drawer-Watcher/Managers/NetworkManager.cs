@@ -28,8 +28,6 @@ public enum MessageID : ushort
 
 public static class NetworkLogger
 {
-    private static readonly List<string> LoggerMessages = new();
-
     public static void Init()
     {
         ServerManager.SetLogger(Log);
@@ -38,18 +36,7 @@ public static class NetworkLogger
 
     private static void Log(string fmt)
     {
-        LoggerMessages.Add(fmt);
-    }
-
-    public static void UpdateImGuiConsole()
-    {
-        ImGui.Begin("Network Console");
-        foreach (var loggerMessage in LoggerMessages)
-            ImGui.Text(loggerMessage);
-        
-        if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
-            ImGui.SetScrollHereY(1.0f);
-        ImGui.End();
+        Console.WriteLine(fmt);
     }
 }
 

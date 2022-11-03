@@ -8,7 +8,7 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace Drawer_Watcher.Panels;
 
-public class ChatPanel : IDisposable
+public class ChatPanel
 {
     public bool DisableInput = false;
     
@@ -41,14 +41,14 @@ public class ChatPanel : IDisposable
         _chat.Add($"{nickname}: {text}");
     }
     
-    public void OnUpdate()
+    public void OnUpdate(float deltaTime)
     {
         Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
         _rl.DrawLine(930, 0, 930, 720, Color.BLACK);
 
         _inputBox.IsEnable = !DisableInput;
         
-        _inputBox.OnUpdate();
+        _inputBox.OnUpdate(deltaTime);
         
         for (var i = 0; i < _chat.Count; i++)
         {
@@ -57,10 +57,5 @@ public class ChatPanel : IDisposable
             
             _rl.DrawTextEx(_inputBox.Font, _chat[i], position, 24f, 1f, Color.BLACK);
         }
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
     }
 }

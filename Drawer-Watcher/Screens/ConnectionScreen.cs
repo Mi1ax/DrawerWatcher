@@ -1,7 +1,6 @@
 using System.Drawing;
 using CouscousEngine.GUI;
 using Drawer_Watcher.Managers;
-using ImGuiNET;
 using Color = CouscousEngine.Utils.Color;
 using Rectangle = Raylib_CsLo.Rectangle;
 
@@ -70,22 +69,19 @@ public class ConnectionScreen : Screen
         };
     }
     
-    public override void OnUpdate()
+    public override void OnUpdate(float deltaTime)
     {
         _rl.DrawRectangleRounded(_frame, 0.1f, 15, Color.WHITE);
 
-        _ipAdress.OnUpdate();
-        _password.OnUpdate();
-        _connect.OnUpdate();
+        _ipAdress.OnUpdate(deltaTime);
+        _password.OnUpdate(deltaTime);
+        _connect.OnUpdate(deltaTime);
     }
 
-    public override void OnImGuiUpdate()
+    public override bool OnEvent()
     {
-        
-    }
-
-    public override void Dispose()
-    {
-        GC.SuppressFinalize(this);
+        return _ipAdress.OnEvent() ||
+               _password.OnEvent() ||
+               _connect.OnEvent();
     }
 }

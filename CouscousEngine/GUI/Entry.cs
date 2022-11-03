@@ -9,7 +9,7 @@ using MouseButton = CouscousEngine.Core.MouseButton;
 
 namespace CouscousEngine.GUI;
 
-public class Entry
+public class Entry : Visual
 {
     public Vector2 Position 
     {
@@ -117,7 +117,7 @@ public class Entry
     
     public float CornerRadius = 0;
 
-    public Entry(Raylib_CsLo.Rectangle bounds) 
+    public Entry(Rectangle bounds) 
     {
         // TODO: Application.GetDefaultFont()
         _font = AssetManager.GetFont("RobotoMono-Regular-24");
@@ -140,32 +140,6 @@ public class Entry
         _rl.SetTextureFilter(_font.texture, TextureFilter.TEXTURE_FILTER_POINT);
 
         _separatorSize = _rl.MeasureTextEx(_rl.GetFontDefault(), "|", 24f, 1f);
-    }
-
-    public void OnUpdate() 
-    {
-        if (CornerRadius != 0)
-        {
-            _rl.DrawRectangleRounded(_bounds, CornerRadius, 15, Color);
-            _rl.DrawRectangleRoundedLines(
-                _bounds, CornerRadius, 
-                15, BordeThickness, BorderColor
-            );
-        }
-        else
-        {
-            _rl.DrawRectangleRec(_bounds, Color);
-            _rl.DrawRectangleLinesEx(_bounds, BordeThickness, BorderColor);
-        }
-
-        if (!IsEnable) return;
-        
-        CheckActivity();
-        TextEntering();
-        DisplayText();
-
-        if (Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
-            _allSelected = true;
     }
     
     private void TextEntering() 
@@ -261,10 +235,42 @@ public class Entry
         }
 
         if (!_isUsed) return;
-        
+
         Color = (Color)_rl.Fade(Color, 0.8f);
 
         if (Input.IsKeyPressed(KeyboardKey.ENTER))
             OnEnterPressed?.Invoke(this, EventArgs.Empty);
+    }
+
+    public override void OnUpdate(float deltaTime)
+    {
+        if (CornerRadius != 0)
+        {
+            _rl.DrawRectangleRounded(_bounds, CornerRadius, 15, Color);
+            _rl.DrawRectangleRoundedLines(
+                _bounds, CornerRadius, 
+                15, BordeThickness, BorderColor
+            );
+        }
+        else
+        {
+            _rl.DrawRectangleRec(_bounds, Color);
+            _rl.DrawRectangleLinesEx(_bounds, BordeThickness, BorderColor);
+        }
+
+        DisplayText();
+        TextEntering();
+    }
+
+    public override bool OnEvent()
+    {
+        if (!IsEnable) return false;
+
+        CheckActivity();
+
+        if (_isUsed && Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
+            _allSelected = true;
+        
+        return false;
     }
 }

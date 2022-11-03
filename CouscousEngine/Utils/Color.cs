@@ -40,4 +40,12 @@ public struct Color
         (byte)(color.Z * 255)
         );
 
+    public static bool operator ==(Color left, Color right)
+        => left.R == right.R &&
+           left.G == right.G &&
+           left.B == right.B &&
+           left.A == right.A;
+
+    public static bool operator !=(Color left, Color right)
+        => !(left == right);
 }

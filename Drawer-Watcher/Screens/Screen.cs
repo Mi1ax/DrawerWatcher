@@ -1,9 +1,8 @@
 namespace Drawer_Watcher.Screens;
 
-public abstract class Screen : IDisposable
+public abstract class Screen
 {
-    public abstract void OnUpdate();
-    public abstract void OnImGuiUpdate();
-
-    public abstract void Dispose();
+    public abstract void OnUpdate(float deltaTime);
+    public virtual void OnImGuiUpdate() {}
+    public abstract bool OnEvent();
 }
