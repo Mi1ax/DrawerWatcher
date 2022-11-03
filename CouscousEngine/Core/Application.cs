@@ -13,8 +13,10 @@ public abstract class Application : IDisposable
         _instance ?? throw new NullReferenceException("Application is null");
 
     #endregion
-    
-    protected readonly Window Window;
+
+    private readonly LayerStack _layerStack;
+
+    public readonly Window Window;
 
     public Size WindowSize => new (Window.Width, Window.Height);
 
@@ -25,6 +27,7 @@ public abstract class Application : IDisposable
     )
     {
         _instance = this;
+        _layerStack = new LayerStack();
         Window = new Window(new WindowData(
             title, 
             width, 
@@ -33,16 +36,35 @@ public abstract class Application : IDisposable
         rlImGui.rlImGui.Setup();
     }
 
-    protected abstract void Update();
-
-    protected abstract void OnExit();
+    protected virtual void OnExit() {}
 
     public void Exit() => Dispose();
+
+    protected void PushLayer(Layer layer)
+    {
+        _layerStack.PushLayer(layer);
+        layer.OnAttach();
+    }
     
     public void Run()
     {
         while (Window.IsRunning())
-            Update();
+        {
+            Renderer.BeginDrawing();
+            Renderer.ClearBackground(Color.WHITE);
+            foreach (var layer in _layerStack.Layers)
+            {
+                layer.OnImGuiUpdate();
+                layer.OnUpdate(_rl.GetFrameTime());
+            }
+            Renderer.EndDrawing();
+
+            for (var i = _layerStack.Layers.Count - 1; i >= 0; i--)
+            {
+                if (_layerStack.Layers[i].OnEvent())
+                    break;
+            }
+        }
     }
 
     public void Dispose()
