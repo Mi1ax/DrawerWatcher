@@ -117,8 +117,9 @@ public static class rlImGui
         SetupMouseCursors();
 
         ImGui.SetCurrentContext(ImGuiContext);
-        _ = ImGui.GetIO().Fonts;
-        ImGui.GetIO().Fonts.AddFontFromFileTTF("Assets/Fonts/RobotoMono-Regular.ttf", 22);
+        var fonts = ImGui.GetIO().Fonts;
+        ImGui.GetIO().Fonts.AddFontFromFileTTF("Assets/Fonts/RobotoMono-Regular.ttf", 
+            22, null, fonts.GetGlyphRangesCyrillic());
 
         var io = ImGui.GetIO();
         io.KeyMap[(int)ImGuiKey.Tab] = (int)KeyboardKey.KEY_TAB;

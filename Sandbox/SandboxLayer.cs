@@ -14,14 +14,17 @@ public class SandboxLayer : Layer
     private bool _viewportHovered;
     private Vector2 _viewportSize = Vector2.Zero;
     
-    private Vector3 _color = new (1f, 1f, 1f);
+    private Vector3 _brushColor = new (1f, 1f, 1f);
+    private Vector3 _clearColor = new (1f, 1f, 1f);
 
     private Vector2 _cursorOffset;
     private Vector2 _currMousePos = Vector2.Zero;
     private Vector2 _prevMousePos = Vector2.Zero;
 
     private RenderTexture _renderTexture;
-    
+
+    private List<string> _chatMessages = new();
+
     public SandboxLayer() 
         : base("SandboxLayer")
     {
@@ -39,12 +42,15 @@ public class SandboxLayer : Layer
         }
 
         _currMousePos = Input.GetMousePosition() - _cursorOffset;
-        Renderer.BeginTextureMode(_renderTexture);
-        if (Input.IsMouseButtonDown(MouseButton.LEFT))
+        if (_viewportHovered && _viewportFocused)
         {
-            Renderer.MouseDrawing(_currMousePos, _prevMousePos, 8f, (Color)_color);
+            Renderer.BeginTextureMode(_renderTexture);
+            if (Input.IsMouseButtonDown(MouseButton.LEFT))
+            {
+                Renderer.MouseDrawing(_currMousePos, _prevMousePos, 8f, (Color)_brushColor);
+            }
+            Renderer.EndTextureMode();
         }
-        Renderer.EndTextureMode();
         _prevMousePos = _currMousePos;
     }
 
@@ -95,9 +101,45 @@ public class SandboxLayer : Layer
 
             // ImGui Drawing Here
 
+            ImGui.Begin("Chat");
+            {
+                var footerHeightToReserve = ImGui.GetStyle().ItemSpacing.Y + ImGui.GetFrameHeightWithSpacing();
+                if (ImGui.BeginChild("ScrollingRegion", new Vector2(0, -footerHeightToReserve), 
+                        false, ImGuiWindowFlags.HorizontalScrollbar))
+                {
+                    ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(4, 1)); // Tighten spacing
+                    foreach (var item in _chatMessages)
+                    {
+                        ImGui.Text(item);
+                    }
+
+                    if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+                        ImGui.SetScrollHereY(1.0f);
+
+                    ImGui.PopStyleVar();
+                }
+                ImGui.EndChild();
+                ImGui.Separator();
+                
+                var text = "";
+                const ImGuiInputTextFlags inputConfig = ImGuiInputTextFlags.EnterReturnsTrue;
+                if (ImGui.InputText("", ref text, 128, inputConfig))
+                {
+                    _chatMessages.Add(text);
+                }
+            }
+            ImGui.End();
+            
             ImGui.Begin("Settings");
             {
-                ImGui.ColorEdit3("Color", ref _color);
+                ImGui.ColorEdit3("Clear Color", ref _clearColor);
+                if (ImGui.Button("Clear Canvas"))
+                {
+                    Renderer.BeginTextureMode(_renderTexture);
+                    Renderer.ClearBackground((Color)_clearColor);
+                    Renderer.EndTextureMode();
+                }
+                ImGui.ColorEdit3("Brush Color", ref _brushColor);
             }
             ImGui.End();
             
@@ -106,10 +148,7 @@ public class SandboxLayer : Layer
             {
                 _viewportFocused = ImGui.IsWindowFocused();
                 _viewportHovered = ImGui.IsWindowHovered();
-                //Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
-
                 _viewportSize = ImGui.GetContentRegionAvail();
-
                 _cursorOffset = ImGui.GetCursorScreenPos();
                 
                 ImGui.Image(new IntPtr(_renderTexture.texture.id), 
