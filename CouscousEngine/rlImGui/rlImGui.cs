@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ImGuiNET;
 using Raylib_CsLo;
@@ -118,6 +119,7 @@ public static class rlImGui
         ImGui.SetCurrentContext(ImGuiContext);
         _ = ImGui.GetIO().Fonts;
         ImGui.GetIO().Fonts.AddFontDefault();
+        ImGui.GetIO().Fonts.AddFontFromFileTTF("Assets/Fonts/RobotoMono-Regular.ttf", 22);
 
         var io = ImGui.GetIO();
         io.KeyMap[(int)ImGuiKey.Tab] = (int)KeyboardKey.KEY_TAB;
@@ -240,11 +242,13 @@ public static class rlImGui
         rlScissor((int)x, Raylib.GetScreenHeight() - (int)(y + height), (int)width, (int)height);
     }
 
+    private static readonly byte[] _colorArray = new byte[sizeof(uint)];
+    
     private static void TriangleVert(ImDrawVertPtr idx_vert)
     {
-        var c = BitConverter.GetBytes(idx_vert.col);
-
-        rlColor4ub(c[0], c[1], c[2], c[3]);
+        Unsafe.As<byte, uint>(ref _colorArray[0]) = idx_vert.col;
+        
+        rlColor4ub(_colorArray[0], _colorArray[1], _colorArray[2], _colorArray[3]);
 
         rlTexCoord2f(idx_vert.uv.X, idx_vert.uv.Y);
         rlVertex2f(idx_vert.pos.X, idx_vert.pos.Y);
