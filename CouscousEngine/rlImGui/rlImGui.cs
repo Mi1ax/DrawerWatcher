@@ -118,7 +118,6 @@ public static class rlImGui
 
         ImGui.SetCurrentContext(ImGuiContext);
         _ = ImGui.GetIO().Fonts;
-        ImGui.GetIO().Fonts.AddFontDefault();
         ImGui.GetIO().Fonts.AddFontFromFileTTF("Assets/Fonts/RobotoMono-Regular.ttf", 22);
 
         var io = ImGui.GetIO();
@@ -235,13 +234,6 @@ public static class rlImGui
         ImGui.NewFrame();
     }
 
-    private static void EnableScissor(float x, float y, float width, float height)
-    {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-        rlEnableScissorTest();
-        rlScissor((int)x, Raylib.GetScreenHeight() - (int)(y + height), (int)width, (int)height);
-    }
-
     private static readonly byte[] _colorArray = new byte[sizeof(uint)];
     
     private static void TriangleVert(ImDrawVertPtr idx_vert)
@@ -266,7 +258,7 @@ public static class rlImGui
         rlBegin(RL_TRIANGLES);
         rlSetTexture(textureId);
 
-        for (var i = 0; i <= (count - 3); i += 3)
+        for (var i = 0; i <= count - 3; i += 3)
         {
             if (rlCheckRenderBatchLimit(3))
             {
@@ -306,7 +298,32 @@ public static class rlImGui
             {
                 var cmd = commandList.CmdBuffer[cmdIndex];
 
-                EnableScissor(cmd.ClipRect.X - data.DisplayPos.X, cmd.ClipRect.Y - data.DisplayPos.Y, cmd.ClipRect.Z - (cmd.ClipRect.X - data.DisplayPos.X), cmd.ClipRect.W - (cmd.ClipRect.Y - data.DisplayPos.Y));
+                var clipOff = data.DisplayPos;
+                var clipScale = _rl.GetWindowScaleDPI();
+
+                var fbWidth = data.DisplaySize.X * clipScale.X;
+                var fbHeight = data.DisplaySize.Y * clipScale.Y;
+
+                var clipMin = new Vector2(
+                    (cmd.ClipRect.X - clipOff.X) * clipScale.X,
+                    (cmd.ClipRect.Y - clipOff.Y) * clipScale.Y
+                    );
+                
+                var clipMax = new Vector2(
+                    (cmd.ClipRect.Z - clipOff.X) * clipScale.X,
+                    (cmd.ClipRect.W - clipOff.Y) * clipScale.Y
+                );
+                
+                rlEnableScissorTest();
+
+                rlScissor(
+                    (int)clipMin.X, 
+                    (int)(fbHeight - clipMax.Y), 
+                    (int)(clipMax.X - clipMin.X), 
+                    (int)(clipMax.Y - clipMin.Y)
+                    );
+
+
                 if (cmd.UserCallback != IntPtr.Zero)
                 {
                     var cb = Marshal.GetDelegateForFunctionPointer<Callback>(cmd.UserCallback);
