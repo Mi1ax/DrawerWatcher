@@ -104,9 +104,9 @@ public class Button : Visual
     public override bool OnEvent()
     {
         var isHover = _rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds);
+        OnHover(isHover);
         if (isHover)
         {
-            OnHover(isHover);
             if (isHover && Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
                 OnButtonClick?.Invoke(this, EventArgs.Empty);

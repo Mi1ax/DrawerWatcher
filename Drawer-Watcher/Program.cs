@@ -9,6 +9,7 @@ public class GameLayer : Layer
     public GameLayer() 
         : base(nameof(GameLayer))
     {
+        
     }
 
     public override void OnAttach()

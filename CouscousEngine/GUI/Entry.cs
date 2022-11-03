@@ -213,7 +213,7 @@ public class Entry : Visual
         );
     }
 
-    private bool CheckActivity() 
+    private void CheckActivity() 
     {
         if (_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds))
         {
@@ -222,27 +222,24 @@ public class Entry : Visual
             if (Input.IsMouseButtonPressed(MouseButton.LEFT))
             {
                 _isUsed = true;
-                return true;
             }
         }
         else if (!_rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds)
                  && Input.IsMouseButtonPressed(MouseButton.LEFT))
         {
             _isUsed = false;
-            return false;
         }
         else
         {
             Color = (Color)_rl.Fade(Color, 1f);
         }
 
-        if (!_isUsed) return false;
-        
+        if (!_isUsed) return;
+
         Color = (Color)_rl.Fade(Color, 0.8f);
 
         if (Input.IsKeyPressed(KeyboardKey.ENTER))
             OnEnterPressed?.Invoke(this, EventArgs.Empty);
-        return false;
     }
 
     public override void OnUpdate(float deltaTime)
@@ -269,11 +266,11 @@ public class Entry : Visual
     {
         if (!IsEnable) return false;
 
-        var activity = CheckActivity();
+        CheckActivity();
 
         if (_isUsed && Input.IsKeyPressedWithModifier(KeyboardKey.LEFT_CONTROL, KeyboardKey.A))
             _allSelected = true;
         
-        return activity;
+        return false;
     }
 }
