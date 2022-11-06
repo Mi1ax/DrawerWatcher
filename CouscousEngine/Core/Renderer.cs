@@ -9,6 +9,8 @@ namespace CouscousEngine.Core;
 
 public static class Renderer
 {
+    public static Color ClearColor = Color.WHITE;
+    
     public static void BeginDrawing() => _rl.BeginDrawing();
     public static void EndDrawing() => _rl.EndDrawing();
 

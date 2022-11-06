@@ -1,18 +1,19 @@
-﻿using System.Drawing;
-using CouscousEngine.Core;
-using CouscousEngine.rlImGui;
+﻿using CouscousEngine.Core;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
-using Color = CouscousEngine.Utils.Color;
 
 namespace Drawer_Watcher;
 
-internal class Sandbox : Application
+public class GameLayer : Layer
 {
-    public Sandbox() 
-        : base("Drawer Watcher")
+    public GameLayer() 
+        : base(nameof(GameLayer))
     {
-        //BIG TODO: Set server on different thread
+        
+    }
+
+    public override void OnAttach()
+    {
         NetworkLogger.Init();
         NetworkManager.Initialize();
         
@@ -28,33 +29,30 @@ internal class Sandbox : Application
         
         ScreenManager.NavigateTo(new MenuScreen());
     }
-    
-    protected override void Update()
+
+    public override void OnImGuiUpdate()
     {
-        NetworkManager.Update();
-
-        Renderer.BeginDrawing();
-        //Renderer.ClearBackground(ColorTranslator.FromHtml("#085EFB"));
-        Renderer.ClearBackground(Color.WHITE);
-        {
-            ScreenManager.Update();
-            ScreenManager.MenuUpdate();
-
-            rlImGui.Begin();
-            ScreenManager.UpdateImGui();
-            rlImGui.End();
-            
-            if (Input.IsKeyPressed(KeyboardKey.ESCAPE))
-                ScreenManager.OpenMenu();
-
-            //Renderer.DrawFPS();
-        }
-        Renderer.EndDrawing();
+        ScreenManager.OnUpdateImGui();
     }
 
-    protected override void OnExit()
+    public override void OnUpdate(float deltaTime)
     {
-        
+        NetworkManager.Update();
+        ScreenManager.OnUpdate(deltaTime);
+    }
+
+    public override bool OnEvent()
+    {
+        return ScreenManager.OnEvent();
+    }
+}
+
+internal class Sandbox : Application
+{
+    public Sandbox() 
+        : base("Drawer Watcher")
+    {
+        PushLayer(new GameLayer());
     }
 }
 

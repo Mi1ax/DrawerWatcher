@@ -28,8 +28,6 @@ public enum MessageID : ushort
 
 public static class NetworkLogger
 {
-    private static readonly List<string> LoggerMessages = new();
-
     public static void Init()
     {
         ServerManager.SetLogger(Log);
@@ -38,18 +36,7 @@ public static class NetworkLogger
 
     private static void Log(string fmt)
     {
-        LoggerMessages.Add(fmt);
-    }
-
-    public static void UpdateImGuiConsole()
-    {
-        ImGui.Begin("Network Console");
-        foreach (var loggerMessage in LoggerMessages)
-            ImGui.Text(loggerMessage);
-        
-        if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
-            ImGui.SetScrollHereY(1.0f);
-        ImGui.End();
+        Console.WriteLine(fmt);
     }
 }
 
@@ -88,7 +75,7 @@ public static class MessageHandlers
     public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
     {
         // Send from Client to Server
-        if (ImGui.GetIO().WantCaptureMouse) return;
+        //if (ImGui.GetIO().WantCaptureMouse) return;
     
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
         message.AddVector2(start);

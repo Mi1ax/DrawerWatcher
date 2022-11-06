@@ -8,40 +8,6 @@ using Rectangle = CouscousEngine.Shapes.Rectangle;
 
 namespace Drawer_Watcher.Screens;
 
-public class NewLobbyScreen : Screen
-{
-    private readonly Raylib_CsLo.Rectangle _frame;
-
-    private readonly Raylib_CsLo.Rectangle _settingsFrame;
-    private readonly Raylib_CsLo.Rectangle _lobbyFrame;
-    
-    public NewLobbyScreen()
-    {
-        // TODO: Temp positions/sizes
-        _frame = new Raylib_CsLo.Rectangle(215, 85, 850, 550);
-
-        _settingsFrame = new Raylib_CsLo.Rectangle(242, 110, 390, 500);
-        _lobbyFrame = new Raylib_CsLo.Rectangle(649, 110, 390, 500);
-    }
-    
-    public override void OnUpdate()
-    {
-        _rl.DrawRectangleRounded(_frame, 0.1f, 15, Color.WHITE);
-        _rl.DrawRectangleRoundedLines(_settingsFrame, 0.1f, 15, 1f, Color.BLACK);
-        _rl.DrawRectangleRoundedLines(_lobbyFrame, 0.1f, 15, 1f, Color.BLACK);
-    }
-
-    public override void OnImGuiUpdate()
-    {
-        
-    }
-
-    public override void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-}
-
 public class LobbyScreen : Screen
 {
     private readonly Rectangle _bounds;
@@ -81,8 +47,9 @@ public class LobbyScreen : Screen
             Text = "Start",
             OnButtonClick = (sender, args) =>
             {
-                // TODO: Temp
-                //if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
+                #if !DEBUG
+                if (_drawerName == "Empty" || _watchersNames.Count == 0) return;
+                #endif
 
                 NetworkManager.StartGame();
             }
@@ -120,7 +87,7 @@ public class LobbyScreen : Screen
         };
     }
 
-    private void DrawSettingsPanel()
+    private void DrawSettingsPanel(float deltaTime)
     {
         var textSize = _rl.MeasureTextEx(
             AssetManager.GetDefaultFont(24), 
@@ -134,10 +101,10 @@ public class LobbyScreen : Screen
                 ), 24f, 1f, Color.BLACK);
         
         if (NetworkManager.IsHost)
-            _startGameButton.OnUpdate();
+            _startGameButton.OnUpdate(deltaTime);
     }
 
-    private void DrawDrawerPanel()
+    private void DrawDrawerPanel(float deltaTime)
     {
         var textSize = _rl.MeasureTextEx(
             AssetManager.GetDefaultFont(24), 
@@ -167,10 +134,10 @@ public class LobbyScreen : Screen
             _topRightPanel.Y + _bounds.Size.Height / 4 - 15), 
             24f, 1f, Color.BLACK);
 
-        _joinDrawerButton.OnUpdate();
+        _joinDrawerButton.OnUpdate(deltaTime);
     }
 
-    private void DrawWatchersPanel()
+    private void DrawWatchersPanel(float detlaTime)
     {
         var textSize = _rl.MeasureTextEx(AssetManager.GetDefaultFont(24), "Watchers", 24f, 1f);
 
@@ -219,7 +186,7 @@ public class LobbyScreen : Screen
                 24f, 1f, Color.BLACK);
         }
         
-        _joinWatcherButton.OnUpdate();
+        _joinWatcherButton.OnUpdate(detlaTime);
     }
 
     private void DrawLines()
@@ -235,25 +202,22 @@ public class LobbyScreen : Screen
             Color.BLACK
         );
     }
-    
-    public override void OnUpdate()
+
+    public override void OnUpdate(float deltaTime)
     {
         _bounds.Update();
         Renderer.DrawRectangleLines(_bounds, 1f, Color.BLACK);
 
-        DrawSettingsPanel();
+        DrawSettingsPanel(deltaTime);
         DrawLines();
-        DrawDrawerPanel();
-        DrawWatchersPanel();
+        DrawDrawerPanel(deltaTime);
+        DrawWatchersPanel(deltaTime);
     }
 
-    public override void OnImGuiUpdate()
+    public override bool OnEvent()
     {
-        
-    }
-
-    public override void Dispose()
-    {
-        
+        return _joinWatcherButton.OnEvent() || 
+               _joinDrawerButton.OnEvent() || 
+               _startGameButton.OnEvent();
     }
 }

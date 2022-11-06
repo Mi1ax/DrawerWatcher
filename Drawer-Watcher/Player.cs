@@ -2,6 +2,7 @@
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Screens;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
 
@@ -17,8 +18,6 @@ public class Player
     public bool IsAppOwner => ApplicationOwner!.ID == ID;
 
     public ushort ID { get; }
-
-    public uint Score { get; set; }
 
     public bool IsDrawer { get; private set; }
 
@@ -46,19 +45,18 @@ public class Player
         Nickname = "DefaultNickname";
     }
 
-    public void Reset()
+    public void Update(bool isViewport)
     {
-        _prevPoint = Vector2.Zero;
-    }
-
-    public void Update()
-    {
+        if (!isViewport)
+        {
+            _currPoint = Vector2.Zero;
+            _prevPoint = Vector2.Zero;
+        }
         if (!IsDrawer || !IsAppOwner) return;
 
-        _currPoint = Input.GetMousePosition();
-        
+        _currPoint = Input.GetMousePosition() - GameScreen.CursorOffset;
         if (_prevPoint == Vector2.Zero)
-            _prevPoint = Input.GetMousePosition();
+            _prevPoint = _currPoint;
         
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {

@@ -1,4 +1,5 @@
 ﻿using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
 
 namespace CouscousEngine.Core;
@@ -13,8 +14,11 @@ public abstract class Application : IDisposable
         _instance ?? throw new NullReferenceException("Application is null");
 
     #endregion
-    
-    protected readonly Window Window;
+
+    private readonly LayerStack _layerStack;
+    private bool _isRunning = true;
+
+    public readonly Window Window;
 
     public Size WindowSize => new (Window.Width, Window.Height);
 
@@ -25,24 +29,51 @@ public abstract class Application : IDisposable
     )
     {
         _instance = this;
+        _layerStack = new LayerStack();
         Window = new Window(new WindowData(
             title, 
             width, 
             height)
         );
-        rlImGui.rlImGui.Setup();
+        PushLayer(new ImGuiLayer());
     }
 
-    protected abstract void Update();
+    protected virtual void OnExit() {}
 
-    protected abstract void OnExit();
-
-    public void Exit() => Dispose();
+    public void Close() => _isRunning = false;
+    
+    protected void PushLayer(Layer layer)
+    {
+        _layerStack.PushLayer(layer);
+        layer.OnAttach();
+    }
     
     public void Run()
     {
-        while (Window.IsRunning())
-            Update();
+        while (Window.IsRunning() && _isRunning)
+        {
+            Renderer.BeginDrawing();
+            Renderer.ClearBackground(Renderer.ClearColor);
+            for (var i = _layerStack.Layers.Count - 1; i >= 0; i--)
+            {
+                _layerStack.Layers[i].OnUpdate(_rl.GetFrameTime());
+            }
+            
+            rlImGui.rlImGui.Begin();
+            foreach (var layer in _layerStack.Layers)
+            {
+                layer.OnImGuiUpdate();
+            }
+            rlImGui.rlImGui.End();
+            
+            for (var i = 0; i < _layerStack.Layers.Count; i++)
+            {
+                if (_layerStack.Layers[i].OnEvent())
+                    break;
+            }
+
+            Renderer.EndDrawing();
+        }
     }
 
     public void Dispose()

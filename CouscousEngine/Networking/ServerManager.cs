@@ -29,7 +29,10 @@ public static class ServerManager
     {
         RiptideLogger.Initialize(LogMethod ??= Console.WriteLine, true);
 
-        _server = new Server();
+        _server = new Server
+        {
+            HeartbeatInterval = ushort.MaxValue
+        };
         _server.ChangeTransport(new UdpServer(SocketMode.IPv4Only));
 
         Server.ClientConnected += onClientConnected;

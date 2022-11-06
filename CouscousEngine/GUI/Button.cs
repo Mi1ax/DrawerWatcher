@@ -8,7 +8,7 @@ using MouseButton = CouscousEngine.Core.MouseButton;
 
 namespace CouscousEngine.GUI;
 
-public class Button
+public class Button : Visual
 {
     private readonly Rectangle _bounds;
 
@@ -68,27 +68,7 @@ public class Button
         BorderThickness = 1f;
         _bounds = bounds;
     }
-
-    public void OnUpdate() 
-    {
-        if (CornerRadius != 0)
-            _rl.DrawRectangleRounded(_bounds, CornerRadius, 16, Color);
-        else
-            _rl.DrawRectangleRec(_bounds, Color);
-        
-        if (BorderThickness != 0)
-            _rl.DrawRectangleRoundedLines(
-                _bounds, CornerRadius, 16, 
-                BorderThickness, BorderColor
-                );
-
-        DrawText();
-        var isHover = _rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds); 
-        OnHover(isHover);
-        if (isHover && Input.IsMouseButtonPressed(MouseButton.LEFT))
-            OnButtonClick?.Invoke(this, EventArgs.Empty);
-    }
-
+    
     private void DrawText()
     {
         var textPos = new Vector2(
@@ -104,5 +84,35 @@ public class Button
             Color = (Color)_rl.Fade(Color, 0.8f);
         else
             Color = (Color)_rl.Fade(Color, 1f);
+    }
+    
+    public override void OnUpdate(float deltaTime) 
+    {
+        if (CornerRadius != 0)
+            _rl.DrawRectangleRounded(_bounds, CornerRadius, 16, Color);
+        else
+            _rl.DrawRectangleRec(_bounds, Color);
+        
+        if (BorderThickness != 0)
+            _rl.DrawRectangleRoundedLines(
+                _bounds, CornerRadius, 16, 
+                BorderThickness, BorderColor
+            );
+        DrawText();
+    }
+
+    public override bool OnEvent()
+    {
+        var isHover = _rl.CheckCollisionPointRec(Input.GetMousePosition(), _bounds);
+        OnHover(isHover);
+        if (isHover)
+        {
+            if (isHover && Input.IsMouseButtonPressed(MouseButton.LEFT))
+            {
+                OnButtonClick?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+        }
+        return false;
     }
 }
