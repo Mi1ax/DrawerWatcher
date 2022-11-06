@@ -1,53 +1,32 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
-using CouscousEngine.GUI;
-using CouscousEngine.Shapes;
-using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
+using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
 public class GameScreen : Screen
 {
-    private readonly Rectangle _drawingPanel;
-    private readonly ChatPanel _chatPanel;
-    private readonly ToolPanel _toolPanel;
+    private bool _viewportFocused;
+    private bool _viewportHovered;
+    private Vector2 _viewportSize = Vector2.Zero;
 
-    private readonly Button _button;
+    private readonly StatPanel _statPanel = new();
+    private readonly ChatPanel _chatPanel = new();
+    private readonly ToolPanel _toolPanel = new();
+    
+    public static Vector2 CursorOffset = Vector2.Zero;
 
     public GameScreen()
     {
-        _chatPanel = new ChatPanel(new Rectangle(new Size(350, 720), new Vector2(930, 0))
-        {
-            Color = new Color(193, 193, 193)
-        });
-        
-        _drawingPanel = new Rectangle(new Size(930, 720 - 144), Vector2.Zero);
+        GameData.Painting = Renderer.LoadRenderTexture(1, 1);
 
-        _toolPanel = new ToolPanel(new Rectangle(new Size(930, 144), new Vector2(0, 720 - 144))
+        if (Player.ApplicationOwner is { IsDrawer: true })
         {
-            Color = Color.GRAY
-        });
-        
-        GameData.Painting = Renderer.LoadRenderTexture((int)_drawingPanel.Size.Width, (int)_drawingPanel.Size.Height);
-        if (Player.ApplicationOwner is {IsDrawer: true})
-            _chatPanel.DisableInput = true;
-        
-        if (Player.ApplicationOwner is {IsDrawer: true})
             NewWord();
-
-        _button = new Button(new Raylib_CsLo.Rectangle(
-            _drawingPanel.Position.X + _drawingPanel.Size.Width / 2 - 125 / 2f,
-            _drawingPanel.Position.Y + _drawingPanel.Size.Height / 2 - 55 / 2f,
-            125, 55))
-        {
-            Text = "New Word",
-            OnButtonClick = (sender, args) =>
-            {
-                NewWord();
-            }
-        };
+            _chatPanel.DisableInput = true;
+        }
     }
 
     private static void NewWord()
@@ -61,61 +40,71 @@ public class GameScreen : Screen
     {
         if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
 
-        Vector2 textSize;
-
-        Renderer.DrawRectangleLines(_drawingPanel, 1f, Color.BLACK);
-        
-        if (GameManager.Guesser == 0)
+        if (_viewportSize.X > 0.0f && _viewportSize.Y > 0.0f &&
+            ((int)_viewportSize.X != GameData.Painting!.Value.texture.width || 
+             (int)_viewportSize.Y != GameData.Painting.Value.texture.height))
         {
-            foreach (var player in NetworkManager.Players.Values)
-                        player.Update();
-                    
-            Renderer.DrawTexture(GameData.Painting!.Value, _drawingPanel.Position, Color.WHITE);
-
-            if (Player.ApplicationOwner is {IsDrawer: true})
-            {
-                _toolPanel.OnUpdate();
-        
-                textSize = _rl.MeasureTextEx(
-                    AssetManager.GetDefaultFont(48), 
-                    GameManager.CurrentWord, 48f, 1f
-                );
-        
-                _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                    GameManager.CurrentWord, 
-                    new Vector2(
-                        _drawingPanel.Size.Width / 2 - textSize.X,
-                        25
-                    ), 
-                    48f, 1f, Color.BLACK);
-            }
+            _rl.UnloadRenderTexture(GameData.Painting.Value);
+            GameData.Painting = Renderer.LoadRenderTexture((int)_viewportSize.X, (int)_viewportSize.Y);
+            MessageHandlers.ClearPainting();
         }
-        else
-        {
-            var nickname = NetworkManager.Players[GameManager.Guesser].Nickname;
-            
-            textSize = _rl.MeasureTextEx(
-                AssetManager.GetDefaultFont(48), 
-                $"{nickname} guessed right", 48f, 1f
-            );
         
-            _rl.DrawTextEx(AssetManager.GetDefaultFont(48), 
-                $"{nickname} guessed right", 
-                new Vector2(
-                    _drawingPanel.Size.Width / 2 - textSize.X / 2,
-                    25
-                ), 
-                48f, 1f, Color.BLACK);
-            
-            if (Player.ApplicationOwner is {IsDrawer: true})
-                _button.OnUpdate(deltaTime);
-        }
-
-        _chatPanel.OnUpdate(deltaTime);
+        foreach (var player in NetworkManager.Players.Values)
+            player.Update(_viewportHovered && _viewportFocused);
     }
 
-    public override bool OnEvent()
+    public override void OnImGuiUpdate()
     {
-        return _button.OnEvent();
+        var window_flags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+        
+        var viewport = ImGui.GetMainViewport();
+        ImGui.SetNextWindowPos(viewport.WorkPos);
+        ImGui.SetNextWindowSize(viewport.WorkSize);
+        ImGui.SetNextWindowViewport(viewport.ID);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags.NoTitleBar | 
+                        ImGuiWindowFlags.NoCollapse | 
+                        ImGuiWindowFlags.NoResize | 
+                        ImGuiWindowFlags.NoMove;
+        window_flags |= ImGuiWindowFlags.NoBringToFrontOnFocus | 
+                        ImGuiWindowFlags.NoNavFocus;
+
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+
+        ImGui.Begin("MainDockspace", window_flags);
+        {
+            ImGui.PopStyleVar();
+            
+            ImGui.PopStyleVar(2);
+
+            var io = ImGui.GetIO();
+
+            if (io.ConfigFlags.HasFlag(ImGuiConfigFlags.DockingEnable))
+            {
+                var dockspaceID = ImGui.GetID("MyDockSpace");
+                // TODO: Disable resizing
+                ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
+            }
+            
+            _statPanel.OnImGuiUpdate();
+            _chatPanel.OnImGuiUpdate();
+            _toolPanel.OnImGuiUpdate();
+
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            ImGui.Begin("Viewport");
+            {
+                _viewportFocused = ImGui.IsWindowFocused();
+                _viewportHovered = ImGui.IsWindowHovered();
+                _viewportSize = ImGui.GetContentRegionAvail();
+                CursorOffset = ImGui.GetCursorScreenPos();
+                
+                ImGui.Image(new IntPtr(GameData.Painting!.Value.texture.id), 
+                    _viewportSize, new Vector2(0, 1), new Vector2(1, 0));
+            }
+            ImGui.End();
+            ImGui.PopStyleVar();
+        }
+        ImGui.End();
     }
 }

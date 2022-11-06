@@ -1,10 +1,6 @@
 ﻿using System.Numerics;
-using CouscousEngine.Core;
-using CouscousEngine.GUI;
-using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
-using Color = CouscousEngine.Utils.Color;
-using Rectangle = CouscousEngine.Shapes.Rectangle;
+using ImGuiNET;
 
 namespace Drawer_Watcher.Panels;
 
@@ -14,48 +10,38 @@ public class ChatPanel
     
     private static readonly List<string> _chat = new();
 
-    private readonly Rectangle _bounds;
-    private readonly Entry _inputBox;
-    
-    public ChatPanel(Rectangle bounds)
-    {
-        _bounds = bounds;
-        _inputBox = new Entry(new Rectangle(
-            new Size(_bounds.Size.Width - 55, 45), 
-            new Vector2(
-                _bounds.Position.X + _bounds.Size.Width / 2 - (_bounds.Size.Width - 55) / 2, 
-                _bounds.Size.Height - 60
-            )))
-        {
-            OnEnterPressed = (sender, args) =>
-            {
-                if (Player.ApplicationOwner == null) return;
-                MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _inputBox.Text);
-                _inputBox.Text = "";
-            }
-        };
-    }
+    private string _text = string.Empty;
 
     public static void AddMessage(string nickname, string text)
     {
         _chat.Add($"{nickname}: {text}");
     }
-    
-    public void OnUpdate(float deltaTime)
-    {
-        Renderer.DrawRectangle(_bounds.Size, _bounds.Position, (Color)_rl.Fade(Color.GRAY, 0.4f));
-        _rl.DrawLine(930, 0, 930, 720, Color.BLACK);
 
-        _inputBox.IsEnable = !DisableInput;
+    public void OnImGuiUpdate()
+    {
+        ImGui.Begin("Chat");
+        ImGui.Text("Chat");
+        ImGui.Separator();
+        var footerHeightToReserve = ImGui.GetStyle().ItemSpacing.Y + ImGui.GetFrameHeightWithSpacing();
+        ImGui.BeginChild("Scrollbar", new Vector2(0, -footerHeightToReserve), false, ImGuiWindowFlags.HorizontalScrollbar);
+        foreach (var text in _chat)
+            ImGui.Text(text);
         
-        _inputBox.OnUpdate(deltaTime);
+        if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+            ImGui.SetScrollHereY(1.0f);
+        ImGui.EndChild();
         
-        for (var i = 0; i < _chat.Count; i++)
+        ImGui.Separator();
+        if (!DisableInput)
         {
-            var textSize = _rl.MeasureTextEx(_inputBox.Font, _chat[i], 24f, 1f);
-            var position = _inputBox.Position with { Y = _inputBox.Position.Y + textSize.Y * i - textSize.Y * _chat.Count - 5 };
-            
-            _rl.DrawTextEx(_inputBox.Font, _chat[i], position, 24f, 1f, Color.BLACK);
+            if (ImGui.InputText("Input", ref _text, 128, ImGuiInputTextFlags.EnterReturnsTrue))
+            {
+                if (Player.ApplicationOwner == null) return;
+                MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _text);
+                _text = "";
+                ImGui.SetKeyboardFocusHere(-1);
+            }
         }
+        ImGui.End();
     }
 }

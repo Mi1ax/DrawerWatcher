@@ -100,6 +100,7 @@ public class SandboxLayer : Layer
             }
 
             // ImGui Drawing Here
+            ImGui.ShowDemoWindow();
 
             ImGui.Begin("Chat");
             {

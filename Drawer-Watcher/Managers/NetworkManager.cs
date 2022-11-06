@@ -75,7 +75,7 @@ public static class MessageHandlers
     public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
     {
         // Send from Client to Server
-        if (ImGui.GetIO().WantCaptureMouse) return;
+        //if (ImGui.GetIO().WantCaptureMouse) return;
     
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
         message.AddVector2(start);

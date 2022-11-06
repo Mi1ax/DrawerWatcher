@@ -33,7 +33,10 @@ public struct Color
     public static explicit operator Color(Raylib_CsLo.Color color) 
         => new(color.r, color.g, color.b, color.a);
 
-    public static implicit operator Vector3(Color color) => new(color.R / 255f, color.G / 255f, color.B / 255f);
+    public static implicit operator Vector3(Color color) 
+        => new(color.R / 255f, color.G / 255f, color.B / 255f);
+    public static implicit operator Vector4(Color color) 
+        => new(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
     public static explicit operator Color(Vector3 color) => new(
         (byte)(color.X * 255), 
         (byte)(color.Y * 255), 
