@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
+using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
 using ImGuiNET;
@@ -95,6 +96,19 @@ public class GameScreen : Screen
             _statPanel.OnImGuiUpdate(flags);
             _chatPanel.OnImGuiUpdate(flags);
             _toolPanel.OnImGuiUpdate(flags);
+
+            ImGui.Begin("Word");
+            var style = ImGui.GetStyle();
+
+            var size = ImGui.CalcTextSize($"{GameManager.CurrentWord}").X + style.FramePadding.X * 2.0f;
+            var avail = ImGui.GetContentRegionAvail().X;
+
+            var off = (avail - size) * 0.5f;
+            if (off > 0.0f)
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
+            if (Player.ApplicationOwner!.IsDrawer)
+                ImGui.Text($"{GameManager.CurrentWord}");
+            ImGui.End();
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             ImGui.Begin("Viewport", ImGuiWindowFlags.NoTitleBar);
