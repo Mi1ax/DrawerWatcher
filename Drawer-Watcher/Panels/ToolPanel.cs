@@ -40,9 +40,10 @@ public class ToolPanel
         };
     }
 
-    public void OnImGuiUpdate()
+    public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
-        ImGui.Begin("Tool Box");
+        if (!Player.ApplicationOwner!.IsDrawer) return;
+        ImGui.Begin("Tool Box", flags);
         ImGui.Text("Current color");
         ImGui.SameLine();
         ImGui.ColorButton("current_color", _colors[_selectedIndex], ImGuiColorEditFlags.NoTooltip);

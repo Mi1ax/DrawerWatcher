@@ -17,9 +17,9 @@ public class ChatPanel
         _chat.Add($"{nickname}: {text}");
     }
 
-    public void OnImGuiUpdate()
+    public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
-        ImGui.Begin("Chat");
+        ImGui.Begin("Chat", flags);
         ImGui.Text("Chat");
         ImGui.Separator();
         var footerHeightToReserve = ImGui.GetStyle().ItemSpacing.Y + ImGui.GetFrameHeightWithSpacing();

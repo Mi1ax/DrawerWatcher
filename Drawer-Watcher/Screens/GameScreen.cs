@@ -86,13 +86,18 @@ public class GameScreen : Screen
                 // TODO: Disable resizing
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
-            
-            _statPanel.OnImGuiUpdate();
-            _chatPanel.OnImGuiUpdate();
-            _toolPanel.OnImGuiUpdate();
+
+            var flags = ImGuiWindowFlags.NoNav | 
+                        ImGuiWindowFlags.NoResize | 
+                        ImGuiWindowFlags.NoCollapse |
+                        ImGuiWindowFlags.NoTitleBar |
+                        ImGuiWindowFlags.NoMove;
+            _statPanel.OnImGuiUpdate(flags);
+            _chatPanel.OnImGuiUpdate(flags);
+            _toolPanel.OnImGuiUpdate(flags);
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            ImGui.Begin("Viewport");
+            ImGui.Begin("Viewport", ImGuiWindowFlags.NoTitleBar);
             {
                 _viewportFocused = ImGui.IsWindowFocused();
                 _viewportHovered = ImGui.IsWindowHovered();
