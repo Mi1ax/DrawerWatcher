@@ -17,6 +17,8 @@ public enum MessageID : ushort
     
     StartGame,
     NewWord,
+    Timer,
+    TimesUp,
     Winner,
     
     ConnectionInfo,
@@ -95,10 +97,23 @@ public static class MessageHandlers
         ClientManager.Client!.Send(message);
     }
 
-    public static void GetNewWord()
+    public static void SendNewWord()
     {
         var message = Message.Create(MessageSendMode.Reliable, MessageID.NewWord);
         message.AddString(GameManager.GetRandomWord());
+        ClientManager.Client!.Send(message);
+    }
+
+    public static void SendTime(string time)
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.Timer);
+        message.AddString(time);
+        ClientManager.Client!.Send(message);
+    }
+    
+    public static void SendTimesUp()
+    {
+        var message = Message.Create(MessageSendMode.Reliable, MessageID.TimesUp);
         ClientManager.Client!.Send(message);
     }
 
@@ -177,6 +192,18 @@ public static class MessageHandlers
     private static void HandleNewWord(ushort fromClientID, Message message)
     {
         ServerManager.Server.SendToAll(message);
+    }
+    
+    [MessageHandler((ushort) MessageID.Timer)]
+    private static void HandleTimer(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message, fromClientID);
+    }
+    
+    [MessageHandler((ushort) MessageID.TimesUp)]
+    private static void HandleTimesUp(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message, fromClientID);
     }
 
     #endregion
@@ -272,6 +299,20 @@ public static class MessageHandlers
         Log($"(From Server) Getting new word {newWord}");
         GameManager.CurrentWord = newWord;
         GameManager.Guesser = 0;
+        GameManager.IsRoundEnded = false;
+    }
+    
+    [MessageHandler((ushort) MessageID.Timer)]
+    private static void HandleTimer(Message message)
+    {
+        var time = message.GetString();
+        GameManager.Timer.CurrentTime = time;
+    }
+    
+    [MessageHandler((ushort) MessageID.TimesUp)]
+    private static void HandleTimesUp(Message message)
+    {
+        GameManager.IsRoundEnded = true;
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]

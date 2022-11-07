@@ -42,36 +42,38 @@ public class ToolPanel
 
     public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
-        if (!Player.ApplicationOwner!.IsDrawer) return;
         ImGui.Begin("Tool Box", flags);
-        ImGui.Text("Current color");
-        ImGui.SameLine();
-        ImGui.ColorButton("current_color", _colors[_selectedIndex], ImGuiColorEditFlags.NoTooltip);
-        ImGui.NewLine();
-        for (var i = 0; i < _colors.Length; i++)
+        if (Player.ApplicationOwner!.IsDrawer)
         {
+            ImGui.Text("Current color");
             ImGui.SameLine();
-            if (ImGui.ColorButton($"color_button_{i}", _colors[i], ImGuiColorEditFlags.NoTooltip))
+            ImGui.ColorButton("current_color", _colors[_selectedIndex], ImGuiColorEditFlags.NoTooltip);
+            ImGui.NewLine();
+            for (var i = 0; i < _colors.Length; i++)
             {
-                if (Player.ApplicationOwner != null)
-                    Player.ApplicationOwner.CurrentBrush.Color = _colors[i];
-                _selectedIndex = i;
+                ImGui.SameLine();
+                if (ImGui.ColorButton($"color_button_{i}", _colors[i], ImGuiColorEditFlags.NoTooltip))
+                {
+                    if (Player.ApplicationOwner != null)
+                        Player.ApplicationOwner.CurrentBrush.Color = _colors[i];
+                    _selectedIndex = i;
+                }
             }
-        }
-        ImGui.SameLine();
-        if (ImGui.Button("Clear all"))
-            MessageHandlers.ClearPainting();
-        ImGui.Text($"Current size {_brushesSize[_currentSize]}");
-        ImGui.Text("Brush sizes: ");
-        ImGui.SameLine();
-        for (var i = 0; i < _brushesSize.Length; i++)
-        {
             ImGui.SameLine();
-            if (ImGui.SmallButton($"{_brushesSize[i]}"))
+            if (ImGui.Button("Clear all"))
+                MessageHandlers.ClearPainting();
+            ImGui.Text($"Current size {_brushesSize[_currentSize]}");
+            ImGui.Text("Brush sizes: ");
+            ImGui.SameLine();
+            for (var i = 0; i < _brushesSize.Length; i++)
             {
-                _currentSize = i;
-                if (Player.ApplicationOwner != null)
-                    Player.ApplicationOwner.CurrentBrush.Thickness = _brushesSize[i];
+                ImGui.SameLine();
+                if (ImGui.SmallButton($"{_brushesSize[i]}"))
+                {
+                    _currentSize = i;
+                    if (Player.ApplicationOwner != null)
+                        Player.ApplicationOwner.CurrentBrush.Thickness = _brushesSize[i];
+                }
             }
         }
         ImGui.End();

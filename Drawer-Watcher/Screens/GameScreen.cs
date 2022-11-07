@@ -18,10 +18,11 @@ public class GameScreen : Screen
     private readonly ToolPanel _toolPanel = new();
     
     public static Vector2 CursorOffset = Vector2.Zero;
-
+    
     public GameScreen()
     {
         GameData.Painting = Renderer.LoadRenderTexture(1, 1);
+        GameManager.Timer.Init();
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {
@@ -30,11 +31,17 @@ public class GameScreen : Screen
         }
     }
 
-    private static void NewWord()
+    private void NewWord()
     {
-        MessageHandlers.GetNewWord();
+        MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
+        GameManager.IsRoundEnded = false;
+        GameManager.Timer.Start(TimeSpan.FromSeconds(10), () =>
+        {
+            MessageHandlers.SendTimesUp();
+            GameManager.IsRoundEnded = true;
+        });
     }
 
     public override void OnUpdate(float deltaTime)
@@ -84,20 +91,35 @@ public class GameScreen : Screen
             if (io.ConfigFlags.HasFlag(ImGuiConfigFlags.DockingEnable))
             {
                 var dockspaceID = ImGui.GetID("MyDockSpace");
-                // TODO: Disable resizing
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            var flags = ImGuiWindowFlags.NoNav | 
-                        ImGuiWindowFlags.NoResize | 
-                        ImGuiWindowFlags.NoCollapse |
-                        ImGuiWindowFlags.NoTitleBar |
-                        ImGuiWindowFlags.NoMove;
+            ImGui.BeginMenuBar();
+            {
+                // TODO: MessageBox
+                if (ImGui.BeginMenu("Game"))
+                {
+                    if (ImGui.MenuItem("Exit"))
+                        Application.Instance.Close();
+                    ImGui.EndMenu();
+                }
+                ImGui.EndMenuBar();
+            }
+
+            const ImGuiWindowFlags flags = ImGuiWindowFlags.NoNav | 
+                                           ImGuiWindowFlags.NoResize | 
+                                           ImGuiWindowFlags.NoCollapse |
+                                           ImGuiWindowFlags.NoTitleBar |
+                                           ImGuiWindowFlags.NoMove;
             _statPanel.OnImGuiUpdate(flags);
             _chatPanel.OnImGuiUpdate(flags);
             _toolPanel.OnImGuiUpdate(flags);
 
             ImGui.Begin("Word");
+            {
+                ImGui.Text(GameManager.Timer.CurrentTime);
+                ImGui.SameLine();
+            }
             var style = ImGui.GetStyle();
 
             var size = ImGui.CalcTextSize($"{GameManager.CurrentWord}").X + style.FramePadding.X * 2.0f;
@@ -117,13 +139,26 @@ public class GameScreen : Screen
                 _viewportHovered = ImGui.IsWindowHovered();
                 _viewportSize = ImGui.GetContentRegionAvail();
                 CursorOffset = ImGui.GetCursorScreenPos();
-                
-                ImGui.Image(new IntPtr(GameData.Painting!.Value.texture.id), 
-                    _viewportSize, new Vector2(0, 1), new Vector2(1, 0));
+
+                if (!GameManager.IsRoundEnded)
+                {
+                    ImGui.Image(new IntPtr(GameData.Painting!.Value.texture.id), 
+                        _viewportSize, new Vector2(0, 1), new Vector2(1, 0));
+                }
+                else
+                {
+                    if (GameManager.Timer.CurrentTime == "0:00")
+                        ImGui.Text($"Time's up. The word was {GameManager.CurrentWord}");
+                    if (Player.ApplicationOwner.IsDrawer)
+                    {
+                        if (ImGui.Button("New Word"))
+                            NewWord();
+                    }
+                }
+                ImGui.End();
+                ImGui.PopStyleVar();
             }
             ImGui.End();
-            ImGui.PopStyleVar();
         }
-        ImGui.End();
     }
 }

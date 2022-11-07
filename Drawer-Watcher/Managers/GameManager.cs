@@ -40,6 +40,8 @@ public static class GameManager
     public static string CurrentWord = "";
     public static ushort Guesser = 0;
 
+    public static bool IsRoundEnded = false;
+
     private static readonly Random _random = new(DateTime.Now.GetHashCode());
     private static readonly string[] EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n");
     
@@ -53,6 +55,7 @@ public static class GameManager
     {
         private static TimeSpan _time;
         private static System.Timers.Timer? _timer;
+        private static Action? _onTimerEnds;
 
         public static bool Enable
         {
@@ -73,20 +76,24 @@ public static class GameManager
                 Enabled = false,
                 Interval = 1000
             };
+            _timer.Elapsed += OnTimerElapsed;
+        }
+
+        private static void OnTimerElapsed(object? sender, ElapsedEventArgs args)
+        {
+            _time -= TimeSpan.FromSeconds(1);
+            CurrentTime = $"{_time.Minutes:0}:{_time.Seconds:00}";
+            MessageHandlers.SendTime(CurrentTime);
+            if (_time != TimeSpan.Zero) return;
+            _timer!.Enabled = false;
+            _onTimerEnds?.Invoke();
         }
 
         public static void Start(TimeSpan time, Action onTimerEnds)
         {
             _time = time;
             CurrentTime = $"{_time.Minutes:0}:{_time.Seconds:00}";
-            _timer.Elapsed += (sender, args) =>
-            {
-                _time -= TimeSpan.FromSeconds(1);
-                CurrentTime = $"{_time.Minutes:0}:{_time.Seconds:00}";
-                if (_time != TimeSpan.Zero) return;
-                _timer.Enabled = false;
-                onTimerEnds.Invoke();
-            };
+            _onTimerEnds = onTimerEnds;
             Enable = true;
         }
     }
