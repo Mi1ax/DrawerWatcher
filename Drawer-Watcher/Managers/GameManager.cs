@@ -96,5 +96,7 @@ public static class GameManager
             _onTimerEnds = onTimerEnds;
             Enable = true;
         }
+
+        public static void Stop() => Enable = false;
     }
 }

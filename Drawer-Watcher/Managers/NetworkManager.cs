@@ -290,6 +290,8 @@ public static class MessageHandlers
         var senderID = message.GetUShort();
         Log($"(From Server) Winner is {senderID}");
         GameManager.Guesser = senderID;
+        // TODO: Time score multiplayer
+        NetworkManager.Players[senderID].Score++;
     }
     
     [MessageHandler((ushort) MessageID.NewWord)]

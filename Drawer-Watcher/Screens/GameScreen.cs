@@ -59,6 +59,12 @@ public class GameScreen : Screen
         
         foreach (var player in NetworkManager.Players.Values)
             player.Update(_viewportHovered && _viewportFocused);
+
+        if (GameManager.Guesser != 0)
+        {
+            GameManager.Timer.Stop();
+            GameManager.IsRoundEnded = true;
+        }
     }
 
     public override void OnImGuiUpdate()
@@ -149,6 +155,10 @@ public class GameScreen : Screen
                 {
                     if (GameManager.Timer.CurrentTime == "0:00")
                         ImGui.Text($"Time's up. The word was {GameManager.CurrentWord}");
+                    if (GameManager.Guesser != 0)
+                        // TODO: Handle error when player disconnected
+                        ImGui.Text($"{NetworkManager.Players[GameManager.Guesser].Nickname} guessed word right. " +
+                                   $"The word was {GameManager.CurrentWord}");
                     if (Player.ApplicationOwner.IsDrawer)
                     {
                         if (ImGui.Button("New Word"))
