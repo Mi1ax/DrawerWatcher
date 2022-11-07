@@ -45,43 +45,27 @@ public class MenuScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize 
                                                            | ImGuiDockNodeFlags.AutoHideTabBar);
             }
-
-            var openModal = false;
+            
             ImGui.BeginMenuBar();
             {
                 // TODO: MessageBox
                 if (ImGui.BeginMenu("Drawer Watcher"))
                 {
                     if (ImGui.MenuItem("Exit"))
-                        openModal = true;
+                    {
+                        MessageBox.Show("Exit", "Are you sure?", 
+                            MessageBoxButtons.YesNo, button =>
+                            {
+                                if (button == MessageBoxResult.Yes)
+                                    Application.Instance.Close();
+                            });
+                    }
 
                     ImGui.EndMenu();
                 }
                 ImGui.EndMenuBar();
             }
 
-            if (openModal)
-            {
-                ImGui.OpenPopup("Exit##modal");
-            }
-            
-            var center = ImGui.GetMainViewport().GetCenter();
-            ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-            var open = true;
-            if (ImGui.BeginPopupModal("Exit##modal", ref open, ImGuiWindowFlags.AlwaysAutoResize))
-            {
-                ImGui.Text("Are you sure?");
-                if (ImGui.Button("Yes"))
-                    Application.Instance.Close();
-                
-                ImGui.SameLine();
-                if (ImGui.Button("No"))
-                {
-                    ImGui.CloseCurrentPopup();
-                }
-                ImGui.EndPopup();
-            }
-            
             if (_showMenu)
             {
                 ImGui.Begin("Menu");
@@ -105,8 +89,8 @@ public class MenuScreen : Screen
                 }
             }
             
+            MessageBox.OnImGuiUpdate();
             LobbyWindow.OnImGuiUpdate();
-
             ServerCreationWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
             ConnectionWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
             

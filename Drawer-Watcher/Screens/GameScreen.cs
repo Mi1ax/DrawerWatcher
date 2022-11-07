@@ -3,6 +3,7 @@ using CouscousEngine.Core;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
+using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
@@ -102,11 +103,17 @@ public class GameScreen : Screen
 
             ImGui.BeginMenuBar();
             {
-                // TODO: MessageBox
                 if (ImGui.BeginMenu("Drawer Watcher"))
                 {
                     if (ImGui.MenuItem("Exit"))
-                        Application.Instance.Close();
+                    {
+                        MessageBox.Show("Exit", "Are you sure?", 
+                            MessageBoxButtons.YesNo, button =>
+                            {
+                                if (button == MessageBoxResult.Yes)
+                                    Application.Instance.Close();
+                            });
+                    }
                     ImGui.EndMenu();
                 }
                 ImGui.EndMenuBar();
