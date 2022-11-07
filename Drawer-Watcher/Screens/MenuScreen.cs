@@ -11,8 +11,12 @@ public class MenuScreen : Screen
 
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
 
+    private readonly LobbyWindow _lobbyWindow = new();
+    
     private bool _showServerCreation;
     private bool _showServerConnection;
+    private bool _showMenu = true;
+    private bool _showLobby;
 
     public override void OnImGuiUpdate()
     {
@@ -44,34 +48,65 @@ public class MenuScreen : Screen
             if (io.ConfigFlags.HasFlag(ImGuiConfigFlags.DockingEnable))
             {
                 var dockspaceID = ImGui.GetID("MyDockSpace");
-                ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
+                ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize 
+                                                           | ImGuiDockNodeFlags.AutoHideTabBar);
             }
 
+            var openModal = false;
             ImGui.BeginMenuBar();
             {
                 // TODO: MessageBox
                 if (ImGui.BeginMenu("Drawer Watcher"))
                 {
                     if (ImGui.MenuItem("Exit"))
-                        Application.Instance.Close();
+                        openModal = true;
+
                     ImGui.EndMenu();
                 }
                 ImGui.EndMenuBar();
             }
-            
-            ImGui.Begin("Menu");
+
+            if (openModal)
             {
-                ImGui.Text("Nickname:");
-                ImGui.InputText("", ref _nickname, 32);
-                if (ImGui.Button("Host"))
-                    _showServerCreation = true;
-            
-                ImGui.SameLine();
-                if (ImGui.Button("Connect"))
-                    _showServerConnection = true;
-            
-                ImGui.End();
+                ImGui.OpenPopup("Exit##modal");
             }
+            
+            var center = ImGui.GetMainViewport().GetCenter();
+            ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+            var open = true;
+            if (ImGui.BeginPopupModal("Exit##modal", ref open, ImGuiWindowFlags.AlwaysAutoResize))
+            {
+                ImGui.Text("Are you sure?");
+                if (ImGui.Button("Yes"))
+                    Application.Instance.Close();
+                
+                ImGui.SameLine();
+                if (ImGui.Button("No"))
+                {
+                    ImGui.CloseCurrentPopup();
+                }
+                ImGui.EndPopup();
+            }
+            
+            if (_showMenu)
+            {
+                ImGui.Begin("Menu");
+                {
+                    ImGui.Text("Nickname:");
+                    ImGui.InputText("", ref _nickname, 32);
+                    if (ImGui.Button("Host"))
+                        _showServerCreation = true;
+            
+                    ImGui.SameLine();
+                    if (ImGui.Button("Connect"))
+                        _showServerConnection = true;
+            
+                    ImGui.End();
+                }
+            }
+
+            if (_showLobby)
+                _lobbyWindow.OnImGuiUpdate();
 
             if (_showServerCreation)
             {
@@ -84,14 +119,18 @@ public class MenuScreen : Screen
                     {
                         NetworkManager.StartServer(_connectionInfo);
                         NetworkManager.ConnectToServer(_connectionInfo, _nickname);
-                        ScreenManager.NavigateTo(new LobbyScreen());
+                        _showServerCreation = false;
+                        _showMenu = false;
+                        _showLobby = true;
                     }
             
                     if (ImGui.Button("Create locally"))
                     {
                         NetworkManager.StartServer(ConnectionInfo.Local);
                         NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
-                        ScreenManager.NavigateTo(new LobbyScreen());
+                        _showServerCreation = false;
+                        _showMenu = false;
+                        _showLobby = true;
                     }
                     ImGui.End();
                 }
@@ -107,13 +146,17 @@ public class MenuScreen : Screen
                     if (ImGui.Button("Connect"))
                     {
                         NetworkManager.ConnectToServer(_connectionInfo, _nickname);
-                        ScreenManager.NavigateTo(new LobbyScreen());
+                        _showServerConnection = false;
+                        _showMenu = false;
+                        _showLobby = true;
                     }
             
                     if (ImGui.Button("Connect locally"))
                     {
                         NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
-                        ScreenManager.NavigateTo(new LobbyScreen());
+                        _showServerConnection = false;
+                        _showMenu = true;
+                        _showLobby = true;
                     }
                     ImGui.End();
                 }
