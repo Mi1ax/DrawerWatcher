@@ -1,126 +1,125 @@
-using System.Drawing;
 using System.Numerics;
-using CouscousEngine.GUI;
-using CouscousEngine.Shapes;
-using Color = CouscousEngine.Utils.Color;
-using Rectangle = Raylib_CsLo.Rectangle;
-using Size = CouscousEngine.Utils.Size;
+using CouscousEngine.Core;
+using Drawer_Watcher.Managers;
+using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
 
 public class MenuScreen : Screen
 {
-    private readonly Rectangle _frame;
-    
-    private readonly Entry[] _entries;
-    private readonly Button[] _buttons;
+    private string _nickname = "Player";
 
-    public MenuScreen()
+    private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
+
+    private bool _showServerCreation;
+    private bool _showServerConnection;
+
+    public override void OnImGuiUpdate()
     {
-        // TODO: Temp positions/sizes
-        _frame = new Rectangle(215, 85, 850, 550);
+        var window_flags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+        
+        var viewport = ImGui.GetMainViewport();
+        ImGui.SetNextWindowPos(viewport.WorkPos);
+        ImGui.SetNextWindowSize(viewport.WorkSize);
+        ImGui.SetNextWindowViewport(viewport.ID);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags.NoTitleBar | 
+                        ImGuiWindowFlags.NoCollapse | 
+                        ImGuiWindowFlags.NoResize | 
+                        ImGuiWindowFlags.NoMove;
+        window_flags |= ImGuiWindowFlags.NoBringToFrontOnFocus | 
+                        ImGuiWindowFlags.NoNavFocus;
 
-        _buttons = new Button[2];
-        ButtonsInit();
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
 
-        _entries = new Entry[2];
-        EntriesInit();
-    }
-
-    private void ButtonsInit() 
-    {
-        var buttonSize = new Size(150, 45);
-
-        _buttons[0] = new Button(new Rectangle(
-            479, 483,
-            buttonSize.Width, buttonSize.Height))
+        ImGui.Begin("MainDockspace", window_flags);
         {
-            Text = "Host",
-            FontSize = 24,
-            FontColor = Color.BLACK,
-
-            CornerRadius = 0.65f,
-            BorderThickness = 3f,
-            BorderColor = Color.BLACK,
+            ImGui.PopStyleVar();
             
-            Color = ColorTranslator.FromHtml("#15BAFE"),
-            OnButtonClick = (sender, args) =>
+            ImGui.PopStyleVar(2);
+
+            var io = ImGui.GetIO();
+
+            if (io.ConfigFlags.HasFlag(ImGuiConfigFlags.DockingEnable))
             {
-                ScreenManager.NavigateTo(new CreatingGameScreen(_entries[0].Text));
+                var dockspaceID = ImGui.GetID("MyDockSpace");
+                ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
-        };
-        
-        _buttons[1] = new Button(new Rectangle(
-            645, 483,
-            buttonSize.Width, buttonSize.Height))
-        {
-            Text = "Connect",
-            FontSize = 24,
-            FontColor = Color.BLACK,
 
-            CornerRadius = 0.65f,
-            BorderThickness = 3f,
-            BorderColor = Color.BLACK,
-
-            Color = ColorTranslator.FromHtml("#FFBF00"),
-            OnButtonClick = (sender, args) =>
+            ImGui.BeginMenuBar();
             {
-                ScreenManager.NavigateTo(new ConnectionScreen(_entries[0].Text));
+                // TODO: MessageBox
+                if (ImGui.BeginMenu("Drawer Watcher"))
+                {
+                    if (ImGui.MenuItem("Exit"))
+                        Application.Instance.Close();
+                    ImGui.EndMenu();
+                }
+                ImGui.EndMenuBar();
             }
-        };
-    }
-
-    private void EntriesInit() 
-    {
-        var entrySize = new Size(180, 45);
-
-        _entries[0] = new Entry(new Rectangle(
-            621, 347, 
-            entrySize.Width, entrySize.Height)
-        )
-        {
-            Placeholder = "Player 1",
             
-            BordeThickness = 2f,
-            BorderColor = Color.BLACK,
-            CornerRadius = 0.65f,
+            ImGui.Begin("Menu");
+            {
+                ImGui.Text("Nickname:");
+                ImGui.InputText("", ref _nickname, 32);
+                if (ImGui.Button("Host"))
+                    _showServerCreation = true;
             
-            Label = "Nickname",
-            LabelFontSize = 32
-        };
-        
-        _entries[1] = new Entry(new Rectangle(
-            621, 409, 
-            entrySize.Width, entrySize.Height)
-        )
-        {
-            Placeholder = "English",
+                ImGui.SameLine();
+                if (ImGui.Button("Connect"))
+                    _showServerConnection = true;
             
-            BordeThickness = 2f,
-            BorderColor = Color.BLACK,
-            CornerRadius = 0.65f,
+                ImGui.End();
+            }
+
+            if (_showServerCreation)
+            {
+                ImGui.Begin("Connection##create", ref _showServerCreation, ImGuiWindowFlags.NoDocking);
+                {
+                    ImGui.Text($"Nickname {_nickname}");
+                    ImGui.InputText("IP", ref _connectionInfo.Ip, 128);
+                    ImGui.InputInt("Port", ref _connectionInfo.Port, 6);
+                    if (ImGui.Button("Create Game"))
+                    {
+                        NetworkManager.StartServer(_connectionInfo);
+                        NetworkManager.ConnectToServer(_connectionInfo, _nickname);
+                        ScreenManager.NavigateTo(new LobbyScreen());
+                    }
             
-            Label = "Language",
-            LabelFontSize = 32
-        };
-    }
-    
-    public override void OnUpdate(float deltaTime)
-    {
-        _rl.DrawRectangleRounded(_frame, 0.1f, 15, Color.WHITE);
+                    if (ImGui.Button("Create locally"))
+                    {
+                        NetworkManager.StartServer(ConnectionInfo.Local);
+                        NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
+                        ScreenManager.NavigateTo(new LobbyScreen());
+                    }
+                    ImGui.End();
+                }
+            }
 
-        foreach (var button in _buttons)
-            button.OnUpdate(deltaTime);
-
-        foreach (var entry in _entries)
-            entry.OnUpdate(deltaTime);
-        
-        _rl.DrawCircleV(new Vector2(640, 237), 75, Color.GRAY);
-    }
-
-    public override bool OnEvent()
-    {
-        return _entries.Any(entry => entry.OnEvent()) || 
-               _buttons.Any(entry => entry.OnEvent());
+            if (_showServerConnection)
+            {
+                ImGui.Begin("Connection##connect", ref _showServerConnection, ImGuiWindowFlags.NoDocking);
+                {
+                    ImGui.Text($"Nickname {_nickname}");
+                    ImGui.InputText("IP", ref _connectionInfo.Ip, 128);
+                    ImGui.InputInt("Port", ref _connectionInfo.Port, 6);
+                    if (ImGui.Button("Connect"))
+                    {
+                        NetworkManager.ConnectToServer(_connectionInfo, _nickname);
+                        ScreenManager.NavigateTo(new LobbyScreen());
+                    }
+            
+                    if (ImGui.Button("Connect locally"))
+                    {
+                        NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
+                        ScreenManager.NavigateTo(new LobbyScreen());
+                    }
+                    ImGui.End();
+                }
+            }
+            
+            ImGui.End();
+        }
     }
 }

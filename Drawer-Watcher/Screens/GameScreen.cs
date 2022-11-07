@@ -103,7 +103,7 @@ public class GameScreen : Screen
             ImGui.BeginMenuBar();
             {
                 // TODO: MessageBox
-                if (ImGui.BeginMenu("Game"))
+                if (ImGui.BeginMenu("Drawer Watcher"))
                 {
                     if (ImGui.MenuItem("Exit"))
                         Application.Instance.Close();
