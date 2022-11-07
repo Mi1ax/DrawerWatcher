@@ -1,6 +1,7 @@
 using System.Numerics;
 using CouscousEngine.Core;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
@@ -8,15 +9,8 @@ namespace Drawer_Watcher.Screens;
 public class MenuScreen : Screen
 {
     private string _nickname = "Player";
-
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
-
-    private readonly LobbyWindow _lobbyWindow = new();
-    
-    private bool _showServerCreation;
-    private bool _showServerConnection;
     private bool _showMenu = true;
-    private bool _showLobby;
 
     public override void OnImGuiUpdate()
     {
@@ -95,72 +89,26 @@ public class MenuScreen : Screen
                     ImGui.Text("Nickname:");
                     ImGui.InputText("", ref _nickname, 32);
                     if (ImGui.Button("Host"))
-                        _showServerCreation = true;
-            
+                    {
+                        _showMenu = false;
+                        ServerCreationWindow.IsVisible = true;
+                    }
+
                     ImGui.SameLine();
                     if (ImGui.Button("Connect"))
-                        _showServerConnection = true;
-            
+                    {
+                        _showMenu = false;
+                        ConnectionWindow.IsVisible = true;
+                    }
+
                     ImGui.End();
                 }
             }
-
-            if (_showLobby)
-                _lobbyWindow.OnImGuiUpdate();
-
-            if (_showServerCreation)
-            {
-                ImGui.Begin("Connection##create", ref _showServerCreation, ImGuiWindowFlags.NoDocking);
-                {
-                    ImGui.Text($"Nickname {_nickname}");
-                    ImGui.InputText("IP", ref _connectionInfo.Ip, 128);
-                    ImGui.InputInt("Port", ref _connectionInfo.Port, 6);
-                    if (ImGui.Button("Create Game"))
-                    {
-                        NetworkManager.StartServer(_connectionInfo);
-                        NetworkManager.ConnectToServer(_connectionInfo, _nickname);
-                        _showServerCreation = false;
-                        _showMenu = false;
-                        _showLobby = true;
-                    }
             
-                    if (ImGui.Button("Create locally"))
-                    {
-                        NetworkManager.StartServer(ConnectionInfo.Local);
-                        NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
-                        _showServerCreation = false;
-                        _showMenu = false;
-                        _showLobby = true;
-                    }
-                    ImGui.End();
-                }
-            }
+            LobbyWindow.OnImGuiUpdate();
 
-            if (_showServerConnection)
-            {
-                ImGui.Begin("Connection##connect", ref _showServerConnection, ImGuiWindowFlags.NoDocking);
-                {
-                    ImGui.Text($"Nickname {_nickname}");
-                    ImGui.InputText("IP", ref _connectionInfo.Ip, 128);
-                    ImGui.InputInt("Port", ref _connectionInfo.Port, 6);
-                    if (ImGui.Button("Connect"))
-                    {
-                        NetworkManager.ConnectToServer(_connectionInfo, _nickname);
-                        _showServerConnection = false;
-                        _showMenu = false;
-                        _showLobby = true;
-                    }
-            
-                    if (ImGui.Button("Connect locally"))
-                    {
-                        NetworkManager.ConnectToServer(ConnectionInfo.Local, _nickname);
-                        _showServerConnection = false;
-                        _showMenu = true;
-                        _showLobby = true;
-                    }
-                    ImGui.End();
-                }
-            }
+            ServerCreationWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
+            ConnectionWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
             
             ImGui.End();
         }

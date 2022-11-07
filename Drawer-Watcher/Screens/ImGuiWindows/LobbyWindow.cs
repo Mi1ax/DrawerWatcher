@@ -1,14 +1,17 @@
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
-namespace Drawer_Watcher.Screens;
+namespace Drawer_Watcher.Screens.ImGuiWindows;
 
-public class LobbyWindow
+public static class LobbyWindow
 {
-    private readonly List<string> _watchersNames = new ();
+    public static bool IsVisible;
     
-    public void OnImGuiUpdate()
+    private static readonly List<string> _watchersNames = new ();
+    
+    public static void OnImGuiUpdate()
     {
+        if (!IsVisible) return;
         ImGui.Begin("Lobby", ImGuiWindowFlags.NoDocking);
         {
             if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
