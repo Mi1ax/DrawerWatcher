@@ -299,9 +299,13 @@ public static class rlImGui
             {
                 var cmd = commandList.CmdBuffer[cmdIndex];
 
+                rlEnableScissorTest();
+
                 var clipOff = data.DisplayPos;
-                var clipScale = _rl.GetWindowScaleDPI();
-                
+                var clipScale = Vector2.One;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    clipScale = new Vector2(2, 2);
+
                 var fbHeight = data.DisplaySize.Y * clipScale.Y;
 
                 var clipMin = new Vector2(
@@ -313,8 +317,6 @@ public static class rlImGui
                     (cmd.ClipRect.Z - clipOff.X) * clipScale.X,
                     (cmd.ClipRect.W - clipOff.Y) * clipScale.Y
                 );
-                
-                rlEnableScissorTest();
 
                 rlScissor(
                     (int)clipMin.X, 
