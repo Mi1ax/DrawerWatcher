@@ -2,6 +2,7 @@
 using System.Numerics;
 using CouscousEngine.Core;
 using Drawer_Watcher.Managers;
+using Drawer_Watcher.Screens;
 using ImGuiNET;
 using Raylib_CsLo;
 using Riptide;
@@ -62,6 +63,9 @@ public class ToolPanel
             ImGui.SameLine();
             if (ImGui.Button("Clear all"))
                 MessageHandlers.ClearPainting();
+            ImGui.SameLine();
+            if (ImGui.Button("Skip word"))
+                GameScreen.NewWord();
             ImGui.Text($"Current size {_brushesSize[_currentSize]}");
             ImGui.Text("Brush sizes: ");
             ImGui.SameLine();

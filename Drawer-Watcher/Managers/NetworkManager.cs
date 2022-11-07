@@ -321,7 +321,7 @@ public static class MessageHandlers
     private static void HandleStartGame(Message message)
     {
         Log("(From Server) Starting game");
-        ScreenManager.NavigateTo(new GameScreen());
+        ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
     }
     
     #endregion
@@ -433,10 +433,11 @@ public static class NetworkManager
         Client.Init();
     }
     
-    public static void StartGame()
+    public static void StartGame(int minutes)
     {
         // Send from Client to Server
         var message = Message.Create(MessageSendMode.Reliable, MessageID.StartGame);
+        message.AddInt(minutes);
         ClientManager.Client!.Send(message);
     }
 

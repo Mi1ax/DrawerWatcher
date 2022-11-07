@@ -8,6 +8,8 @@ public static class LobbyWindow
     public static bool IsVisible;
     
     private static readonly List<string> _watchersNames = new ();
+
+    private static int _minutes = 1;
     
     public static void OnImGuiUpdate()
     {
@@ -21,9 +23,15 @@ public static class LobbyWindow
                 ImGui.Text("Game Settings");
                 if (NetworkManager.IsHost)
                 {
+                    ImGui.Text("Minutes for guessing");
+                    if (ImGui.InputInt("", ref _minutes, 1, 1))
+                    {
+                        if (_minutes < 0) 
+                            _minutes = 0;
+                    }
                     if (ImGui.Button("Start"))
                     {
-                        NetworkManager.StartGame();
+                        NetworkManager.StartGame(_minutes);
                     }
                 }
                 

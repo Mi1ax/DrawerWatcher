@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
-using CouscousEngine.Utils;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -17,11 +16,14 @@ public class GameScreen : Screen
     private readonly StatPanel _statPanel = new();
     private readonly ChatPanel _chatPanel = new();
     private readonly ToolPanel _toolPanel = new();
+
+    private static int _minutes;
     
     public static Vector2 CursorOffset = Vector2.Zero;
     
-    public GameScreen()
+    public GameScreen(int minutes)
     {
+        _minutes = minutes;
         GameData.Painting = Renderer.LoadRenderTexture(1, 1);
         GameManager.Timer.Init();
 
@@ -32,13 +34,13 @@ public class GameScreen : Screen
         }
     }
 
-    private void NewWord()
+    public static void NewWord()
     {
         MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
         GameManager.IsRoundEnded = false;
-        GameManager.Timer.Start(TimeSpan.FromSeconds(10), () =>
+        GameManager.Timer.Start(TimeSpan.FromMinutes(_minutes), () =>
         {
             MessageHandlers.SendTimesUp();
             GameManager.IsRoundEnded = true;
