@@ -46,25 +46,7 @@ public class MenuScreen : Screen
                                                            | ImGuiDockNodeFlags.AutoHideTabBar);
             }
             
-            ImGui.BeginMenuBar();
-            {
-                // TODO: MessageBox
-                if (ImGui.BeginMenu("Drawer Watcher"))
-                {
-                    if (ImGui.MenuItem("Exit"))
-                    {
-                        MessageBox.Show("Exit", "Are you sure?", 
-                            MessageBoxButtons.YesNo, button =>
-                            {
-                                if (button == MessageBoxResult.Yes)
-                                    Application.Instance.Close();
-                            });
-                    }
-
-                    ImGui.EndMenu();
-                }
-                ImGui.EndMenuBar();
-            }
+            MenuBar.OnImGuiUpdate();
 
             if (_showMenu)
             {

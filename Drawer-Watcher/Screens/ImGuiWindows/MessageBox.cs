@@ -62,11 +62,9 @@ public static class MessageBox
     
     private static void Button(MessageBoxResult button)
     {
-        if (ImGui.Button(button.ToString()))
-        {
-            _open = false;
-            ImGui.CloseCurrentPopup();
-            _onResult.Invoke(button);
-        }
+        if (!ImGui.Button(button.ToString())) return;
+        _open = false;
+        ImGui.CloseCurrentPopup();
+        _onResult.Invoke(button);
     }
 }

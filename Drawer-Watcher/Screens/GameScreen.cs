@@ -101,23 +101,7 @@ public class GameScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            ImGui.BeginMenuBar();
-            {
-                if (ImGui.BeginMenu("Drawer Watcher"))
-                {
-                    if (ImGui.MenuItem("Exit"))
-                    {
-                        MessageBox.Show("Exit", "Are you sure?", 
-                            MessageBoxButtons.YesNo, button =>
-                            {
-                                if (button == MessageBoxResult.Yes)
-                                    Application.Instance.Close();
-                            });
-                    }
-                    ImGui.EndMenu();
-                }
-                ImGui.EndMenuBar();
-            }
+            MenuBar.OnImGuiUpdate();
 
             const ImGuiWindowFlags flags = ImGuiWindowFlags.NoNav | 
                                            ImGuiWindowFlags.NoResize | 
@@ -175,6 +159,7 @@ public class GameScreen : Screen
                 ImGui.End();
                 ImGui.PopStyleVar();
             }
+            MessageBox.OnImGuiUpdate();
             ImGui.End();
         }
     }
