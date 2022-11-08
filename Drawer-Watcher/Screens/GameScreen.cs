@@ -2,6 +2,7 @@
 using CouscousEngine.Core;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
+using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens;
@@ -15,12 +16,16 @@ public class GameScreen : Screen
     private readonly StatPanel _statPanel = new();
     private readonly ChatPanel _chatPanel = new();
     private readonly ToolPanel _toolPanel = new();
+
+    private static int _minutes;
     
     public static Vector2 CursorOffset = Vector2.Zero;
-
-    public GameScreen()
+    
+    public GameScreen(int minutes)
     {
+        _minutes = minutes;
         GameData.Painting = Renderer.LoadRenderTexture(1, 1);
+        GameManager.Timer.Init();
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {
@@ -29,11 +34,17 @@ public class GameScreen : Screen
         }
     }
 
-    private static void NewWord()
+    public static void NewWord()
     {
-        MessageHandlers.GetNewWord();
+        MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
+        GameManager.IsRoundEnded = false;
+        GameManager.Timer.Start(TimeSpan.FromMinutes(_minutes), () =>
+        {
+            MessageHandlers.SendTimesUp();
+            GameManager.IsRoundEnded = true;
+        });
     }
 
     public override void OnUpdate(float deltaTime)
@@ -51,6 +62,12 @@ public class GameScreen : Screen
         
         foreach (var player in NetworkManager.Players.Values)
             player.Update(_viewportHovered && _viewportFocused);
+
+        if (GameManager.Guesser != 0)
+        {
+            GameManager.Timer.Stop();
+            GameManager.IsRoundEnded = true;
+        }
     }
 
     public override void OnImGuiUpdate()
@@ -83,18 +100,36 @@ public class GameScreen : Screen
             if (io.ConfigFlags.HasFlag(ImGuiConfigFlags.DockingEnable))
             {
                 var dockspaceID = ImGui.GetID("MyDockSpace");
-                // TODO: Disable resizing
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            var flags = ImGuiWindowFlags.NoNav | 
-                        ImGuiWindowFlags.NoResize | 
-                        ImGuiWindowFlags.NoCollapse |
-                        ImGuiWindowFlags.NoTitleBar |
-                        ImGuiWindowFlags.NoMove;
+            MenuBar.OnImGuiUpdate();
+
+            const ImGuiWindowFlags flags = ImGuiWindowFlags.NoNav | 
+                                           ImGuiWindowFlags.NoResize | 
+                                           ImGuiWindowFlags.NoCollapse |
+                                           ImGuiWindowFlags.NoTitleBar |
+                                           ImGuiWindowFlags.NoMove;
             _statPanel.OnImGuiUpdate(flags);
             _chatPanel.OnImGuiUpdate(flags);
             _toolPanel.OnImGuiUpdate(flags);
+
+            ImGui.Begin("Word");
+            {
+                ImGui.Text(GameManager.Timer.CurrentTime);
+                ImGui.SameLine();
+            }
+            var style = ImGui.GetStyle();
+
+            var size = ImGui.CalcTextSize($"{GameManager.CurrentWord}").X + style.FramePadding.X * 2.0f;
+            var avail = ImGui.GetContentRegionAvail().X;
+
+            var off = (avail - size) * 0.5f;
+            if (off > 0.0f)
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
+            if (Player.ApplicationOwner!.IsDrawer)
+                ImGui.Text($"{GameManager.CurrentWord}");
+            ImGui.End();
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             ImGui.Begin("Viewport", ImGuiWindowFlags.NoTitleBar);
@@ -103,13 +138,31 @@ public class GameScreen : Screen
                 _viewportHovered = ImGui.IsWindowHovered();
                 _viewportSize = ImGui.GetContentRegionAvail();
                 CursorOffset = ImGui.GetCursorScreenPos();
-                
-                ImGui.Image(new IntPtr(GameData.Painting!.Value.texture.id), 
-                    _viewportSize, new Vector2(0, 1), new Vector2(1, 0));
+
+                if (!GameManager.IsRoundEnded)
+                {
+                    ImGui.Image(new IntPtr(GameData.Painting!.Value.texture.id), 
+                        _viewportSize, new Vector2(0, 1), new Vector2(1, 0));
+                }
+                else
+                {
+                    if (GameManager.Timer.CurrentTime == "0:00")
+                        ImGui.Text($"Time's up. The word was {GameManager.CurrentWord}");
+                    if (GameManager.Guesser != 0)
+                        // TODO: Handle error when player disconnected
+                        ImGui.Text($"{NetworkManager.Players[GameManager.Guesser].Nickname} guessed word right. " +
+                                   $"The word was {GameManager.CurrentWord}");
+                    if (Player.ApplicationOwner.IsDrawer)
+                    {
+                        if (ImGui.Button("New Word"))
+                            NewWord();
+                    }
+                }
+                ImGui.End();
+                ImGui.PopStyleVar();
             }
+            MessageBox.OnImGuiUpdate();
             ImGui.End();
-            ImGui.PopStyleVar();
         }
-        ImGui.End();
     }
 }

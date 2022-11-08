@@ -18,6 +18,7 @@ public class Player
     public bool IsAppOwner => ApplicationOwner!.ID == ID;
 
     public ushort ID { get; }
+    public int Score { get; set; } = 0;
 
     public bool IsDrawer { get; private set; }
 

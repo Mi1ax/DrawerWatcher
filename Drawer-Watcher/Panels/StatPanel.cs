@@ -12,7 +12,12 @@ public class StatPanel
         ImGui.Separator();
         foreach (var player in NetworkManager.Players.Values)
         {
-            ImGui.Text($"{player.Nickname} [{player.ID}]");
+            var text = $"{player.Nickname} [{player.ID}] ";
+            if (!player.IsDrawer)
+                text += $"Score: {player.Score}";
+            else
+                text += "<- Drawer";
+            ImGui.Text(text);
         }
         ImGui.End();
     }
