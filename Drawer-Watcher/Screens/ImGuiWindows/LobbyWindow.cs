@@ -14,7 +14,10 @@ public static class LobbyWindow
     public static void OnImGuiUpdate()
     {
         if (!IsVisible) return;
-        ImGui.Begin("Lobby", ImGuiWindowFlags.NoDocking);
+        ImGui.Begin("Lobby", ImGuiWindowFlags.NoDocking |
+                             ImGuiWindowFlags.NoResize |
+                             ImGuiWindowFlags.NoMove | 
+                             ImGuiWindowFlags.NoCollapse);
         {
             if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
             {

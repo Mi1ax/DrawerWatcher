@@ -1,3 +1,4 @@
+using System.Numerics;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -10,9 +11,14 @@ public static class ServerCreationWindow
     public static void OnImGuiUpdate(string nickname, ref ConnectionInfo connectionInfo)
     {
         if (!IsVisible) return;
-        ImGui.Begin("Connection##create", ImGuiWindowFlags.NoDocking);
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        ImGui.Begin("Connection##create", ref IsVisible, ImGuiWindowFlags.NoDocking |
+                                                         ImGuiWindowFlags.NoResize |
+                                                         ImGuiWindowFlags.NoMove | 
+                                                         ImGuiWindowFlags.NoCollapse);
         {
-            ImGui.Text($"Nickname {nickname}");
+            ImGui.Text($"Nickname: ({nickname})");
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref connectionInfo.Port, 6);
             if (ImGui.Button("Create Game"))
