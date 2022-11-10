@@ -1,3 +1,5 @@
+using System.Numerics;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -14,87 +16,112 @@ public static class LobbyWindow
     public static void OnImGuiUpdate()
     {
         if (!IsVisible) return;
-        ImGui.Begin("Lobby", ImGuiWindowFlags.NoDocking |
-                             ImGuiWindowFlags.NoResize |
-                             ImGuiWindowFlags.NoMove | 
-                             ImGuiWindowFlags.NoCollapse);
+
+        if (ClientManager.Client!.IsConnecting)
         {
-            if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
+            var center = ImGui.GetMainViewport().GetCenter();
+            ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+            ImGui.Begin("Connection", ImGuiWindowFlags.NoDocking |
+                                      ImGuiWindowFlags.NoResize |
+                                      ImGuiWindowFlags.NoMove | 
+                                      ImGuiWindowFlags.NoCollapse);
             {
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Text("Game Settings");
-                if (NetworkManager.IsHost)
-                {
-                    ImGui.Text("Minutes for guessing");
-                    if (ImGui.InputInt("", ref _minutes, 1, 1))
-                    {
-                        if (_minutes < 0) 
-                            _minutes = 0;
-                    }
-                    if (ImGui.Button("Start"))
-                    {
-                        NetworkManager.StartGame(_minutes);
-                    }
-                }
-                
-                ImGui.TableNextColumn();
-                ImGui.Text("Drawers");
-                var drawerName = "Empty";
-                foreach (var (_, player) in NetworkManager.Players)
-                {
-                    if (player.IsDrawer)
-                    {
-                        drawerName = player.Nickname;
-                        break;
-                    }
-                }
-                ImGui.Text(drawerName);
-                if (ImGui.Button("Join##drawers"))
-                {
-                    if (Player.ApplicationOwner == null) return;
-                    if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
-                        return;
-                
-                    Player.ApplicationOwner.SetDrawerWithNotifyngServer(true);
-                }
-                ImGui.Separator();
-                
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.TableNextColumn();
-                ImGui.Text("Watchers");
-                foreach (var (_, player) in NetworkManager.Players)
-                {
-                    if (player.IsDrawer)
-                    {
-                        if (_watchersNames.Contains(player.Nickname))
-                            _watchersNames.Remove(player.Nickname);
-                        continue;
-                    }
-                    if (!_watchersNames.Contains(player.Nickname))
-                        _watchersNames.Add(player.Nickname);
-                }
-                
-                if (_watchersNames.Count == 0)
-                    ImGui.Text("Empty");
-                else
-                {
-                    foreach (var name in _watchersNames)
-                        ImGui.Text(name);
-                }
-                
-                if (ImGui.Button("Join##watchers"))
-                {
-                    if (Player.ApplicationOwner == null) return;
-
-                    if (Player.ApplicationOwner.IsDrawer)
-                        Player.ApplicationOwner.SetDrawerWithNotifyngServer(false);
-                }
-
-                ImGui.EndTable();
+                ImGui.Text("Connecting to the server ... ");
+                ImGui.End();
             }
-            ImGui.End();
+        } 
+        else if (ClientManager.Client.IsNotConnected)
+        {
+            MessageBox.Show("Error", "An error occurred connecting to the server", MessageBoxButtons.Ok,
+                result =>
+                {
+                    if (result == MessageBoxResult.Ok)
+                        IsVisible = false;
+                });
+        }
+        else if (ClientManager.Client.IsConnected)
+        {
+            var center = ImGui.GetMainViewport().GetCenter();
+            ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+            ImGui.Begin("Lobby", SettingsData.WindowFlags);
+            {
+                if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
+                {
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Game Settings");
+                    if (NetworkManager.IsHost)
+                    {
+                        ImGui.Text("Minutes for guessing");
+                        if (ImGui.InputInt("", ref _minutes, 1, 1))
+                            if (_minutes < 1) _minutes = 1;
+                        
+                        if (ImGui.Button("Start"))
+                        {
+                            NetworkManager.StartGame(_minutes);
+                        }
+                    }
+                    
+                    ImGui.TableNextColumn();
+                    var drawerName = "Empty";
+                    foreach (var (_, player) in NetworkManager.Players)
+                    {
+                        if (player.IsDrawer)
+                        {
+                            drawerName = player.Nickname;
+                            break;
+                        }
+                    }
+
+                    var count = drawerName == "Empty" ? 0 : 1;
+                    ImGui.Text($"Drawers ({count})");
+                    ImGui.Text(drawerName);
+                    if (ImGui.Button("Join##drawers"))
+                    {
+                        if (Player.ApplicationOwner == null) return;
+                        if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
+                            return;
+                    
+                        Player.ApplicationOwner.SetDrawerWithNotifyngServer(true);
+                    }
+                    ImGui.Separator();
+                    
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.TableNextColumn();
+                    ImGui.Text($"Watchers ({_watchersNames.Count})");
+                    foreach (var (_, player) in NetworkManager.Players)
+                    {
+                        if (player.IsDrawer)
+                        {
+                            if (_watchersNames.Contains(player.Nickname))
+                                _watchersNames.Remove(player.Nickname);
+                            continue;
+                        }
+                        if (!_watchersNames.Contains(player.Nickname))
+                            _watchersNames.Add(player.Nickname);
+                    }
+                    
+                    if (_watchersNames.Count == 0)
+                        ImGui.Text("Empty");
+                    else
+                    {
+                        foreach (var name in _watchersNames)
+                            ImGui.Text(name);
+                    }
+                    
+                    if (ImGui.Button("Join##watchers"))
+                    {
+                        if (Player.ApplicationOwner == null) return;
+
+                        if (Player.ApplicationOwner.IsDrawer)
+                            Player.ApplicationOwner.SetDrawerWithNotifyngServer(false);
+                    }
+
+                    ImGui.EndTable();
+                }
+                ImGui.End();
+            }
         }
     }
 }

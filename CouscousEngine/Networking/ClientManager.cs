@@ -21,7 +21,7 @@ public static class ClientManager
         RiptideLogger.Initialize(LogMethod ??= Console.WriteLine, true);
         Client = new Client
         {
-            HeartbeatInterval = ushort.MaxValue
+            //HeartbeatInterval = ushort.MaxValue
         };
         Client.ChangeTransport(new UdpClient(SocketMode.IPv4Only));
         Client.Connected += onServerConnected;

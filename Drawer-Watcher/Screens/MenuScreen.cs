@@ -48,7 +48,9 @@ public class MenuScreen : Screen
 
             if (!ServerCreationWindow.IsVisible && !ConnectionWindow.IsVisible && !LobbyWindow.IsVisible)
             {
-                ImGui.Begin("Menu");
+                var center = ImGui.GetMainViewport().GetCenter();
+                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+                ImGui.Begin("Menu", SettingsData.WindowFlags);
                 {
                     ImGui.Text("Nickname:");
                     ImGui.InputText("", ref _nickname, 32);

@@ -13,10 +13,7 @@ public static class ConnectionWindow
         if (!IsVisible) return;
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-        ImGui.Begin("Connection##connect", ref IsVisible, ImGuiWindowFlags.NoDocking |
-                                                          ImGuiWindowFlags.NoResize |
-                                                          ImGuiWindowFlags.NoMove | 
-                                                          ImGuiWindowFlags.NoCollapse);
+        ImGui.Begin("Connection##connect", ref IsVisible, SettingsData.WindowFlags);
         {
             ImGui.Text($"Nickname: ({nickname})");
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);

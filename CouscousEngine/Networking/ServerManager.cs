@@ -31,7 +31,7 @@ public static class ServerManager
 
         _server = new Server
         {
-            HeartbeatInterval = ushort.MaxValue
+            //HeartbeatInterval = ushort.MaxValue
         };
         _server.ChangeTransport(new UdpServer(SocketMode.IPv4Only));
 
