@@ -4,6 +4,7 @@ using CouscousEngine.Networking;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens;
+using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
 using Riptide;
 using Riptide.Utils;
@@ -14,7 +15,7 @@ public enum MessageID : ushort
 {
     SendPainting = 1,
     ChatMessage,
-    
+    SameNick,
     StartGame,
     LobbyExit,
     NewWord,
@@ -155,7 +156,15 @@ public static class MessageHandlers
     private static void HandleClientInfo(ushort fromClientID, Message message)
     {
         Log("(To all Clients) New client info");
-        ServerManager.Server.SendToAll(message);
+        var clientID = message.GetUShort();
+        var nickname = message.GetString();
+        if (NetworkManager.Players.Values.FirstOrDefault(p => p.Nickname == nickname) != null)
+        {
+            var disconnectMessage = Message.Create(MessageSendMode.Reliable, MessageID.SameNick);
+            disconnectMessage.AddUShort((ushort)MessageID.SameNick);
+            ServerManager.Server.DisconnectClient(clientID, disconnectMessage);
+        } else
+            ServerManager.Server.SendToAll(message);
     }
     
     [MessageHandler((ushort) MessageID.DrawerStatus)]
@@ -431,13 +440,21 @@ public static class NetworkManager
             message.AddString(_clientNickname);
             ClientManager.Client.Send(message);
         }
-        
+
         private static void OnServerDisconnected(
-            object? sender, 
+            object? sender,
             DisconnectedEventArgs args)
         {
             Players.Clear();
             IsConnected = false;
+            if (args.Message != null &&
+                args.Message.GetUShort() == (ushort)MessageID.SameNick)
+                MessageBox.Show("Error", "Player with the same nickname already exist", MessageBoxButtons.Ok,
+                    result =>
+                    {
+                        if (result == MessageBoxResult.Ok)  
+                            LobbyWindow.IsVisible = false;
+                    });
             ScreenManager.NavigateTo(new MenuScreen());
         }
         

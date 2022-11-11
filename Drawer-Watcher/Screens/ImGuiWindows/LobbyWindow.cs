@@ -32,7 +32,8 @@ public static class LobbyWindow
         } 
         else if (ClientManager.Client.IsNotConnected)
         {
-            MessageBox.Show("Error", "An error occurred connecting to the server", MessageBoxButtons.Ok,
+            if (!MessageBox.IsOpen())
+                MessageBox.Show("Error", "An error occurred connecting to the server", MessageBoxButtons.Ok,
                 result =>
                 {
                     if (result == MessageBoxResult.Ok)
@@ -57,9 +58,12 @@ public static class LobbyWindow
                             ImGui.Text("Minutes for guessing");
                             if (ImGui.InputInt("", ref _minutes, 1, 1))
                                 if (_minutes < 1) _minutes = 1;
-                        
+
                             if (ImGui.Button("Start"))
-                                NetworkManager.StartGame(_minutes);
+                            {
+                                if (NetworkManager.Players.Values.FirstOrDefault(p => p.IsDrawer) != null)
+                                    NetworkManager.StartGame(_minutes);
+                            }
 
                             break;
                         }
