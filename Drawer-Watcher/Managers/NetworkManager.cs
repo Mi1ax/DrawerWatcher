@@ -169,7 +169,11 @@ public static class MessageHandlers
     private static void HandleLobbyExit(ushort fromClientID, Message message)
     {
         Log("(To all Clients) Exit to lobby");
-        ServerManager.Server.SendToAll(message, fromClientID);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby && id != fromClientID)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.AllClear)]
@@ -215,7 +219,7 @@ public static class MessageHandlers
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
-            if (!player.IsInLobby)
+            if (!player.IsInLobby && id != fromClientID)
                 ServerManager.Server.Send(message, id);
         }
     }
@@ -309,7 +313,7 @@ public static class MessageHandlers
         Renderer.BeginTextureMode(GameData.Painting!.Value);
         var start = message.GetVector2();
         var end = message.GetVector2();
-        var thickness = message.GetFloat(); 
+        var thickness = message.GetFloat();
         var color = message.GetColor();
         Renderer.MouseDrawing(start, end, thickness, color);
         Renderer.EndTextureMode();
@@ -370,6 +374,8 @@ public static class MessageHandlers
     {
         Log("(From Server) Starting game");
         GameManager.IsGameStarted = true;
+        foreach (var player in NetworkManager.Players.Values)
+            player.IsInLobby = false;
         ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
     }
     
@@ -378,6 +384,8 @@ public static class MessageHandlers
     {
         Log("(From Server) Exit to lobby");
         GameManager.IsGameStarted = false;
+        foreach (var player in NetworkManager.Players.Values)
+            player.IsInLobby = true;
         ScreenManager.NavigateTo(new MenuScreen());
     }
     
@@ -460,7 +468,10 @@ public static class NetworkManager
             ServerManager.Initialize(
                 (_, e) =>
                 {
-                    var player = new Player(e.Client.Id, false);
+                    var player = new Player(e.Client.Id, false)
+                    {
+                        IsInLobby = true
+                    };
                     Players.Add(e.Client.Id, player);
                     MessageHandlers.SendOtherPlayersInfo(e.Client.Id);
                 },
