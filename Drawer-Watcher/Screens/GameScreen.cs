@@ -4,6 +4,7 @@ using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
+using Riptide;
 
 namespace Drawer_Watcher.Screens;
 
@@ -28,7 +29,7 @@ public class GameScreen : Screen
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {
-            NewWord();
+            NewRound();
             _chatPanel.DisableInput = true;
         }
     }
@@ -41,13 +42,14 @@ public class GameScreen : Screen
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {
-            NewWord();
+            NewRound();
             _chatPanel.DisableInput = true;
         }
     }
 
-    private static void NewWord()
+    public static void NewRound()
     {
+        LeaderBoardWindow.IsVisible = false;
         MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
@@ -62,6 +64,13 @@ public class GameScreen : Screen
     private static void SkipWord()
     {
         MessageHandlers.SendNewWord();
+    }
+
+    private static void WordGuessed()
+    {
+        MessageHandlers.SendNewWord();
+        MessageHandlers.ClearPainting();
+        GameManager.Guesser = 0;
     }
 
     public override void OnUpdate(float deltaTime)
@@ -82,8 +91,8 @@ public class GameScreen : Screen
 
         if (GameManager.Guesser != 0)
         {
-            GameManager.Timer.Stop();
-            GameManager.IsRoundEnded = true;
+            ChatPanel.AddToLastMessage(" <- right");
+            WordGuessed();
         }
     }
 
@@ -124,6 +133,7 @@ public class GameScreen : Screen
             {
                 GameManager.IsGameStarted = false;
                 MessageHandlers.SendLobbyExit();
+                LeaderBoardWindow.IsVisible = false;
                 ScreenManager.NavigateTo(new MenuScreen());
             });
 
@@ -176,16 +186,14 @@ public class GameScreen : Screen
                         // TODO: Handle error when player disconnected
                         ImGui.Text($"{NetworkManager.Players[GameManager.Guesser].Nickname} guessed word right. " +
                                    $"The word was {GameManager.CurrentWord}");
-                    if (Player.ApplicationOwner.IsDrawer)
-                    {
-                        if (ImGui.Button("New Word"))
-                            NewWord();
-                    }
+                    LeaderBoardWindow.IsVisible = true;
+                    GameManager.Timer.Stop();
                 }
                 ImGui.End();
                 ImGui.PopStyleVar();
             }
             MessageBox.OnImGuiUpdate();
+            LeaderBoardWindow.OnImGuiUpdate();
             ImGui.End();
         }
     }

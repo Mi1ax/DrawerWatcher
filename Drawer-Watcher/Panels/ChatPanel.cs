@@ -17,6 +17,12 @@ public class ChatPanel
         _chat.Add($"{nickname}: {text}");
     }
 
+    public static void AddToLastMessage(string value)
+    {
+        if (!_chat[^1].Contains(value))
+            _chat[^1] += value;
+    }
+
     public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
         ImGui.Begin("Chat", flags);
