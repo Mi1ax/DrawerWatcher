@@ -18,10 +18,11 @@ public class Player
     public bool IsAppOwner => ApplicationOwner!.ID == ID;
 
     public ushort ID { get; }
-    public int Score { get; set; } = 0;
+    public int Score { get; set; }
 
     public bool IsDrawer { get; private set; }
-
+    public bool IsInLobby { get; set; }
+    
     public string Nickname { get; set; }
     
     public void SetDrawerWithNotifyngServer(bool value)

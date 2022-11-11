@@ -63,9 +63,6 @@ public class ToolPanel
             ImGui.SameLine();
             if (ImGui.Button("Clear all"))
                 MessageHandlers.ClearPainting();
-            ImGui.SameLine();
-            if (ImGui.Button("Skip word"))
-                GameScreen.NewWord();
             ImGui.Text($"Current size {_brushesSize[_currentSize]}");
             ImGui.Text("Brush sizes: ");
             ImGui.SameLine();

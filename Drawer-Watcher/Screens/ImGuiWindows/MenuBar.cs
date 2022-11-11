@@ -5,7 +5,7 @@ namespace Drawer_Watcher.Screens.ImGuiWindows;
 
 public static class MenuBar
 {
-    public static void OnImGuiUpdate()
+    public static void OnImGuiUpdate(Action? additionalMenu = null, Action? onExit = null)
     {
         ImGui.BeginMenuBar();
         {
@@ -15,15 +15,19 @@ public static class MenuBar
                     SettingsWindow.IsVisible = true;
                 if (ImGui.MenuItem("Exit"))
                 {
-                    MessageBox.Show("Exit", "Are you sure?", 
-                        MessageBoxButtons.YesNo, button =>
-                        {
-                            if (button == MessageBoxResult.Yes)
-                                Application.Instance.Close();
-                        });
+                    if (onExit == null)
+                    {
+                        MessageBox.Show("Exit", "Are you sure?",
+                            MessageBoxButtons.YesNo, button =>
+                            {
+                                if (button == MessageBoxResult.Yes)
+                                    Application.Instance.Close();
+                            });
+                    } else onExit.Invoke();
                 }
                 ImGui.EndMenu();
             }
+            additionalMenu?.Invoke();
             ImGui.EndMenuBar();
         }
         

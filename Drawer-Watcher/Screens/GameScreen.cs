@@ -12,8 +12,7 @@ public class GameScreen : Screen
     private bool _viewportFocused;
     private bool _viewportHovered;
     private Vector2 _viewportSize = Vector2.Zero;
-
-    private readonly StatPanel _statPanel = new();
+    
     private readonly ChatPanel _chatPanel = new();
     private readonly ToolPanel _toolPanel = new();
 
@@ -33,8 +32,21 @@ public class GameScreen : Screen
             _chatPanel.DisableInput = true;
         }
     }
+    
+    public GameScreen()
+    {
+        _minutes = 1;
+        GameData.Painting = Renderer.LoadRenderTexture(1, 1);
+        GameManager.Timer.Init();
 
-    public static void NewWord()
+        if (Player.ApplicationOwner is { IsDrawer: true })
+        {
+            NewWord();
+            _chatPanel.DisableInput = true;
+        }
+    }
+
+    private static void NewWord()
     {
         MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
@@ -45,6 +57,11 @@ public class GameScreen : Screen
             MessageHandlers.SendTimesUp();
             GameManager.IsRoundEnded = true;
         });
+    }
+
+    private static void SkipWord()
+    {
+        MessageHandlers.SendNewWord();
     }
 
     public override void OnUpdate(float deltaTime)
@@ -103,33 +120,40 @@ public class GameScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            MenuBar.OnImGuiUpdate();
+            MenuBar.OnImGuiUpdate(onExit: () =>
+            {
+                GameManager.IsGameStarted = false;
+                MessageHandlers.SendLobbyExit();
+                ScreenManager.NavigateTo(new MenuScreen());
+            });
 
             const ImGuiWindowFlags flags = ImGuiWindowFlags.NoNav | 
                                            ImGuiWindowFlags.NoResize | 
                                            ImGuiWindowFlags.NoCollapse |
                                            ImGuiWindowFlags.NoTitleBar |
                                            ImGuiWindowFlags.NoMove;
-            _statPanel.OnImGuiUpdate(flags);
+            StatPanel.OnImGuiUpdate(flags);
             _chatPanel.OnImGuiUpdate(flags);
             _toolPanel.OnImGuiUpdate(flags);
 
-            ImGui.Begin("Word");
+            ImGui.Begin("TopPanel");
             {
                 ImGui.Text(GameManager.Timer.CurrentTime);
                 ImGui.SameLine();
+                var style = ImGui.GetStyle();
+
+                var size = ImGui.CalcTextSize($"{GameManager.CurrentWord}").X + style.FramePadding.X * 2.0f;
+                var avail = ImGui.GetContentRegionAvail().X;
+
+                var off = (avail - size) * 0.5f;
+                if (off > 0.0f)
+                    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
+                if (Player.ApplicationOwner!.IsDrawer)
+                    ImGui.Text($"{GameManager.CurrentWord}");
+                ImGui.SameLine();
+                if (ImGui.SmallButton("Skip")) SkipWord();
+                ImGui.End();
             }
-            var style = ImGui.GetStyle();
-
-            var size = ImGui.CalcTextSize($"{GameManager.CurrentWord}").X + style.FramePadding.X * 2.0f;
-            var avail = ImGui.GetContentRegionAvail().X;
-
-            var off = (avail - size) * 0.5f;
-            if (off > 0.0f)
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
-            if (Player.ApplicationOwner!.IsDrawer)
-                ImGui.Text($"{GameManager.CurrentWord}");
-            ImGui.End();
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             ImGui.Begin("Viewport", ImGuiWindowFlags.NoTitleBar);

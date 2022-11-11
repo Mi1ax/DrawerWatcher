@@ -16,6 +16,7 @@ public enum MessageID : ushort
     ChatMessage,
     
     StartGame,
+    LobbyExit,
     NewWord,
     Timer,
     TimesUp,
@@ -28,7 +29,7 @@ public enum MessageID : ushort
     AllClear,
 }
 
-public static class NetworkLogger
+public static class NetworkLogger 
 {
     public static void Init()
     {
@@ -43,7 +44,7 @@ public static class NetworkLogger
 }
 
 // ReSharper disable once UnusedType.Local
-public static class MessageHandlers 
+public static class MessageHandlers
 {
     private static void Log(string functionName, string enumName, LogType type = LogType.Info)
     {
@@ -66,6 +67,12 @@ public static class MessageHandlers
         message.AddBool(value);
         ClientManager.Client!.Send(message);
     }
+
+    public static void SendLobbyExit()
+    {
+        Log("(To Server) Exit to lobby");
+        ClientManager.Client!.Send(Message.Create(MessageSendMode.Reliable, MessageID.LobbyExit));
+    }
     
     public static void ClearPainting()
     {
@@ -77,8 +84,6 @@ public static class MessageHandlers
     public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
     {
         // Send from Client to Server
-        //if (ImGui.GetIO().WantCaptureMouse) return;
-    
         var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
         message.AddVector2(start);
         message.AddVector2(end);
@@ -125,20 +130,24 @@ public static class MessageHandlers
     {
         Log($"(To Client) Send {toClientId} other players info");
         var message = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        message.AddBool(GameManager.IsGameStarted);
         message.AddInt(NetworkManager.Players.Count);
         foreach (var (id, player) in NetworkManager.Players)
         {
             message.AddUShort(id);
             message.AddString(player.Nickname);
             message.AddBool(player.IsDrawer);
+            message.AddBool(player.IsInLobby);
         }
         ServerManager.Server.Send(message, toClientId);
 
         var newPlayer = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        newPlayer.AddBool(GameManager.IsGameStarted);
         newPlayer.AddInt(1);
         newPlayer.AddUShort(toClientId);
         newPlayer.AddString(NetworkManager.Players[toClientId].Nickname);
         newPlayer.AddBool(false);
+        newPlayer.AddBool(true);
         ServerManager.Server.SendToAll(message, toClientId);
     }
     
@@ -156,18 +165,33 @@ public static class MessageHandlers
         ServerManager.Server.SendToAll(message, fromClientID);
     }
     
+    [MessageHandler((ushort) MessageID.LobbyExit)]
+    private static void HandleLobbyExit(ushort fromClientID, Message message)
+    {
+        Log("(To all Clients) Exit to lobby");
+        ServerManager.Server.SendToAll(message, fromClientID);
+    }
+    
     [MessageHandler((ushort) MessageID.AllClear)]
     private static void HandleAllClear(ushort fromClientID, Message message)
     {
         if (!NetworkManager.Players[fromClientID].IsDrawer) return;
         Log("(To all Clients) Clear painting");
-        ServerManager.Server.SendToAll(message);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.SendPainting)]
     private static void HandlePainting(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.StartGame)]
@@ -179,40 +203,61 @@ public static class MessageHandlers
     [MessageHandler((ushort) MessageID.ChatMessage)]
     private static void HandleChatMessage(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.Winner)]
     private static void HandleWinner(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message, fromClientID);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.NewWord)]
     private static void HandleNewWord(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.Timer)]
     private static void HandleTimer(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message, fromClientID);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
     
     [MessageHandler((ushort) MessageID.TimesUp)]
     private static void HandleTimesUp(ushort fromClientID, Message message)
     {
-        ServerManager.Server.SendToAll(message, fromClientID);
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
     }
 
     #endregion
 
     #region Handle Server messages on Client Side
 
-    [MessageHandler((ushort) MessageID.ConnectionInfo)]
+    [MessageHandler((ushort)MessageID.ConnectionInfo)]
     private static void HandleConnectionInfo(Message message)
     {
+        GameManager.IsGameStarted = message.GetBool();
         var playersCount = message.GetInt();
         Log($"(From Server) Get data about {playersCount} other players!");
         for (var _ = 0; _ < playersCount; _++)
@@ -221,10 +266,13 @@ public static class MessageHandlers
             var nickname = message.GetString();
             var player = new Player(id, message.GetBool())
             {
-                Nickname = nickname
+                Nickname = nickname,
+                IsInLobby = message.GetBool()
             };
             if (!NetworkManager.Players.ContainsKey(id))
                 NetworkManager.Players.Add(id, player);
+            else
+                NetworkManager.Players[id] = player;
         }
     }
     
@@ -261,7 +309,7 @@ public static class MessageHandlers
         Renderer.BeginTextureMode(GameData.Painting!.Value);
         var start = message.GetVector2();
         var end = message.GetVector2();
-        var thickness = message.GetFloat();
+        var thickness = message.GetFloat(); 
         var color = message.GetColor();
         Renderer.MouseDrawing(start, end, thickness, color);
         Renderer.EndTextureMode();
@@ -321,13 +369,22 @@ public static class MessageHandlers
     private static void HandleStartGame(Message message)
     {
         Log("(From Server) Starting game");
+        GameManager.IsGameStarted = true;
         ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
+    }
+    
+    [MessageHandler((ushort) MessageID.LobbyExit)]
+    private static void HandleLobbyExit(Message message)
+    {
+        Log("(From Server) Exit to lobby");
+        GameManager.IsGameStarted = false;
+        ScreenManager.NavigateTo(new MenuScreen());
     }
     
     #endregion
 }
 
-public static class NetworkManager
+public static class NetworkManager 
 {
     public static readonly Dictionary<ushort, Player> Players = new();
     

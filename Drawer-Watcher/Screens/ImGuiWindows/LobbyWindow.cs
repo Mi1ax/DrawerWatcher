@@ -50,18 +50,24 @@ public static class LobbyWindow
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Game Settings");
-                    if (NetworkManager.IsHost)
+                    switch (NetworkManager.IsHost)
                     {
-                        ImGui.Text("Minutes for guessing");
-                        if (ImGui.InputInt("", ref _minutes, 1, 1))
-                            if (_minutes < 1) _minutes = 1;
-                        
-                        if (ImGui.Button("Start"))
+                        case true:
                         {
-                            NetworkManager.StartGame(_minutes);
+                            ImGui.Text("Minutes for guessing");
+                            if (ImGui.InputInt("", ref _minutes, 1, 1))
+                                if (_minutes < 1) _minutes = 1;
+                        
+                            if (ImGui.Button("Start"))
+                                NetworkManager.StartGame(_minutes);
+
+                            break;
                         }
+                        case false when GameManager.IsGameStarted:
+                            ImGui.Text("Game is already started. \nWhait until the end");
+                            break;
                     }
-                    
+
                     ImGui.TableNextColumn();
                     var drawerName = "Empty";
                     foreach (var (_, player) in NetworkManager.Players)

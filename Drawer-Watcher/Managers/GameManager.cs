@@ -41,6 +41,7 @@ public static class GameManager
     public static ushort Guesser = 0;
 
     public static bool IsRoundEnded = false;
+    public static bool IsGameStarted = false;
 
     private static readonly Random _random = new(DateTime.Now.GetHashCode());
     private static readonly string[] EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n");
