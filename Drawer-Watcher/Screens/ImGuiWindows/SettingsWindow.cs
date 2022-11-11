@@ -27,6 +27,12 @@ public static class SettingsData
             _resolution = value;
         }
     }
+
+    public const ImGuiWindowFlags WindowFlags = ImGuiWindowFlags.NoDocking 
+                                                | ImGuiWindowFlags.AlwaysAutoResize 
+                                                | ImGuiWindowFlags.NoResize 
+                                                | ImGuiWindowFlags.NoMove 
+                                                | ImGuiWindowFlags.NoCollapse;
 }
 
 public static class SettingsWindow

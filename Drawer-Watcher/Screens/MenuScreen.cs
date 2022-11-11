@@ -1,5 +1,5 @@
 using System.Numerics;
-using CouscousEngine.Core;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
@@ -10,7 +10,6 @@ public class MenuScreen : Screen
 {
     private string _nickname = "Player";
     private ConnectionInfo _connectionInfo = ConnectionInfo.Default;
-    private bool _showMenu = true;
 
     public override void OnImGuiUpdate()
     {
@@ -48,24 +47,25 @@ public class MenuScreen : Screen
             
             MenuBar.OnImGuiUpdate();
 
-            if (_showMenu)
+            if (!ServerCreationWindow.IsVisible && !ConnectionWindow.IsVisible && !LobbyWindow.IsVisible)
             {
-                ImGui.Begin("Menu");
+                if (ClientManager.Client!.IsConnected)
+                    ClientManager.Client.Disconnect();
+                if (ServerManager.Server.IsRunning)
+                    ServerManager.Server.Stop();
+
+                var center = ImGui.GetMainViewport().GetCenter();
+                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+                ImGui.Begin("Menu", SettingsData.WindowFlags);
                 {
                     ImGui.Text("Nickname:");
                     ImGui.InputText("", ref _nickname, 32);
                     if (ImGui.Button("Host"))
-                    {
-                        _showMenu = false;
                         ServerCreationWindow.IsVisible = true;
-                    }
 
                     ImGui.SameLine();
                     if (ImGui.Button("Connect"))
-                    {
-                        _showMenu = false;
                         ConnectionWindow.IsVisible = true;
-                    }
 
                     ImGui.End();
                 }

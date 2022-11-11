@@ -20,11 +20,13 @@ public static class MessageBox
     private static string _title = "MessageBox";
     private static string _message = "Message";
     private static MessageBoxButtons _buttons;
-    private static Action<MessageBoxResult> _onResult;
+    private static Action<MessageBoxResult>? _onResult;
 
+    public static bool IsOpen() => _open;
+    
     public static void Show(
         string title, string message, 
-        MessageBoxButtons buttons, Action<MessageBoxResult> onResult)
+        MessageBoxButtons buttons, Action<MessageBoxResult>? onResult = null)
     {
         _title = title;
         _message = message;
@@ -65,6 +67,6 @@ public static class MessageBox
         if (!ImGui.Button(button.ToString())) return;
         _open = false;
         ImGui.CloseCurrentPopup();
-        _onResult.Invoke(button);
+        _onResult?.Invoke(button);
     }
 }

@@ -3,18 +3,19 @@ using ImGuiNET;
 
 namespace Drawer_Watcher.Panels;
 
-public class StatPanel
+public static class StatPanel
 {
-    public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
+    public static void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
         ImGui.Begin("Stats", flags);
         ImGui.Text("Players:");
         ImGui.Separator();
         foreach (var player in NetworkManager.Players.Values)
         {
-            var text = $"{player.Nickname} [{player.ID}] ";
+            if (player.IsInLobby) continue;
+            var text = $"{player.Nickname} ";
             if (!player.IsDrawer)
-                text += $"Score: {player.Score}";
+                text += $"Score: {player.Score} ";
             else
                 text += "<- Drawer";
             ImGui.Text(text);
