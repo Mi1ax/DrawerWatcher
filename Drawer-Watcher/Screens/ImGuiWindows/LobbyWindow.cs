@@ -43,7 +43,7 @@ public static class LobbyWindow
         {
             var center = ImGui.GetMainViewport().GetCenter();
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-            ImGui.Begin("Lobby", SettingsData.WindowFlags);
+            ImGui.Begin("Lobby", ref IsVisible, SettingsData.WindowFlags);
             {
                 if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
                 {

@@ -1,4 +1,5 @@
 using System.Numerics;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
@@ -48,6 +49,11 @@ public class MenuScreen : Screen
 
             if (!ServerCreationWindow.IsVisible && !ConnectionWindow.IsVisible && !LobbyWindow.IsVisible)
             {
+                if (ClientManager.Client!.IsConnected)
+                    ClientManager.Client.Disconnect();
+                if (ServerManager.Server.IsRunning)
+                    ServerManager.Server.Stop();
+
                 var center = ImGui.GetMainViewport().GetCenter();
                 ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
                 ImGui.Begin("Menu", SettingsData.WindowFlags);
