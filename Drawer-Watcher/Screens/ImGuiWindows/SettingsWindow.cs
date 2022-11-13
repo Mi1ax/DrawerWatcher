@@ -1,6 +1,9 @@
 using System.ComponentModel;
+using CouscousEngine.Core;
 using CouscousEngine.Utils;
 using ImGuiNET;
+using IniParser;
+using IniParser.Model;
 
 namespace Drawer_Watcher.Screens.ImGuiWindows;
 
@@ -35,6 +38,41 @@ public static class SettingsData
                                                 | ImGuiWindowFlags.NoCollapse;
 }
 
+public static class SettingsIni
+{
+    private static string _filePath = null!;
+    private static IniData _data = null!;
+    
+    private static readonly FileIniDataParser _parser = new ();
+    
+    public static readonly Dictionary<string, string> Default = new();
+
+    public static void Init(string fileName)
+    {
+        _filePath = fileName;
+        _data = _parser.ReadFile(fileName);
+
+        Default["resolution"] = Resolutions._1280x720.GetDescription()!;
+    }
+
+    public static void Load()
+    {
+        var resolution = GetData("resolution");
+        var windowWidth = Convert.ToInt32(resolution.Split('x')[0]);
+        var windowHeight = Convert.ToInt32(resolution.Split('x')[1]);
+        _rl.SetWindowSize(windowWidth, windowHeight);
+    }
+    
+    public static void AddData(string name, string data)
+    {
+        _data["Settings"][name] = data;
+        _parser.WriteFile(_filePath, _data);
+    }
+
+    public static string GetData(string name) 
+        => _data["Settings"][name] ?? Default[name];
+}
+
 public static class SettingsWindow
 {
     public static bool IsVisible;
@@ -42,13 +80,22 @@ public static class SettingsWindow
     public static void OnImGuiUpdate()
     {
         if (!IsVisible || ScreenManager.CurrentScreen is GameScreen) return;
-        ImGui.Begin("Settings", ref IsVisible);
+        var flags = SettingsData.WindowFlags;
+        flags -= ImGuiWindowFlags.NoMove;
+        ImGui.Begin("Settings", ref IsVisible, flags);
         {
-            ImGui.Text($"Resolution (Current {SettingsData.Resolution.GetDescription()}):");
+            ImGui.Text($"Resolution (Current {SettingsIni.GetData("resolution")}):");
             if (ImGui.Button("1280x720"))
+            {
                 SettingsData.Resolution = Resolutions._1280x720;
+                SettingsIni.AddData("resolution", "1280x720");
+            }
+
             if (ImGui.Button("960x480"))
+            {
                 SettingsData.Resolution = Resolutions._960x480;
+                SettingsIni.AddData("resolution", "960x480");
+            }
             ImGui.End();
         }
     }

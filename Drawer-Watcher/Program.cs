@@ -18,6 +18,14 @@ public class GameLayer : Layer
     {
         NetworkLogger.Init();
         NetworkManager.Initialize();
+        if (!File.Exists("Settings.ini"))
+        {
+            var fileStream = File.Create("Settings.ini");
+            fileStream.Close();
+        }
+
+        SettingsIni.Init("Settings.ini");
+        SettingsIni.Load();
         
         AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
         
