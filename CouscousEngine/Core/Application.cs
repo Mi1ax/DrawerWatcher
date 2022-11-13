@@ -27,7 +27,8 @@ public abstract class Application : IDisposable
     protected Application(
         string title, 
         int width = 1280, 
-        int height = 720
+        int height = 720,
+        bool disableWindowCloseButton = false
     )
     {
         _instance = this;
@@ -35,7 +36,8 @@ public abstract class Application : IDisposable
         Window = new Window(new WindowData(
             title, 
             width, 
-            height)
+            height,
+            disableWindowCloseButton)
         );
         PushLayer(new ImGuiLayer());
     }
@@ -60,7 +62,7 @@ public abstract class Application : IDisposable
             {
                 _layerStack.Layers[i].OnUpdate(_rl.GetFrameTime());
             }
-            
+
             rlImGui.rlImGui.Begin();
             foreach (var layer in _layerStack.Layers)
             {

@@ -1,6 +1,8 @@
 ﻿using CouscousEngine.Core;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
+using Drawer_Watcher.Screens.ImGuiWindows;
+using Riptide;
 
 namespace Drawer_Watcher;
 
@@ -32,6 +34,17 @@ public class GameLayer : Layer
 
     public override void OnImGuiUpdate()
     {
+        if (_rl.WindowShouldClose())
+        {
+            MessageBox.Show("Exit", "Are you sure?",
+                MessageBoxButtons.YesNo, button =>
+                {
+                    if (button == MessageBoxResult.Yes)
+                        Application.Instance.Close();
+                });
+        }
+        
+        MessageBox.OnImGuiUpdate();
         ScreenManager.OnUpdateImGui();
     }
 
@@ -50,7 +63,7 @@ public class GameLayer : Layer
 internal class Sandbox : Application
 {
     public Sandbox() 
-        : base("Drawer Watcher")
+        : base("Drawer Watcher", disableWindowCloseButton: true)
     {
         PushLayer(new GameLayer());
     }

@@ -193,7 +193,6 @@ public class GameScreen : Screen
                 ImGui.End();
                 ImGui.PopStyleVar();
             }
-            MessageBox.OnImGuiUpdate();
             LeaderBoardWindow.OnImGuiUpdate();
             ImGui.End();
         }

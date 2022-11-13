@@ -71,7 +71,6 @@ public class MenuScreen : Screen
                 }
             }
             
-            MessageBox.OnImGuiUpdate();
             LobbyWindow.OnImGuiUpdate();
             ServerCreationWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
             ConnectionWindow.OnImGuiUpdate(_nickname, ref _connectionInfo);
