@@ -7,6 +7,8 @@ public static class ScreenManager
     private static bool _captureEvents = true;
     private static Screen? _currentScreen;
 
+    public static Screen? CurrentScreen => _currentScreen;
+    
     public static void NavigateTo(Screen newScreen)
         => _currentScreen = newScreen;
 

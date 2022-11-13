@@ -76,7 +76,7 @@ public static class LobbyWindow
                     var drawerName = "Empty";
                     foreach (var (_, player) in NetworkManager.Players)
                     {
-                        if (player.IsDrawer)
+                        if (player.IsDrawer && player.Nickname != "DefaultNickname")
                         {
                             drawerName = player.Nickname;
                             break;
@@ -102,6 +102,7 @@ public static class LobbyWindow
                     ImGui.Text($"Watchers ({_watchersNames.Count})");
                     foreach (var (_, player) in NetworkManager.Players)
                     {
+                        if (player.Nickname == "DefaultNickname") continue;
                         if (player.IsDrawer)
                         {
                             if (_watchersNames.Contains(player.Nickname))

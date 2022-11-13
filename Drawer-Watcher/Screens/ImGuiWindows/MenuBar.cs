@@ -11,7 +11,7 @@ public static class MenuBar
         {
             if (ImGui.BeginMenu("Drawer Watcher"))
             {
-                if (ImGui.MenuItem("Settings"))
+                if (ImGui.MenuItem("Settings", ScreenManager.CurrentScreen is not GameScreen))
                     SettingsWindow.IsVisible = true;
                 if (ImGui.MenuItem("Exit"))
                 {
