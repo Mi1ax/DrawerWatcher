@@ -1,4 +1,5 @@
 using System.Numerics;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -19,19 +20,20 @@ public static class ConnectionWindow
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref connectionInfo.Port, 6);
             if (ImGui.Button("Connect"))
-            {
-                NetworkManager.ConnectToServer(connectionInfo, nickname);
-                IsVisible = false;
-                LobbyWindow.IsVisible = true;
-            }
-            
+                Connect(connectionInfo, nickname);
             if (ImGui.Button("Connect locally"))
-            {
-                NetworkManager.ConnectToServer(ConnectionInfo.Local, nickname);
-                IsVisible = false;
-                LobbyWindow.IsVisible = true;
-            }
+                Connect(ConnectionInfo.Local, nickname);
             ImGui.End();
         }
+    }
+    
+    private static void Connect(ConnectionInfo info, string nickname)
+    {
+        LobbyWindow.Clear();
+        NetworkManager.Players.Clear();
+        ServerManager.Server.Stop();
+        NetworkManager.ConnectToServer(info, nickname);
+        IsVisible = false;
+        LobbyWindow.IsVisible = true;
     }
 }

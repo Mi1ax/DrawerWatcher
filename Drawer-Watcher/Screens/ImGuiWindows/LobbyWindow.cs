@@ -12,6 +12,8 @@ public static class LobbyWindow
     private static readonly List<string> _watchersNames = new();
 
     private static int _minutes = 1;
+
+    public static void Clear() => _watchersNames.Clear();
     
     public static void OnImGuiUpdate()
     {

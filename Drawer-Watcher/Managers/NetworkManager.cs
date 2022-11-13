@@ -360,6 +360,7 @@ public static class MessageHandlers
     {
         var newWord = message.GetString();
         Log($"(From Server) Getting new word {newWord}");
+        LeaderBoardWindow.IsVisible = false;
         GameManager.CurrentWord = newWord;
         GameManager.Guesser = 0;
         GameManager.IsRoundEnded = false;

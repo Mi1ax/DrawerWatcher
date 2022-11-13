@@ -20,20 +20,21 @@ public static class ServerCreationWindow
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref connectionInfo.Port, 6);
             if (ImGui.Button("Create Game"))
-                Connect(connectionInfo, nickname);
+                Create(connectionInfo, nickname);
 
             if (ImGui.Button("Create locally"))
-                Connect(ConnectionInfo.Local, nickname);
+                Create(ConnectionInfo.Local, nickname);
             ImGui.End();
         }
     }
 
-    private static void Connect(ConnectionInfo info, string nickname)
+    private static void Create(ConnectionInfo info, string nickname)
     {
+        LobbyWindow.Clear();
         NetworkManager.Players.Clear();
         ServerManager.Server.Stop();
-        NetworkManager.StartServer(ConnectionInfo.Local);
-        NetworkManager.ConnectToServer(ConnectionInfo.Local, nickname);
+        NetworkManager.StartServer(info);
+        NetworkManager.ConnectToServer(info, nickname);
         IsVisible = false;
         LobbyWindow.IsVisible = true;
     }
