@@ -41,7 +41,7 @@ public static class SettingsWindow
     
     public static void OnImGuiUpdate()
     {
-        if (!IsVisible) return;
+        if (!IsVisible || ScreenManager.CurrentScreen is GameScreen) return;
         ImGui.Begin("Settings", ref IsVisible);
         {
             ImGui.Text($"Resolution (Current {SettingsData.Resolution.GetDescription()}):");

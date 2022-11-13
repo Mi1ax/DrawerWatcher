@@ -16,14 +16,19 @@ public static class Renderer
 
     public static void MouseDrawing(Vector2 start, Vector2 end, float thickness, Color color)
     {
-        var dx = end.X - start.X;
-        var dy = end.Y - start.Y;
-        var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
-        for (var i = 0; i < distance; i++)
+        if (start == end)
+            _rl.DrawCircleV(start, thickness, color);
+        else
         {
-            var x = (int)(start.X + i / distance * dx);
-            var y = (int)(start.Y + i / distance * dy);
-            _rl.DrawCircleV(new Vector2(x, y), thickness, color);
+            var dx = end.X - start.X;
+            var dy = end.Y - start.Y;
+            var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+            for (var i = 0; i < distance; i++)
+            {
+                var x = (int)(start.X + i / distance * dx);
+                var y = (int)(start.Y + i / distance * dy);
+                _rl.DrawCircleV(new Vector2(x, y), thickness, color);
+            }
         }
     }
     

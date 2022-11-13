@@ -50,6 +50,7 @@ public class GameScreen : Screen
     public static void NewRound()
     {
         LeaderBoardWindow.IsVisible = false;
+        ChatPanel.ClearChat();
         MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
@@ -129,7 +130,7 @@ public class GameScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            MenuBar.OnImGuiUpdate(onExit: () =>
+            MenuBar.OnImGuiUpdate(exitName: "Exit to lobby", onExit: () =>
             {
                 GameManager.IsGameStarted = false;
                 MessageHandlers.SendLobbyExit();
@@ -192,7 +193,6 @@ public class GameScreen : Screen
                 ImGui.End();
                 ImGui.PopStyleVar();
             }
-            MessageBox.OnImGuiUpdate();
             LeaderBoardWindow.OnImGuiUpdate();
             ImGui.End();
         }

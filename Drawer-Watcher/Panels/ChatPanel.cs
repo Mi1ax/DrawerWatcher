@@ -23,6 +23,9 @@ public class ChatPanel
             _chat[^1] += value;
     }
 
+    public static void ClearChat()
+        => _chat.Clear();
+
     public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
         ImGui.Begin("Chat", flags);

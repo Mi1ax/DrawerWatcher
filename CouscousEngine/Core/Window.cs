@@ -8,13 +8,15 @@ public struct WindowData
     
     public int Width { get; set; }
     public int Height { get; set; }
+    public bool DisableWindowCloseButton { get; set; }
 
-    public WindowData(string title, int width, int height)
+    public WindowData(string title, int width, int height, bool disableWindowCloseButton = false)
     {
         Title = title;
-        
+
         Width = width;
         Height = height;
+        DisableWindowCloseButton = disableWindowCloseButton;
     }
 }
 
@@ -33,7 +35,9 @@ public class Window : IDisposable
     public int Width => _data.Width;
     public int Height => _data.Height;
 
-    public static bool IsRunning() => !_rl.WindowShouldClose();
+    public bool IsRunning() 
+        => _data.DisableWindowCloseButton || !_rl.WindowShouldClose();
+
     public static void SetTargetFPS(int fps) => _rl.SetTargetFPS(fps);
     
     public void Dispose()

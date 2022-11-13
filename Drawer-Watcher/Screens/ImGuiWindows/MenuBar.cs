@@ -5,15 +5,15 @@ namespace Drawer_Watcher.Screens.ImGuiWindows;
 
 public static class MenuBar
 {
-    public static void OnImGuiUpdate(Action? additionalMenu = null, Action? onExit = null)
+    public static void OnImGuiUpdate(Action? additionalMenu = null, string exitName = "Exit", Action? onExit = null)
     {
         ImGui.BeginMenuBar();
         {
             if (ImGui.BeginMenu("Drawer Watcher"))
             {
-                if (ImGui.MenuItem("Settings"))
+                if (ImGui.MenuItem("Settings", ScreenManager.CurrentScreen is not GameScreen))
                     SettingsWindow.IsVisible = true;
-                if (ImGui.MenuItem("Exit"))
+                if (ImGui.MenuItem(exitName))
                 {
                     if (onExit == null)
                     {
