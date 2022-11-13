@@ -130,7 +130,7 @@ public class GameScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            MenuBar.OnImGuiUpdate(onExit: () =>
+            MenuBar.OnImGuiUpdate(exitName: "Exit to lobby", onExit: () =>
             {
                 GameManager.IsGameStarted = false;
                 MessageHandlers.SendLobbyExit();
