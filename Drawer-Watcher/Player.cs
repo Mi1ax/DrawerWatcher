@@ -60,6 +60,15 @@ public class Player
         if (_prevPoint == Vector2.Zero)
             _prevPoint = _currPoint;
         
+        if (Input.IsMouseButtonPressed(MouseButton.LEFT))
+        {
+            MessageHandlers.SendDrawingData(_currPoint, _currPoint, CurrentBrush.Thickness, (Color)CurrentBrush.Color);
+        } 
+        else if (Input.IsMouseButtonPressed(MouseButton.RIGHT))
+        {
+            MessageHandlers.SendDrawingData(_currPoint, _currPoint, CurrentBrush.Thickness, Brush.ClearColor);
+        }
+        
         if (Input.IsMouseButtonDown(MouseButton.LEFT))
         {
             MessageHandlers.SendDrawingData(_prevPoint, _currPoint, CurrentBrush.Thickness, (Color)CurrentBrush.Color);
