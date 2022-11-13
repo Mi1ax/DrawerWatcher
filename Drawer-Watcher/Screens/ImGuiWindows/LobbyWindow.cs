@@ -9,7 +9,7 @@ public static class LobbyWindow
 {
     public static bool IsVisible;
     
-    private static readonly List<string> _watchersNames = new ();
+    private static readonly List<string> _watchersNames = new();
 
     private static int _minutes = 1;
     
@@ -68,7 +68,7 @@ public static class LobbyWindow
                             break;
                         }
                         case false when GameManager.IsGameStarted:
-                            ImGui.Text("Game is already started. \nWhait until the end");
+                            ImGui.Text("Game is already started. \nWait until the end");
                             break;
                     }
 

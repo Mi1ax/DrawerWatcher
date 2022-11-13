@@ -1,4 +1,5 @@
 using System.Numerics;
+using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -19,21 +20,21 @@ public static class ServerCreationWindow
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref connectionInfo.Port, 6);
             if (ImGui.Button("Create Game"))
-            {
-                NetworkManager.StartServer(connectionInfo);
-                NetworkManager.ConnectToServer(connectionInfo, nickname);
-                IsVisible = false;
-                LobbyWindow.IsVisible = true;
-            }
-            
+                Connect(connectionInfo, nickname);
+
             if (ImGui.Button("Create locally"))
-            {
-                NetworkManager.StartServer(ConnectionInfo.Local);
-                NetworkManager.ConnectToServer(ConnectionInfo.Local, nickname);
-                IsVisible = false;
-                LobbyWindow.IsVisible = true;
-            }
+                Connect(ConnectionInfo.Local, nickname);
             ImGui.End();
         }
+    }
+
+    private static void Connect(ConnectionInfo info, string nickname)
+    {
+        NetworkManager.Players.Clear();
+        ServerManager.Server.Stop();
+        NetworkManager.StartServer(ConnectionInfo.Local);
+        NetworkManager.ConnectToServer(ConnectionInfo.Local, nickname);
+        IsVisible = false;
+        LobbyWindow.IsVisible = true;
     }
 }
