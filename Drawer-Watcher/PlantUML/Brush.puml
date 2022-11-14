@@ -1,0 +1,8 @@
+@startuml
+class Brush <<struct>> {
+    + Thickness : float <<get>> <<set>>
+}
+Brush --> "Color" Vector3
+Brush --> "ClearColor" Color
+Brush o-> "Default" Brush
+@enduml

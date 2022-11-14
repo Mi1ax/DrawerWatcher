@@ -1,0 +1,27 @@
+@startuml
+enum Resolutions {
+    _1280x720,
+    _960x480,
+}
+class SettingsData <<static>> {
+}
+class SettingsIni <<static>> {
+    - {static} _filePath : string
+    + {static} Init(fileName:string) : void
+    + {static} Load() : void
+    + {static} AddData(name:string, data:string) : void
+    + {static} GetData(name:string) : string
+}
+class SettingsWindow <<static>> {
+    + {static} IsVisible : bool
+    + {static} OnImGuiUpdate() : void
+}
+class "Dictionary`2"<T1,T2> {
+}
+SettingsData o-> "_resolution" Resolutions
+SettingsData --> "Resolution" Resolutions
+SettingsData o-> "WindowFlags" ImGuiWindowFlags
+SettingsIni o-> "_data" IniData
+SettingsIni o-> "_parser" FileIniDataParser
+SettingsIni o-> "Default<string,string>" "Dictionary`2"
+@enduml

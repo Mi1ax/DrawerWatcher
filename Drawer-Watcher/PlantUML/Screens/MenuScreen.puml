@@ -1,0 +1,8 @@
+@startuml
+class MenuScreen {
+    - _nickname : string = "Player"
+    + <<override>> OnImGuiUpdate() : void
+}
+Screen <|-- MenuScreen
+MenuScreen o-> "_connectionInfo" ConnectionInfo
+@enduml

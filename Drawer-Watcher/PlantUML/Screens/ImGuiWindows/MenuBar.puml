@@ -1,0 +1,5 @@
+@startuml
+class MenuBar <<static>> {
+    + {static} OnImGuiUpdate(additionalMenu:Action?, exitName:string, onExit:Action?) : void
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+class LobbyWindow <<static>> {
+    + {static} IsVisible : bool
+    - {static} _minutes : int = 1
+    + {static} Clear() : void
+    + {static} OnImGuiUpdate() : void
+}
+class "List`1"<T> {
+}
+LobbyWindow o-> "_watchersNames<string>" "List`1"
+@enduml

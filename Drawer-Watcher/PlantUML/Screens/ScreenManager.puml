@@ -1,0 +1,12 @@
+@startuml
+class ScreenManager <<static>> {
+    - {static} _captureEvents : bool = true
+    - {static} _currentScreen : Screen?
+    + {static} CurrentScreen : Screen? <<get>>
+    + {static} NavigateTo(newScreen:Screen) : void
+    + {static} OnEsc() : void
+    + {static} OnUpdate(deltaTime:float) : void
+    + {static} OnUpdateImGui() : void
+    + {static} OnEvent() : bool
+}
+@enduml

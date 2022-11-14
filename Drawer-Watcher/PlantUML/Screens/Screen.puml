@@ -1,0 +1,7 @@
+@startuml
+abstract class Screen {
+    + <<virtual>> OnUpdate(deltaTime:float) : void
+    + <<virtual>> OnImGuiUpdate() : void
+    + <<virtual>> OnEvent() : bool
+}
+@enduml

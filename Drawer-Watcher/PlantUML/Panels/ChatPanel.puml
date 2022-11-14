@@ -1,0 +1,13 @@
+@startuml
+class ChatPanel {
+    + DisableInput : bool = false
+    - _text : string
+    + {static} AddMessage(nickname:string, text:string) : void
+    + {static} AddToLastMessage(value:string) : void
+    + {static} ClearChat() : void
+    + OnImGuiUpdate(flags:ImGuiWindowFlags) : void
+}
+class "List`1"<T> {
+}
+ChatPanel o-> "_chat<string>" "List`1"
+@enduml

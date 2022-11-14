@@ -1,0 +1,6 @@
+@startuml
+class LeaderBoardWindow <<static>> {
+    + {static} IsVisible : bool
+    + {static} OnImGuiUpdate() : void
+}
+@enduml

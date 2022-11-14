@@ -1,0 +1,18 @@
+@startuml
+class Player {
+    + {static} ApplicationOwner : Player? <<get>>
+    + IsAppOwner : bool <<get>>
+    + ID : ushort <<get>>
+    + Score : int <<get>> <<set>>
+    + IsDrawer : bool <<get>>
+    + IsInLobby : bool <<get>> <<set>>
+    + Nickname : string <<get>> <<set>>
+    + SetDrawerWithNotifyngServer(value:bool) : void
+    + SetDrawer(value:bool) : void
+    + Player(clientId:ushort, isDrawer:bool)
+    + Update(isViewport:bool) : void
+}
+Player --> "CurrentBrush" Brush
+Player o-> "_prevPoint" Vector2
+Player o-> "_currPoint" Vector2
+@enduml

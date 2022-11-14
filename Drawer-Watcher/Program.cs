@@ -68,9 +68,9 @@ public class GameLayer : Layer
     }
 }
 
-internal class Sandbox : Application
+internal class Game : Application
 {
-    public Sandbox() 
+    public Game() 
         : base("Drawer Watcher", disableWindowCloseButton: true)
     {
         PushLayer(new GameLayer());
@@ -81,7 +81,7 @@ internal static class Program
 {
     private static void Main()
     {
-        using var app = new Sandbox();
+        using var app = new Game();
         app.Run();
     }
 }

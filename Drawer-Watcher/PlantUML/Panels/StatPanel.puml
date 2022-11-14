@@ -1,0 +1,5 @@
+@startuml
+class StatPanel <<static>> {
+    + {static} OnImGuiUpdate(flags:ImGuiWindowFlags) : void
+}
+@enduml

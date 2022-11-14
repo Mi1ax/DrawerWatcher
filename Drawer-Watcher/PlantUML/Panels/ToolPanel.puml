@@ -1,0 +1,8 @@
+@startuml
+class ToolPanel {
+    - _selectedIndex : int = 0
+    - _currentSize : int
+    + ToolPanel()
+    + OnImGuiUpdate(flags:ImGuiWindowFlags) : void
+}
+@enduml

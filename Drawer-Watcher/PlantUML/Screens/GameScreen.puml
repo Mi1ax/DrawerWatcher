@@ -1,0 +1,19 @@
+@startuml
+class GameScreen {
+    - _viewportFocused : bool
+    - _viewportHovered : bool
+    - {static} _minutes : int
+    + GameScreen(minutes:int)
+    + GameScreen()
+    + {static} NewRound() : void
+    - {static} SkipWord() : void
+    - {static} WordGuessed() : void
+    + <<override>> OnUpdate(deltaTime:float) : void
+    + <<override>> OnImGuiUpdate() : void
+}
+Screen <|-- GameScreen
+GameScreen o-> "_viewportSize" Vector2
+GameScreen o-> "_chatPanel" ChatPanel
+GameScreen o-> "_toolPanel" ToolPanel
+GameScreen o-> "CursorOffset" Vector2
+@enduml

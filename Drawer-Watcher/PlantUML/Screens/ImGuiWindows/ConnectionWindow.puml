@@ -1,0 +1,7 @@
+@startuml
+class ConnectionWindow <<static>> {
+    + {static} IsVisible : bool
+    + {static} OnImGuiUpdate(nickname:string, connectionInfo:ConnectionInfo) : void
+    - {static} Connect(info:ConnectionInfo, nickname:string) : void
+}
+@enduml

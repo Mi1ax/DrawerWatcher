@@ -1,0 +1,89 @@
+@startuml
+enum MessageID {
+    SendPainting= 1,
+    ChatMessage,
+    SameNick,
+    StartGame,
+    LobbyExit,
+    NewWord,
+    Timer,
+    TimesUp,
+    Winner,
+    ConnectionInfo,
+    ClientInfo,
+    DrawerStatus,
+    AllClear,
+}
+class NetworkLogger <<static>> {
+    + {static} Init() : void
+    - {static} Log(fmt:string) : void
+}
+class MessageHandlers <<static>> {
+    - {static} Log(functionName:string, enumName:string, type:LogType) : void
+    - {static} Log(message:string, type:LogType) : void
+    + {static} SetDrawer(clientID:ushort, value:bool) : void
+    + {static} SendLobbyExit() : void
+    + {static} ClearPainting() : void
+    + {static} SendDrawingData(start:Vector2, end:Vector2, thickness:float, color:Color) : void
+    + {static} SendMessageInChat(senderID:ushort, text:string) : void
+    + {static} SendNewWord() : void
+    + {static} SendTime(time:string) : void
+    + {static} SendTimesUp() : void
+    + {static} SendOtherPlayersInfo(toClientId:ushort) : void
+    - {static} HandleClientInfo(fromClientID:ushort, message:Message) : void
+    - {static} HandleDrawerMessage(fromClientID:ushort, message:Message) : void
+    - {static} HandleLobbyExit(fromClientID:ushort, message:Message) : void
+    - {static} HandleAllClear(fromClientID:ushort, message:Message) : void
+    - {static} HandlePainting(fromClientID:ushort, message:Message) : void
+    - {static} HandleStartGame(fromClientID:ushort, message:Message) : void
+    - {static} HandleChatMessage(fromClientID:ushort, message:Message) : void
+    - {static} HandleWinner(fromClientID:ushort, message:Message) : void
+    - {static} HandleNewWord(fromClientID:ushort, message:Message) : void
+    - {static} HandleTimer(fromClientID:ushort, message:Message) : void
+    - {static} HandleTimesUp(fromClientID:ushort, message:Message) : void
+    - {static} HandleConnectionInfo(message:Message) : void
+    - {static} HandleNewClientInfo(message:Message) : void
+    - {static} HandleDrawerStatus(message:Message) : void
+    - {static} HandleAllClear(_:Message) : void
+    - {static} HandlePainting(message:Message) : void
+    - {static} HandleChatMessage(message:Message) : void
+    - {static} HandleWinner(message:Message) : void
+    - {static} HandleNewWord(message:Message) : void
+    - {static} HandleTimer(message:Message) : void
+    - {static} HandleTimesUp(message:Message) : void
+    - {static} HandleStartGame(message:Message) : void
+    - {static} HandleLobbyExit(message:Message) : void
+}
+class NetworkManager <<static>> {
+    + {static} IsHost : bool <<get>>
+    + {static} IsClientConnected : bool <<get>>
+    + {static} Initialize() : void
+    + {static} StartGame(minutes:int) : void
+    + {static} StartServer(info:ConnectionInfo) : void
+    + {static} ConnectToServer(info:ConnectionInfo, nickname:string) : void
+    + {static} Update() : void
+}
+class "Dictionary`2"<T1,T2> {
+}
+class Client <<static>> {
+    + {static} IsConnected : bool
+    - {static} _clientNickname : string = "DefaultNickname"
+    + {static} Init() : void
+    - {static} OnServerConnected(sender:object?, args:EventArgs) : void
+    - {static} OnServerDisconnected(sender:object?, args:DisconnectedEventArgs) : void
+    - {static} OnClientDisconnected(sender:object?, args:ClientDisconnectedEventArgs) : void
+    + {static} Connect(info:ConnectionInfo, nickname:string) : void
+    + {static} IsConnectedToServer : bool <<get>>
+}
+class Server <<static>> {
+    + {static} IsHosted : bool
+    + {static} Init() : void
+    + {static} Start() : void
+    + {static} Close() : void
+    + {static} ServerIsRunning() : bool
+}
+NetworkManager o-> "Players<ushort,Player>" "Dictionary`2"
+NetworkManager +-- Client
+NetworkManager +-- Server
+Server o-> "ConnectionInfo" ConnectionInfo
+@enduml

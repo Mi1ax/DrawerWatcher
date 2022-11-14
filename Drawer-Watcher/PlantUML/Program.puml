@@ -1,0 +1,17 @@
+@startuml
+class GameLayer {
+    + GameLayer()
+    + <<override>> OnAttach() : void
+    + <<override>> OnImGuiUpdate() : void
+    + <<override>> OnUpdate(deltaTime:float) : void
+    + <<override>> OnEvent() : bool
+}
+class Game {
+    + Game()
+}
+class Program <<static>> {
+    - {static} Main() : void
+}
+Layer <|-- GameLayer
+Application <|-- Game
+@enduml

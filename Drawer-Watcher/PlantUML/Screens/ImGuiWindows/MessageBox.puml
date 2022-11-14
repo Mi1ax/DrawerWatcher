@@ -1,0 +1,23 @@
+@startuml
+enum MessageBoxButtons {
+    YesNo,
+    Ok,
+}
+enum MessageBoxResult {
+    None,
+    Ok,
+    Yes,
+    No,
+}
+class MessageBox <<static>> {
+    - {static} _open : bool
+    - {static} _title : string = "MessageBox"
+    - {static} _message : string = "Message"
+    - {static} _onResult : Action<MessageBoxResult>?
+    + {static} IsOpen() : bool
+    + {static} Show(title:string, message:string, buttons:MessageBoxButtons, onResult:Action<MessageBoxResult>?) : void
+    + {static} OnImGuiUpdate() : void
+    - {static} Button(button:MessageBoxResult) : void
+}
+MessageBox --> "_buttons" MessageBoxButtons
+@enduml

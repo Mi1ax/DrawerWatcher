@@ -1,0 +1,7 @@
+@startuml
+class ServerCreationWindow <<static>> {
+    + {static} IsVisible : bool
+    + {static} OnImGuiUpdate(nickname:string, connectionInfo:ConnectionInfo) : void
+    - {static} Create(info:ConnectionInfo, nickname:string) : void
+}
+@enduml

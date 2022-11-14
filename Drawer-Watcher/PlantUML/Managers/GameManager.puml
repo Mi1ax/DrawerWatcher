@@ -1,0 +1,36 @@
+@startuml
+class ConnectionInfo <<struct>> {
+    + Ip : string
+    + Port : int
+    + ConnectionInfo(ip:string, port:int)
+    + <<const>> MaxConnection : int = 4
+}
+class GameData <<struct>> {
+    + {static} Painting : RenderTexture? = null
+    + Dispose() : void
+}
+class GameManager <<static>> {
+    + {static} CurrentWord : string = ""
+    + {static} Guesser : ushort = 0
+    + {static} IsRoundEnded : bool = false
+    + {static} IsGameStarted : bool = false
+    + {static} GetRandomWord() : string
+}
+class Timer <<static>> {
+    - {static} _timer : System.Timers.Timer?
+    - {static} _onTimerEnds : Action?
+    + {static} Enable : bool <<get>>
+    + {static} CurrentTime : string = "0:00"
+    + {static} Init() : void
+    - {static} OnTimerElapsed(sender:object?, args:ElapsedEventArgs) : void
+    + {static} Start(time:TimeSpan, onTimerEnds:Action) : void
+    + {static} Stop() : void
+}
+ConnectionInfo o-> "Default" ConnectionInfo
+ConnectionInfo o-> "Local" ConnectionInfo
+IDisposable <|-- GameData
+GameData o-> "ClearColor" Color
+GameManager o-> "_random" Random
+GameManager +-- Timer
+Timer --> "_time" TimeSpan
+@enduml
