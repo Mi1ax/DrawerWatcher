@@ -50,6 +50,9 @@
     "Score": "Score",
     "Drawer": "Drawer",
     "Leaders": "Leaders",
-    "OpenWords": "Open words dictionary"
+    "OpenWords": "Open words dictionary",
+    "MaxPlayers": "Max players",
+    "NeedServerRestart": "Need to restart the server",
+    "SameNickname": "Player with the same nickname already exist"
   }
 }
