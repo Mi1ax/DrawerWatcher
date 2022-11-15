@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using CouscousEngine.Core;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -92,7 +93,7 @@ public class GameScreen : Screen
 
         if (GameManager.Guesser != 0)
         {
-            ChatPanel.AddToLastMessage(" <- right");
+            ChatPanel.AddToLastMessage($" <- {LanguageSystem.GetLocalized("Correct")}");
             WordGuessed();
         }
     }
@@ -130,7 +131,7 @@ public class GameScreen : Screen
                 ImGui.DockSpace(dockspaceID, Vector2.Zero, ImGuiDockNodeFlags.NoResize);
             }
 
-            MenuBar.OnImGuiUpdate(exitName: "Exit to lobby", onExit: () =>
+            MenuBar.OnImGuiUpdate(exitName: LanguageSystem.GetLocalized("LobbyExit"), onExit: () =>
             {
                 GameManager.IsGameStarted = false;
                 MessageHandlers.SendLobbyExit();
@@ -162,7 +163,7 @@ public class GameScreen : Screen
                 if (Player.ApplicationOwner!.IsDrawer)
                     ImGui.Text($"{GameManager.CurrentWord}");
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Skip")) SkipWord();
+                if (ImGui.SmallButton(LanguageSystem.GetLocalized("Skip"))) SkipWord();
                 ImGui.End();
             }
 
@@ -182,11 +183,13 @@ public class GameScreen : Screen
                 else
                 {
                     if (GameManager.Timer.CurrentTime == "0:00")
-                        ImGui.Text($"Time's up. The word was {GameManager.CurrentWord}");
+                        ImGui.Text($"{LanguageSystem.GetLocalized("TimesUp")}. " +
+                                   $"{LanguageSystem.GetLocalized("WordWas")} {GameManager.CurrentWord}");
                     if (GameManager.Guesser != 0)
                         // TODO: Handle error when player disconnected
-                        ImGui.Text($"{NetworkManager.Players[GameManager.Guesser].Nickname} guessed word right. " +
-                                   $"The word was {GameManager.CurrentWord}");
+                        ImGui.Text($"{NetworkManager.Players[GameManager.Guesser].Nickname} " +
+                                   $"{LanguageSystem.GetLocalized("GuessedWord")}. " +
+                                   $"{LanguageSystem.GetLocalized("WordWas")} {GameManager.CurrentWord}");
                     LeaderBoardWindow.IsVisible = true;
                     GameManager.Timer.Stop();
                 }

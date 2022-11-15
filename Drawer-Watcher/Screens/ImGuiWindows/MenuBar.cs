@@ -6,19 +6,21 @@ namespace Drawer_Watcher.Screens.ImGuiWindows;
 
 public static class MenuBar
 {
-    public static void OnImGuiUpdate(Action? additionalMenu = null, string exitName = "Exit", Action? onExit = null)
+    public static void OnImGuiUpdate(Action? additionalMenu = null, string? exitName = null, Action? onExit = null)
     {
+        exitName ??= LanguageSystem.GetLocalized("Exit");
         ImGui.BeginMenuBar();
         {
             if (ImGui.BeginMenu(LanguageSystem.GetLocalized("GameName")))
             {
-                if (ImGui.MenuItem("Settings", ScreenManager.CurrentScreen is not GameScreen))
+                if (ImGui.MenuItem(LanguageSystem.GetLocalized("Settings"), ScreenManager.CurrentScreen is not GameScreen))
                     SettingsWindow.IsVisible = true;
                 if (ImGui.MenuItem(exitName))
                 {
                     if (onExit == null)
                     {
-                        MessageBox.Show("Exit", "Are you sure?",
+                        MessageBox.Show(LanguageSystem.GetLocalized("Exit"), 
+                            LanguageSystem.GetLocalized("AreYouSure"),
                             MessageBoxButtons.YesNo, button =>
                             {
                                 if (button == MessageBoxResult.Yes)

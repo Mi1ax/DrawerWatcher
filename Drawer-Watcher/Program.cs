@@ -24,10 +24,12 @@ public class GameLayer : Layer
             fileStream.Close();
         }
 
+        LanguageSystem.Init();
+
         SettingsIni.Init("Settings.ini");
         SettingsIni.Load();
         
-        LanguageSystem.Init();
+        _rl.SetWindowTitle(LanguageSystem.GetLocalized("GameName"));
         
         var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
         var font32 = AssetManager.LoadFont("RobotoMono-Regular-32", "Assets/Fonts/RobotoMono-Regular.ttf", 32);
@@ -44,7 +46,8 @@ public class GameLayer : Layer
     {
         if (_rl.WindowShouldClose())
         {
-            MessageBox.Show("Exit", "Are you sure?",
+            MessageBox.Show(LanguageSystem.GetLocalized("Exit"), 
+                LanguageSystem.GetLocalized("AreYouSure"),
                 MessageBoxButtons.YesNo, button =>
                 {
                     if (button == MessageBoxResult.Yes)

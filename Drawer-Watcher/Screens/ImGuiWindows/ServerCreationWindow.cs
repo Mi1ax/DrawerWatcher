@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Networking;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -14,15 +15,15 @@ public static class ServerCreationWindow
         if (!IsVisible) return;
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-        ImGui.Begin("Connection##create", ref IsVisible, SettingsData.WindowFlags);
+        ImGui.Begin($"{LanguageSystem.GetLocalized("Connection")}##create", ref IsVisible, SettingsData.WindowFlags);
         {
-            ImGui.Text($"Nickname: ({nickname})");
+            ImGui.Text($"{LanguageSystem.GetLocalized("Nickname")}: ({nickname})");
             ImGui.InputText("IP", ref connectionInfo.Ip, 128);
             ImGui.InputInt("Port", ref connectionInfo.Port, 6);
-            if (ImGui.Button("Create Game"))
+            if (ImGui.Button(LanguageSystem.GetLocalized("CreateGame")))
                 Create(connectionInfo, nickname);
 
-            if (ImGui.Button("Create locally"))
+            if (ImGui.Button(LanguageSystem.GetLocalized("CreateGameLocally")))
                 Create(ConnectionInfo.Local, nickname);
             ImGui.End();
         }

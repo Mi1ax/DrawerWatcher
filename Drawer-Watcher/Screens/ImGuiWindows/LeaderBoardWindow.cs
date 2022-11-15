@@ -1,4 +1,5 @@
 using System.Numerics;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -13,7 +14,7 @@ public static class LeaderBoardWindow
         if (!IsVisible) return;
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-        ImGui.Begin("Leaders:", SettingsData.WindowFlags);
+        ImGui.Begin($"{LanguageSystem.GetLocalized("Leaders")}:", SettingsData.WindowFlags);
         {
             var sortedDict = (
                     from entry in NetworkManager.Players.Values 
@@ -28,10 +29,10 @@ public static class LeaderBoardWindow
 
             if (Player.ApplicationOwner!.IsDrawer)
             {
-                if (ImGui.SmallButton("New round"))
+                if (ImGui.SmallButton(LanguageSystem.GetLocalized("NewRound")))
                     GameScreen.NewRound();
             }
-            if (ImGui.SmallButton("Exit"))
+            if (ImGui.SmallButton(LanguageSystem.GetLocalized("Exit")))
             {
                 GameManager.IsGameStarted = false;
                 MessageHandlers.SendLobbyExit();

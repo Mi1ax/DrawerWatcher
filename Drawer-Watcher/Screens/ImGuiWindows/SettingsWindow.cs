@@ -62,6 +62,18 @@ public static class SettingsIni
         var windowWidth = Convert.ToInt32(resolution.Split('x')[0]);
         var windowHeight = Convert.ToInt32(resolution.Split('x')[1]);
         _rl.SetWindowSize(windowWidth, windowHeight);
+
+        var language = GetData("language");
+        var languages = LanguageSystem.Languages.Keys.ToArray();
+        for (var i = 0; i < languages.Length; i++)
+        {
+            if (languages[i] == language)
+            {
+                LanguageSystem.SelectedLanguageIndex = i;
+                break;
+            }
+        }
+        LanguageSystem.SelectLanguage(language);
     }
     
     public static void AddData(string name, string data)
@@ -83,9 +95,9 @@ public static class SettingsWindow
         if (!IsVisible || ScreenManager.CurrentScreen is GameScreen) return;
         var flags = SettingsData.WindowFlags;
         flags -= ImGuiWindowFlags.NoMove;
-        ImGui.Begin("Settings", ref IsVisible, flags);
+        ImGui.Begin(LanguageSystem.GetLocalized("Settings"), ref IsVisible, flags);
         {
-            ImGui.Text($"Resolution (Current {SettingsIni.GetData("resolution")}):");
+            ImGui.Text($"{LanguageSystem.GetLocalized("Resolution")} ({LanguageSystem.GetLocalized("CurrentResolution")} {SettingsIni.GetData("resolution")}):");
             if (ImGui.Button("1280x720"))
             {
                 SettingsData.Resolution = Resolutions._1280x720;
@@ -98,11 +110,16 @@ public static class SettingsWindow
                 SettingsIni.AddData("resolution", "960x480");
             }
             
-            ImGui.Text($"Language: (Current {LanguageSystem.CurrentLanguage.Name}):");
+            ImGui.Text($"{LanguageSystem.GetLocalized("Language")}: ({LanguageSystem.GetLocalized("CurrentLanguage")} {LanguageSystem.CurrentLanguage.Name}):");
             var languages = LanguageSystem.Languages.Keys.ToArray();
-            ImGui.Combo("##languages", 
-                ref LanguageSystem.SelectedLanguageIndex, languages, languages.Length);
-            LanguageSystem.SelectLanguage(languages[LanguageSystem.SelectedLanguageIndex]);
+            if (ImGui.Combo("##languages", 
+                    ref LanguageSystem.SelectedLanguageIndex,
+                    languages, languages.Length))
+            {
+                var lang = languages[LanguageSystem.SelectedLanguageIndex];
+                SettingsIni.AddData("language", lang);
+                LanguageSystem.SelectLanguage(lang);
+            }
             ImGui.End();
         }
     }

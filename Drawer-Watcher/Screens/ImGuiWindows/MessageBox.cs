@@ -1,4 +1,5 @@
 using System.Numerics;
+using Drawer_Watcher.Localization;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens.ImGuiWindows;
@@ -64,7 +65,8 @@ public static class MessageBox
     
     private static void Button(MessageBoxResult button)
     {
-        if (!ImGui.Button(button.ToString())) return;
+        if (!ImGui.Button(LanguageSystem.GetLocalized(button.ToString()))) 
+            return;
         _open = false;
         ImGui.CloseCurrentPopup();
         _onResult?.Invoke(button);

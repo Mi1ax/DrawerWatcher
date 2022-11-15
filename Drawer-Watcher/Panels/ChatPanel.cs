@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -29,7 +30,7 @@ public class ChatPanel
     public void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
         ImGui.Begin("Chat", flags);
-        ImGui.Text("Chat");
+        ImGui.Text(LanguageSystem.GetLocalized("Chat"));
         ImGui.Separator();
         var footerHeightToReserve = ImGui.GetStyle().ItemSpacing.Y + ImGui.GetFrameHeightWithSpacing();
         ImGui.BeginChild("Scrollbar", new Vector2(0, -footerHeightToReserve), false, ImGuiWindowFlags.HorizontalScrollbar);
@@ -43,7 +44,8 @@ public class ChatPanel
         ImGui.Separator();
         if (!DisableInput)
         {
-            if (ImGui.InputText("Input", ref _text, 128, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputText(LanguageSystem.GetLocalized("Input"), 
+                    ref _text, 128, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if (Player.ApplicationOwner == null) return;
                 MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _text);
