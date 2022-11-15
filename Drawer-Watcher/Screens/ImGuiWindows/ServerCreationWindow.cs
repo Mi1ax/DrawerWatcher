@@ -34,6 +34,7 @@ public static class ServerCreationWindow
         LobbyWindow.Clear();
         NetworkManager.Players.Clear();
         ServerManager.Server.Stop();
+        NetworkManager.IsHost = false;
         NetworkManager.StartServer(info);
         NetworkManager.ConnectToServer(info, nickname);
         IsVisible = false;

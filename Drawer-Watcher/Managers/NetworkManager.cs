@@ -457,7 +457,7 @@ public static class NetworkManager
     public static bool IsHost 
     {
         get => Server.IsHosted;
-        private set
+        set
         {
             Server.IsHosted = value;
             if (Server.IsHosted) 

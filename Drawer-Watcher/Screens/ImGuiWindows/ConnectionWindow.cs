@@ -32,6 +32,7 @@ public static class ConnectionWindow
     {
         LobbyWindow.Clear();
         NetworkManager.Players.Clear();
+        NetworkManager.IsHost = false;
         ServerManager.Server.Stop();
         NetworkManager.ConnectToServer(info, nickname);
         IsVisible = false;
