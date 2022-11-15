@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Localization;
@@ -120,6 +121,9 @@ public static class SettingsWindow
                 SettingsIni.AddData("language", lang);
                 LanguageSystem.SelectLanguage(lang);
             }
+
+            if (ImGui.SmallButton($"{LanguageSystem.GetLocalized("OpenWords")}"))
+                Process.Start( new ProcessStartInfo { FileName = @"Assets/Words.txt", UseShellExecute = true } );
             ImGui.End();
         }
     }
