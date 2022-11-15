@@ -32,18 +32,7 @@ public class GameScreen : Screen
             NewRound();
             _chatPanel.DisableInput = true;
         }
-    }
-    
-    public GameScreen()
-    {
-        _minutes = 1;
-        GameData.Painting = Renderer.LoadRenderTexture(1, 1);
-
-        if (Player.ApplicationOwner is { IsDrawer: true })
-        {
-            NewRound();
-            _chatPanel.DisableInput = true;
-        }
+        MessageHandlers.ClearPainting();
     }
 
     public static void NewRound()
@@ -54,6 +43,7 @@ public class GameScreen : Screen
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
         GameManager.IsRoundEnded = false;
+        GameManager.Timer.Init();
         GameManager.Timer.Start(TimeSpan.FromMinutes(_minutes), () =>
         {
             MessageHandlers.SendTimesUp();
@@ -190,7 +180,7 @@ public class GameScreen : Screen
                                    $"{LanguageSystem.GetLocalized("GuessedWord")}. " +
                                    $"{LanguageSystem.GetLocalized("WordWas")} {GameManager.CurrentWord}");
                     LeaderBoardWindow.IsVisible = true;
-                    GameManager.Timer.Stop();
+                    GameManager.Timer.Enable = false;
                 }
                 ImGui.End();
                 ImGui.PopStyleVar();

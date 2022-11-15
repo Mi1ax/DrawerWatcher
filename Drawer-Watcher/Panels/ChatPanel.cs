@@ -47,7 +47,7 @@ public class ChatPanel
             if (ImGui.InputText(LanguageSystem.GetLocalized("Input"), 
                     ref _text, 128, ImGuiInputTextFlags.EnterReturnsTrue))
             {
-                if (Player.ApplicationOwner == null) return;
+                if (Player.ApplicationOwner == null || string.IsNullOrWhiteSpace(_text)) return;
                 MessageHandlers.SendMessageInChat(Player.ApplicationOwner.ID, _text);
                 _text = "";
                 ImGui.SetKeyboardFocusHere(-1);

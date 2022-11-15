@@ -63,7 +63,7 @@ public static class GameManager
         public static bool Enable
         {
             get => _timer is { Enabled: true };
-            private set
+            set
             {
                 if (_timer != null) 
                     _timer.Enabled = value;
@@ -74,6 +74,7 @@ public static class GameManager
         
         public static void Init()
         {
+            _timer?.Dispose();
             _timer = new System.Timers.Timer
             {
                 Enabled = false,
@@ -99,7 +100,5 @@ public static class GameManager
             _onTimerEnds = onTimerEnds;
             Enable = true;
         }
-
-        public static void Stop() => Enable = false;
     }
 }

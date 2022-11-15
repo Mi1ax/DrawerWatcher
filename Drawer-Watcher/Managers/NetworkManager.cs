@@ -23,6 +23,7 @@ public enum MessageID : ushort
     Timer,
     TimesUp,
     Winner,
+    ResetScore,
     
     ConnectionInfo,
     ClientInfo,
@@ -60,6 +61,11 @@ public static class MessageHandlers
     }
     
     #region Send data from Client to the Server
+
+    public static void ResetScore()
+    {
+        ClientManager.Client!.Send(Message.Create(MessageSendMode.Reliable, MessageID.ResetScore));
+    }
 
     public static void SetDrawer(ushort clientID, bool value)
     {
@@ -158,6 +164,12 @@ public static class MessageHandlers
         newPlayer.AddBool(false);
         newPlayer.AddBool(true);
         ServerManager.Server.SendToAll(message, toClientId);
+    }
+    
+    [MessageHandler((ushort) MessageID.ResetScore)]
+    private static void HandleResetScore(ushort fromClientID, Message message)
+    {
+        ServerManager.Server.SendToAll(message);
     }
     
     [MessageHandler((ushort) MessageID.ClientInfo)]
@@ -322,6 +334,13 @@ public static class MessageHandlers
         ChatPanel.ClearChat();
     }
     
+    [MessageHandler((ushort) MessageID.ResetScore)]
+    private static void HandlResetScore(Message message)
+    {
+        foreach (var player in NetworkManager.Players.Values)
+            player.Score = 0;
+    }
+    
     [MessageHandler((ushort) MessageID.DrawerStatus)]
     private static void HandleDrawerStatus(Message message)
     {
@@ -360,7 +379,7 @@ public static class MessageHandlers
         var text = message.GetString();
         if (!GameManager.IsRoundEnded)
         {
-            if (text == GameManager.CurrentWord)
+            if (string.Equals(text, GameManager.CurrentWord, StringComparison.CurrentCultureIgnoreCase))
             {
                 GameManager.Guesser = senderID;
                 var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageID.Winner);
@@ -413,8 +432,9 @@ public static class MessageHandlers
         GameManager.IsGameStarted = true;
         foreach (var player in NetworkManager.Players.Values)
             player.IsInLobby = false;
+        foreach (var player in NetworkManager.Players.Values)
+            player.Score = 0;
         ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
-        ClearPainting();
     }
     
     [MessageHandler((ushort) MessageID.LobbyExit)]

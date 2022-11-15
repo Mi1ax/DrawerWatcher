@@ -30,7 +30,10 @@ public static class LeaderBoardWindow
             if (Player.ApplicationOwner!.IsDrawer)
             {
                 if (ImGui.SmallButton(LanguageSystem.GetLocalized("NewRound")))
+                {
+                    MessageHandlers.ResetScore();
                     GameScreen.NewRound();
+                }
             }
             if (ImGui.SmallButton(LanguageSystem.GetLocalized("Exit")))
             {

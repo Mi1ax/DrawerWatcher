@@ -23,8 +23,6 @@ public class GameLayer : Layer
             var fileStream = File.Create("Settings.ini");
             fileStream.Close();
         }
-        
-        GameManager.Timer.Init();
 
         LanguageSystem.Init();
 
@@ -78,6 +76,8 @@ internal class Game : Application
     public Game() 
         : base("Drawer Watcher", disableWindowCloseButton: true)
     {
+        var image = _rl.LoadImage("Assets/icon.png");
+        _rl.SetWindowIcon(image);
         PushLayer(new GameLayer());
     }
 }
