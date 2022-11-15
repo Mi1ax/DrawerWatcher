@@ -10,11 +10,11 @@ public static class LobbyWindow
 {
     public static bool IsVisible;
     
-    private static readonly List<string> _watchersNames = new();
+    public static readonly List<string> WatchersNames = new();
 
     private static int _minutes = 1;
 
-    public static void Clear() => _watchersNames.Clear();
+    public static void Clear() => WatchersNames.Clear();
     
     public static void OnImGuiUpdate()
     {
@@ -107,25 +107,25 @@ public static class LobbyWindow
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
-                    ImGui.Text($"{LanguageSystem.GetLocalized("Watchers")} ({_watchersNames.Count})");
+                    ImGui.Text($"{LanguageSystem.GetLocalized("Watchers")} ({WatchersNames.Count})");
                     foreach (var (_, player) in NetworkManager.Players)
                     {
                         if (player.Nickname == "DefaultNickname") continue;
                         if (player.IsDrawer)
                         {
-                            if (_watchersNames.Contains(player.Nickname))
-                                _watchersNames.Remove(player.Nickname);
+                            if (WatchersNames.Contains(player.Nickname))
+                                WatchersNames.Remove(player.Nickname);
                             continue;
                         }
-                        if (!_watchersNames.Contains(player.Nickname))
-                            _watchersNames.Add(player.Nickname);
+                        if (!WatchersNames.Contains(player.Nickname))
+                            WatchersNames.Add(player.Nickname);
                     }
                     
-                    if (_watchersNames.Count == 0)
+                    if (WatchersNames.Count == 0)
                         ImGui.Text(LanguageSystem.GetLocalized("Empty"));
                     else
                     {
-                        foreach (var name in _watchersNames)
+                        foreach (var name in WatchersNames)
                             ImGui.Text(name);
                     }
                     

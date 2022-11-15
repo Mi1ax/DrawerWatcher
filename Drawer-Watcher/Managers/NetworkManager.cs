@@ -28,6 +28,7 @@ public enum MessageID : ushort
     
     DrawerStatus,
     AllClear,
+    ChatClear
 }
 
 public static class NetworkLogger 
@@ -67,6 +68,12 @@ public static class MessageHandlers
         message.AddUShort(clientID);
         message.AddBool(value);
         ClientManager.Client!.Send(message);
+    }
+
+    public static void ClearChat()
+    {
+        Log("(To Server) Clear chat");
+        ClientManager.Client!.Send(Message.Create(MessageSendMode.Reliable, MessageID.ChatClear));
     }
 
     public static void SendLobbyExit()
@@ -223,6 +230,16 @@ public static class MessageHandlers
         }
     }
     
+    [MessageHandler((ushort) MessageID.ChatClear)]
+    private static void HandleChatClear(ushort fromClientID, Message message)
+    {
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
+    }
+    
     [MessageHandler((ushort) MessageID.Winner)]
     private static void HandleWinner(ushort fromClientID, Message message)
     {
@@ -296,6 +313,12 @@ public static class MessageHandlers
         var clientNick = message.GetString();
         Log($"(From Server) Get nick from {clientID}: {clientNick}");
         NetworkManager.Players[clientID].Nickname = clientNick;
+    }
+    
+    [MessageHandler((ushort) MessageID.ChatClear)]
+    private static void HandleClearChat(Message message)
+    {
+        ChatPanel.ClearChat();
     }
     
     [MessageHandler((ushort) MessageID.DrawerStatus)]
@@ -463,7 +486,12 @@ public static class NetworkManager
             object? sender, 
             ClientDisconnectedEventArgs args)
         {
-            Players.Remove(args.Id);
+            if (Players.TryGetValue(args.Id, out var player))
+            {
+                var playerName = player.Nickname;
+                LobbyWindow.WatchersNames.Remove(playerName);
+                Players.Remove(args.Id);   
+            }
         }
 
         public static void Connect(ConnectionInfo info, string nickname)
@@ -495,6 +523,8 @@ public static class NetworkManager
                 },
                 (_, e) =>
                 {
+                    var playerName = Players[e.Client.Id].Nickname;
+                    LobbyWindow.WatchersNames.Remove(playerName);
                     Players.Remove(e.Client.Id);
                 }
             );

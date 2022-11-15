@@ -51,7 +51,7 @@ public class GameScreen : Screen
     public static void NewRound()
     {
         LeaderBoardWindow.IsVisible = false;
-        ChatPanel.ClearChat();
+        MessageHandlers.ClearChat();
         MessageHandlers.SendNewWord();
         MessageHandlers.ClearPainting();
         GameManager.Guesser = 0;
