@@ -16,7 +16,7 @@ public struct ConnectionInfo
         Port = port;
     }
     
-    public const int MaxConnection = 4;
+    public static int MaxConnection = 4;
 
     public static readonly ConnectionInfo Default = new("46.138.252.180", 34827);
     public static readonly ConnectionInfo Local = new("127.0.0.1", 34827);

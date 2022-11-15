@@ -161,7 +161,8 @@ public class GameScreen : Screen
                 if (Player.ApplicationOwner!.IsDrawer)
                     ImGui.Text($"{GameManager.CurrentWord}");
                 ImGui.SameLine();
-                if (ImGui.SmallButton(LanguageSystem.GetLocalized("Skip"))) SkipWord();
+                if (Player.ApplicationOwner.IsDrawer)
+                    if (ImGui.SmallButton(LanguageSystem.GetLocalized("Skip"))) SkipWord();
                 ImGui.End();
             }
 

@@ -2,8 +2,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Localization;
+using Drawer_Watcher.Managers;
 using ImGuiNET;
 using IniParser;
 using IniParser.Model;
@@ -112,6 +114,20 @@ public static class SettingsWindow
                 SettingsIni.AddData("resolution", "960x480");
             }
             
+            ImGui.Text($"{LanguageSystem.GetLocalized("MaxPlayers")}: " +
+                       $"({LanguageSystem.GetLocalized("CurrentResolution")} {ConnectionInfo.MaxConnection}):");
+            ImGui.SameLine();
+            rlImGui.HelpMarker(LanguageSystem.GetLocalized("NeedServerRestart"));
+            if (ImGui.InputInt("", ref ConnectionInfo.MaxConnection, 1, 1))
+            {
+                ConnectionInfo.MaxConnection = ConnectionInfo.MaxConnection switch
+                {
+                    < 1 => 1,
+                    > 6 => 6,
+                    _ => ConnectionInfo.MaxConnection
+                }; 
+            }
+
             ImGui.Text($"{LanguageSystem.GetLocalized("Language")}: ({LanguageSystem.GetLocalized("CurrentLanguage")} {LanguageSystem.CurrentLanguage.Name}):");
             var languages = LanguageSystem.Languages.Keys.ToArray();
             if (ImGui.Combo("##languages", 
