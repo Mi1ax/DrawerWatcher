@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
 using Drawer_Watcher.Localization;
@@ -123,7 +124,12 @@ public static class SettingsWindow
             }
 
             if (ImGui.SmallButton($"{LanguageSystem.GetLocalized("OpenWords")}"))
-                Process.Start( new ProcessStartInfo { FileName = @"Assets/Words.txt", UseShellExecute = true } );
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    Process.Start( new ProcessStartInfo { FileName = @"Assets/Words.txt", UseShellExecute = true } );
+                else
+                    Process.Start( new ProcessStartInfo { FileName = @"Assets\Words.txt", UseShellExecute = true } );
+            }
             ImGui.End();
         }
     }
