@@ -1,3 +1,4 @@
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -8,16 +9,16 @@ public static class StatPanel
     public static void OnImGuiUpdate(ImGuiWindowFlags flags = ImGuiWindowFlags.None)
     {
         ImGui.Begin("Stats", flags);
-        ImGui.Text("Players:");
+        ImGui.Text($"{LanguageSystem.GetLocalized("Players")}:");
         ImGui.Separator();
         foreach (var player in NetworkManager.Players.Values)
         {
             if (player.IsInLobby) continue;
             var text = $"{player.Nickname} ";
             if (!player.IsDrawer)
-                text += $"Score: {player.Score} ";
+                text += $"{LanguageSystem.GetLocalized("Score")}: {player.Score} ";
             else
-                text += "<- Drawer";
+                text += $"<- {LanguageSystem.GetLocalized("Drawer")}";
             ImGui.Text(text);
         }
         ImGui.End();

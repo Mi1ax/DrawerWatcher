@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Networking;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
 
@@ -9,11 +10,11 @@ public static class LobbyWindow
 {
     public static bool IsVisible;
     
-    private static readonly List<string> _watchersNames = new();
+    public static readonly List<string> WatchersNames = new();
 
     private static int _minutes = 1;
 
-    public static void Clear() => _watchersNames.Clear();
+    public static void Clear() => WatchersNames.Clear();
     
     public static void OnImGuiUpdate()
     {
@@ -23,19 +24,21 @@ public static class LobbyWindow
         {
             var center = ImGui.GetMainViewport().GetCenter();
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-            ImGui.Begin("Connection", ImGuiWindowFlags.NoDocking |
-                                      ImGuiWindowFlags.NoResize |
-                                      ImGuiWindowFlags.NoMove | 
-                                      ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin(LanguageSystem.GetLocalized("Connection"), ImGuiWindowFlags.NoDocking |
+                                                                   ImGuiWindowFlags.NoResize |
+                                                                   ImGuiWindowFlags.NoMove | 
+                                                                   ImGuiWindowFlags.NoCollapse);
             {
-                ImGui.Text("Connecting to the server ... ");
+                ImGui.Text(LanguageSystem.GetLocalized("ConnectingToTheServer"));
                 ImGui.End();
             }
         } 
         else if (ClientManager.Client.IsNotConnected)
         {
             if (!MessageBox.IsOpen())
-                MessageBox.Show("Error", "An error occurred connecting to the server", MessageBoxButtons.Ok,
+                MessageBox.Show(LanguageSystem.GetLocalized("Error"), 
+                    LanguageSystem.GetLocalized("ErrorConnectionToServer"), 
+                    MessageBoxButtons.Ok,
                 result =>
                 {
                     if (result == MessageBoxResult.Ok)
@@ -46,22 +49,25 @@ public static class LobbyWindow
         {
             var center = ImGui.GetMainViewport().GetCenter();
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-            ImGui.Begin("Lobby", ref IsVisible, SettingsData.WindowFlags);
+            ImGui.Begin(LanguageSystem.GetLocalized("Lobby"), ref IsVisible, SettingsData.WindowFlags);
             {
                 if (ImGui.BeginTable("table", 2, ImGuiTableFlags.BordersInnerV))
                 {
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                    ImGui.Text("Game Settings");
+                    ImGui.Text(LanguageSystem.GetLocalized("GameSettings"));
                     switch (NetworkManager.IsHost)
                     {
                         case true:
                         {
-                            ImGui.Text("Minutes for guessing");
+                            ImGui.Text(LanguageSystem.GetLocalized("MinutesForGuessing"));
                             if (ImGui.InputInt("", ref _minutes, 1, 1))
+                            {
                                 if (_minutes < 1) _minutes = 1;
+                                if (_minutes > 15) _minutes = 15;
+                            }
 
-                            if (ImGui.Button("Start"))
+                            if (ImGui.Button(LanguageSystem.GetLocalized("Start")))
                             {
                                 if (NetworkManager.Players.Values.FirstOrDefault(p => p.IsDrawer) != null)
                                     NetworkManager.StartGame(_minutes);
@@ -70,12 +76,12 @@ public static class LobbyWindow
                             break;
                         }
                         case false when GameManager.IsGameStarted:
-                            ImGui.Text("Game is already started. \nWait until the end");
+                            ImGui.Text(LanguageSystem.GetLocalized("GameIsRunning"));
                             break;
                     }
 
                     ImGui.TableNextColumn();
-                    var drawerName = "Empty";
+                    var drawerName = LanguageSystem.GetLocalized("Empty");
                     foreach (var (_, player) in NetworkManager.Players)
                     {
                         if (player.IsDrawer && player.Nickname != "DefaultNickname")
@@ -86,9 +92,9 @@ public static class LobbyWindow
                     }
 
                     var count = drawerName == "Empty" ? 0 : 1;
-                    ImGui.Text($"Drawers ({count})");
+                    ImGui.Text($"{LanguageSystem.GetLocalized("Drawers")} ({count})");
                     ImGui.Text(drawerName);
-                    if (ImGui.Button("Join##drawers"))
+                    if (ImGui.Button($"{LanguageSystem.GetLocalized("Join")}##drawers"))
                     {
                         if (Player.ApplicationOwner == null) return;
                         if (NetworkManager.Players.Values.Any(player => player.IsDrawer))
@@ -101,29 +107,29 @@ public static class LobbyWindow
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
-                    ImGui.Text($"Watchers ({_watchersNames.Count})");
+                    ImGui.Text($"{LanguageSystem.GetLocalized("Watchers")} ({WatchersNames.Count})");
                     foreach (var (_, player) in NetworkManager.Players)
                     {
                         if (player.Nickname == "DefaultNickname") continue;
                         if (player.IsDrawer)
                         {
-                            if (_watchersNames.Contains(player.Nickname))
-                                _watchersNames.Remove(player.Nickname);
+                            if (WatchersNames.Contains(player.Nickname))
+                                WatchersNames.Remove(player.Nickname);
                             continue;
                         }
-                        if (!_watchersNames.Contains(player.Nickname))
-                            _watchersNames.Add(player.Nickname);
+                        if (!WatchersNames.Contains(player.Nickname))
+                            WatchersNames.Add(player.Nickname);
                     }
                     
-                    if (_watchersNames.Count == 0)
-                        ImGui.Text("Empty");
+                    if (WatchersNames.Count == 0)
+                        ImGui.Text(LanguageSystem.GetLocalized("Empty"));
                     else
                     {
-                        foreach (var name in _watchersNames)
+                        foreach (var name in WatchersNames)
                             ImGui.Text(name);
                     }
                     
-                    if (ImGui.Button("Join##watchers"))
+                    if (ImGui.Button($"{LanguageSystem.GetLocalized("Join")}##watchers"))
                     {
                         if (Player.ApplicationOwner == null) return;
 

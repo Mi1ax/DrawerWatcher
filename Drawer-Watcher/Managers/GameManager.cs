@@ -44,11 +44,13 @@ public static class GameManager
     public static bool IsGameStarted = false;
 
     private static readonly Random _random = new(DateTime.Now.GetHashCode());
-    private static readonly string[] EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n");
-    
+    public static List<string> EnglishWords = 
+        File.ReadAllText("Assets/Words.txt").Split("\n").ToList();
+
     public static string GetRandomWord()
     {
-        var word = EnglishWords[_random.Next(0, EnglishWords.Length)];
+        EnglishWords = File.ReadAllText("Assets/Words.txt").Split("\n").ToList();
+        var word = EnglishWords[_random.Next(0, EnglishWords.Count)];
         return word.Contains('\r') ? word.Remove(word.Length - 1, 1) : word;
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using CouscousEngine.Core;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
 using ImGuiNET;
@@ -16,7 +17,7 @@ public class ToolPanel
 {
     private readonly float[] _brushesSize;
     private readonly Color[] _colors;
-    private int _selectedIndex = 0;
+    private int _selectedIndex;
     private int _currentSize;
 
     public ToolPanel()
@@ -46,7 +47,7 @@ public class ToolPanel
         ImGui.Begin("Tool Box", flags);
         if (Player.ApplicationOwner!.IsDrawer)
         {
-            ImGui.Text("Current color");
+            ImGui.Text(LanguageSystem.GetLocalized("CurrentColor"));
             ImGui.SameLine();
             ImGui.ColorButton("current_color", _colors[_selectedIndex], ImGuiColorEditFlags.NoTooltip);
             ImGui.NewLine();
@@ -61,10 +62,10 @@ public class ToolPanel
                 }
             }
             ImGui.SameLine();
-            if (ImGui.Button("Clear all"))
+            if (ImGui.Button(LanguageSystem.GetLocalized("ClearAll")))
                 MessageHandlers.ClearPainting();
-            ImGui.Text($"Current size {_brushesSize[_currentSize]}");
-            ImGui.Text("Brush sizes: ");
+            ImGui.Text($"{LanguageSystem.GetLocalized("CurrentSize")} {_brushesSize[_currentSize]}");
+            ImGui.Text($"{LanguageSystem.GetLocalized("BrushSizes")}: ");
             ImGui.SameLine();
             for (var i = 0; i < _brushesSize.Length; i++)
             {

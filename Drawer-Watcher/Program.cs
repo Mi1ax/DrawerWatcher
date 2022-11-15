@@ -1,4 +1,5 @@
 ﻿using CouscousEngine.Core;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -11,7 +12,6 @@ public class GameLayer : Layer
     public GameLayer() 
         : base(nameof(GameLayer))
     {
-        
     }
 
     public override void OnAttach()
@@ -23,11 +23,15 @@ public class GameLayer : Layer
             var fileStream = File.Create("Settings.ini");
             fileStream.Close();
         }
+        
+        GameManager.Timer.Init();
+
+        LanguageSystem.Init();
 
         SettingsIni.Init("Settings.ini");
         SettingsIni.Load();
         
-        AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
+        _rl.SetWindowTitle(LanguageSystem.GetLocalized("GameName"));
         
         var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
         var font32 = AssetManager.LoadFont("RobotoMono-Regular-32", "Assets/Fonts/RobotoMono-Regular.ttf", 32);
@@ -44,7 +48,8 @@ public class GameLayer : Layer
     {
         if (_rl.WindowShouldClose())
         {
-            MessageBox.Show("Exit", "Are you sure?",
+            MessageBox.Show(LanguageSystem.GetLocalized("Exit"), 
+                LanguageSystem.GetLocalized("AreYouSure"),
                 MessageBoxButtons.YesNo, button =>
                 {
                     if (button == MessageBoxResult.Yes)
