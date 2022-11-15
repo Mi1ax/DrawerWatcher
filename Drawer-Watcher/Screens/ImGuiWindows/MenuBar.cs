@@ -1,4 +1,5 @@
 using CouscousEngine.Core;
+using Drawer_Watcher.Localization;
 using ImGuiNET;
 
 namespace Drawer_Watcher.Screens.ImGuiWindows;
@@ -9,7 +10,7 @@ public static class MenuBar
     {
         ImGui.BeginMenuBar();
         {
-            if (ImGui.BeginMenu("Drawer Watcher"))
+            if (ImGui.BeginMenu(LanguageSystem.GetLocalized("GameName")))
             {
                 if (ImGui.MenuItem("Settings", ScreenManager.CurrentScreen is not GameScreen))
                     SettingsWindow.IsVisible = true;

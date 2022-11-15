@@ -1,4 +1,5 @@
 ﻿using CouscousEngine.Core;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -11,7 +12,6 @@ public class GameLayer : Layer
     public GameLayer() 
         : base(nameof(GameLayer))
     {
-        
     }
 
     public override void OnAttach()
@@ -27,7 +27,7 @@ public class GameLayer : Layer
         SettingsIni.Init("Settings.ini");
         SettingsIni.Load();
         
-        AssetManager.LoadTexture("Bomb", "Assets/bomb.png");
+        LanguageSystem.Init();
         
         var font24 = AssetManager.LoadFont("RobotoMono-Regular-24", "Assets/Fonts/RobotoMono-Regular.ttf");
         var font32 = AssetManager.LoadFont("RobotoMono-Regular-32", "Assets/Fonts/RobotoMono-Regular.ttf", 32);

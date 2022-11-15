@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CouscousEngine.Core;
 using CouscousEngine.Utils;
+using Drawer_Watcher.Localization;
 using ImGuiNET;
 using IniParser;
 using IniParser.Model;
@@ -96,6 +97,12 @@ public static class SettingsWindow
                 SettingsData.Resolution = Resolutions._960x480;
                 SettingsIni.AddData("resolution", "960x480");
             }
+            
+            ImGui.Text($"Language: (Current {LanguageSystem.CurrentLanguage.Name}):");
+            var languages = LanguageSystem.Languages.Keys.ToArray();
+            ImGui.Combo("##languages", 
+                ref LanguageSystem.SelectedLanguageIndex, languages, languages.Length);
+            LanguageSystem.SelectLanguage(languages[LanguageSystem.SelectedLanguageIndex]);
             ImGui.End();
         }
     }

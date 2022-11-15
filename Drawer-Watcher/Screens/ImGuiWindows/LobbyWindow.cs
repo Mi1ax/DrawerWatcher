@@ -59,7 +59,10 @@ public static class LobbyWindow
                         {
                             ImGui.Text("Minutes for guessing");
                             if (ImGui.InputInt("", ref _minutes, 1, 1))
+                            {
                                 if (_minutes < 1) _minutes = 1;
+                                if (_minutes > 15) _minutes = 15;
+                            }
 
                             if (ImGui.Button("Start"))
                             {
