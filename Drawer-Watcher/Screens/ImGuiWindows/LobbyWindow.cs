@@ -37,7 +37,8 @@ public static class LobbyWindow
         {
             if (!MessageBox.IsOpen())
                 MessageBox.Show(LanguageSystem.GetLocalized("Error"), 
-                    LanguageSystem.GetLocalized("ErrorConnectionToServer"), 
+                    $"{LanguageSystem.GetLocalized("ErrorConnectionToServer")}: " + 
+                    ClientManager.Client.DisconnectedReason, 
                     MessageBoxButtons.Ok,
                 result =>
                 {
