@@ -2,6 +2,7 @@
 using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using CouscousEngine.Utils;
+using Drawer_Watcher.Localization;
 using Drawer_Watcher.Panels;
 using Drawer_Watcher.Screens;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -357,12 +358,15 @@ public static class MessageHandlers
         var senderID = message.GetUShort();
         var nickname = message.GetString();
         var text = message.GetString();
-        if (text == GameManager.CurrentWord)
+        if (!GameManager.IsRoundEnded)
         {
-            GameManager.Guesser = senderID;
-            var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageID.Winner);
-            winnerMessage.AddUShort(senderID);
-            ClientManager.Client!.Send(winnerMessage);
+            if (text == GameManager.CurrentWord)
+            {
+                GameManager.Guesser = senderID;
+                var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageID.Winner);
+                winnerMessage.AddUShort(senderID);
+                ClientManager.Client!.Send(winnerMessage);
+            }
         }
 
         ChatPanel.AddMessage(nickname, text);
@@ -474,7 +478,8 @@ public static class NetworkManager
             IsConnected = false;
             if (args.Message != null &&
                 args.Message.GetUShort() == (ushort)MessageID.SameNick)
-                MessageBox.Show("Error", "Player with the same nickname already exist", MessageBoxButtons.Ok,
+                MessageBox.Show(LanguageSystem.GetLocalized("Error"), 
+                    LanguageSystem.GetLocalized("SameNickname"), MessageBoxButtons.Ok,
                     result =>
                     {
                         if (result == MessageBoxResult.Ok)  
@@ -533,7 +538,7 @@ public static class NetworkManager
 
         public static void Start()
         {
-            ServerManager.Start((ushort)ConnectionInfo.Port, ConnectionInfo.MaxConnection);
+            ServerManager.Start((ushort)ConnectionInfo.Port, (ushort)ConnectionInfo.MaxConnection);
         }
         
         public static void Close()
