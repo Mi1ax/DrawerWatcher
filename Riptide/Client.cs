@@ -42,6 +42,8 @@ namespace Riptide
         public bool IsPending => !(connection is null) && connection.IsPending;
         /// <summary>Whether or not the client is currently connected.</summary>
         public bool IsConnected => !(connection is null) && connection.IsConnected;
+        /// <summary>The reason why client can't connect to server.</summary>
+        public string DisconnectedReason => disconnectedReason;
         /// <inheritdoc cref="connection"/>
         // Not an auto property because properties can't be passed as ref/out parameters. Could
         // use a local variable in the Connect method, but that's arguably not any cleaner. This
@@ -51,6 +53,8 @@ namespace Riptide
         /// <param name="message">The message that was received.</param>
         public delegate void MessageHandler(Message message);
 
+        /// <summary>The reason why client can't connect to server.</summary>
+        private string disconnectedReason;
         /// <summary>The client's connection to a server.</summary>
         private Connection connection;
         /// <summary>How many connection attempts have been made so far.</summary>
@@ -376,7 +380,8 @@ namespace Riptide
                     reasonString = UnknownReason;
                     break;
             }
-            
+
+            disconnectedReason = reasonString;
             RiptideLogger.Log(LogType.Info, LogName, $"Connection to server failed: {reasonString}.");
             ConnectionFailed?.Invoke(this, new ConnectionFailedEventArgs(message));
         }

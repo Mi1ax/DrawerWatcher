@@ -6,6 +6,8 @@ namespace CouscousEngine.Networking;
 
 public static class ClientManager
 {
+    public static string ErrorReason = "";
+    
     public static Client? Client { get; set; }
     private static RiptideLogger.LogMethod? LogMethod;
     
