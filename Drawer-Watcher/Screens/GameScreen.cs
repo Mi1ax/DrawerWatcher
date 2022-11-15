@@ -26,7 +26,6 @@ public class GameScreen : Screen
     {
         _minutes = minutes;
         GameData.Painting = Renderer.LoadRenderTexture(1, 1);
-        GameManager.Timer.Init();
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {
@@ -39,7 +38,6 @@ public class GameScreen : Screen
     {
         _minutes = 1;
         GameData.Painting = Renderer.LoadRenderTexture(1, 1);
-        GameManager.Timer.Init();
 
         if (Player.ApplicationOwner is { IsDrawer: true })
         {

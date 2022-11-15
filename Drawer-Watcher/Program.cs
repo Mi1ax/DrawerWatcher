@@ -23,6 +23,8 @@ public class GameLayer : Layer
             var fileStream = File.Create("Settings.ini");
             fileStream.Close();
         }
+        
+        GameManager.Timer.Init();
 
         LanguageSystem.Init();
 

@@ -187,7 +187,7 @@ public static class MessageHandlers
         Log("(To all Clients) Exit to lobby");
         foreach (var (id, player) in NetworkManager.Players)
         {
-            if (!player.IsInLobby && id != fromClientID)
+            if (id != fromClientID)
                 ServerManager.Server.Send(message, id);
         }
     }
@@ -410,6 +410,7 @@ public static class MessageHandlers
         foreach (var player in NetworkManager.Players.Values)
             player.IsInLobby = false;
         ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
+        ClearPainting();
     }
     
     [MessageHandler((ushort) MessageID.LobbyExit)]
