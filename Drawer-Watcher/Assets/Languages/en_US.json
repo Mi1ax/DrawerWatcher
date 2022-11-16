@@ -65,6 +65,7 @@
     "StartHint": "The start of the game is possible only if there is a drawing",
     "ClearAllHint": "Clear the canvas for drawing",
     "StatsHint": "The score of all players",
-    "Tutorial": "Tutorial"
+    "Tutorial": "Tutorial",
+    "TutorialDesc": "Tutorial description"
   }
 }

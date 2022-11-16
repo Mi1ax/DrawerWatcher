@@ -3,6 +3,7 @@ using CouscousEngine.Core;
 using CouscousEngine.Networking;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
+using ImGuiNET;
 using Color = CouscousEngine.Utils.Color;
 using MouseButton = CouscousEngine.Core.MouseButton;
 
@@ -53,6 +54,7 @@ public class Player
         {
             _currPoint = Vector2.Zero;
             _prevPoint = Vector2.Zero;
+            return;
         }
         if (!IsDrawer || !IsAppOwner) return;
 
