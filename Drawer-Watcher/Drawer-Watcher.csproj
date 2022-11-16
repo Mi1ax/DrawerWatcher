@@ -7,8 +7,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ApplicationIcon>bin\Publish\Assets\icon.ico</ApplicationIcon>
+        <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="Assets\icon.ico" />
+    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\CouscousEngine\CouscousEngine.csproj" />
@@ -17,10 +21,6 @@
     <ItemGroup>
       <PackageReference Include="ini-parser" Version="2.5.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="bin\Publish\Assets\icon.ico" />
     </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ public static class TutorialWindow
         if (!IsVisible) return;
         ImGui.Begin(LanguageSystem.GetLocalized("Tutorial"), ref IsVisible, ImGuiWindowFlags.NoDocking);
         {
-            ImGui.Text(LanguageSystem.GetLocalized("TutorialDesc"));
+            ImGui.TextWrapped(LanguageSystem.GetLocalized("TutorialDesc"));
             ImGui.End();
         }
     }

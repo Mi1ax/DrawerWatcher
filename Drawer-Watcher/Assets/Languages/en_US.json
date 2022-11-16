@@ -66,6 +66,6 @@
     "ClearAllHint": "Clear the canvas for drawing",
     "StatsHint": "The score of all players",
     "Tutorial": "Tutorial",
-    "TutorialDesc": "Tutorial description"
+    "TutorialDesc": "The game Drawer-Watcher is built around two roles: drawer and watcher. Hence the name of the game itself is built. Drawers is the role that will cause all the main actions in the game to take place. At the beginning of the game, he draws the word that only he knows, and the watchers must guess it. The watcher are the players who have to make out the drawing and understand what exactly the drawing is trying to portray",
   }
 }
