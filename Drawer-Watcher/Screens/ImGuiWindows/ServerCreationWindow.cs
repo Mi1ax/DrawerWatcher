@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
@@ -25,6 +26,11 @@ public static class ServerCreationWindow
 
             if (ImGui.Button(LanguageSystem.GetLocalized("CreateGameLocally")))
                 Create(ConnectionInfo.Local, nickname);
+            if (SettingsData.IsHintsOn)
+            {
+                ImGui.SameLine();
+                rlImGui.HelpMarker(LanguageSystem.GetLocalized("LocallyHint"));
+            }
             ImGui.End();
         }
     }

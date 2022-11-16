@@ -24,6 +24,9 @@ public static class SettingsData
 {
     private static Resolutions _resolution =
         Resolutions._1280x720;
+
+    private static bool _isHintsOn;
+    
     public static Resolutions Resolution
     {
         get => _resolution;
@@ -36,6 +39,16 @@ public static class SettingsData
         }
     }
 
+    public static bool IsHintsOn
+    {
+        get => _isHintsOn;
+        set
+        {
+            SettingsIni.AddData("hints", value ? "true" : "false");
+            _isHintsOn = value;
+        }
+    }
+    
     public const ImGuiWindowFlags WindowFlags = ImGuiWindowFlags.NoDocking 
                                                 | ImGuiWindowFlags.AlwaysAutoResize 
                                                 | ImGuiWindowFlags.NoResize 
@@ -58,6 +71,8 @@ public static class SettingsIni
         _data = _parser.ReadFile(fileName);
 
         Default["resolution"] = Resolutions._1280x720.GetDescription()!;
+        Default["language"] = LanguageSystem.CurrentLanguage.Name;
+        Default["hints"] = SettingsData.IsHintsOn ? "true" : "false";
     }
 
     public static void Load()
@@ -78,6 +93,8 @@ public static class SettingsIni
             }
         }
         LanguageSystem.SelectLanguage(language);
+
+        SettingsData.IsHintsOn = GetData("hints") == "true";
     }
     
     public static void AddData(string name, string data)
@@ -101,6 +118,15 @@ public static class SettingsWindow
         flags -= ImGuiWindowFlags.NoMove;
         ImGui.Begin(LanguageSystem.GetLocalized("Settings"), ref IsVisible, flags);
         {
+            ImGui.Text($"{LanguageSystem.GetLocalized("Hints")}: ");
+            ImGui.SameLine();
+            var value = SettingsData.IsHintsOn;
+            if (ImGui.Checkbox("##hints", ref value))
+            {
+                if (!value.Equals(SettingsData.IsHintsOn))
+                    SettingsData.IsHintsOn = value;
+            }
+                
             ImGui.Text($"{LanguageSystem.GetLocalized("Resolution")} ({LanguageSystem.GetLocalized("CurrentResolution")} {SettingsIni.GetData("resolution")}):");
             if (ImGui.Button("1280x720"))
             {
@@ -128,7 +154,8 @@ public static class SettingsWindow
                 }; 
             }
 
-            ImGui.Text($"{LanguageSystem.GetLocalized("Language")}: ({LanguageSystem.GetLocalized("CurrentLanguage")} {LanguageSystem.CurrentLanguage.Name}):");
+            ImGui.Text($"{LanguageSystem.GetLocalized("Language")}: " +
+                       $"({LanguageSystem.GetLocalized("CurrentLanguage")} {LanguageSystem.CurrentLanguage.Name}):");
             var languages = LanguageSystem.Languages.Keys.ToArray();
             if (ImGui.Combo("##languages", 
                     ref LanguageSystem.SelectedLanguageIndex,
@@ -141,10 +168,9 @@ public static class SettingsWindow
 
             if (ImGui.SmallButton($"{LanguageSystem.GetLocalized("OpenWords")}"))
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    Process.Start( new ProcessStartInfo { FileName = @"Assets/Words.txt", UseShellExecute = true } );
-                else
-                    Process.Start( new ProcessStartInfo { FileName = @"Assets\Words.txt", UseShellExecute = true } );
+                Process.Start(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                    ? new ProcessStartInfo {FileName = @"Assets/Words.txt", UseShellExecute = true}
+                    : new ProcessStartInfo {FileName = @"Assets\Words.txt", UseShellExecute = true});
             }
             ImGui.End();
         }

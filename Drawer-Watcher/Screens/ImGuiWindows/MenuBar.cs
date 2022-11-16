@@ -13,6 +13,8 @@ public static class MenuBar
         {
             if (ImGui.BeginMenu(LanguageSystem.GetLocalized("GameName")))
             {
+                if (ImGui.MenuItem(LanguageSystem.GetLocalized("Tutorial")))
+                    TutorialWindow.IsVisible = true;
                 if (ImGui.MenuItem(LanguageSystem.GetLocalized("Settings"), ScreenManager.CurrentScreen is not GameScreen))
                     SettingsWindow.IsVisible = true;
                 if (ImGui.MenuItem(exitName))
@@ -35,5 +37,6 @@ public static class MenuBar
         }
         
         SettingsWindow.OnImGuiUpdate();
+        TutorialWindow.OnImGuiUpdate();
     }
 }

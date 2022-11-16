@@ -53,6 +53,18 @@
     "OpenWords": "Open words dictionary",
     "MaxPlayers": "Max players",
     "NeedServerRestart": "Need to restart the server",
-    "SameNickname": "Player with the same nickname already exist"
+    "SameNickname": "Player with the same nickname already exist",
+    "Hints": "Hints",
+    "NicknameHint": "Name visible to other players",
+    "HostHint": "Creating a room that\nother players will connect to",
+    "ConnectHint": "Connecting to an already created room",
+    "LocallyHint": "When creating a local or connecting\nto a local room\n, joining players from outside will not be possible",
+    "DrawersHint": "Drawers - players who draw the hidden words",
+    "WatchersHint": "Watchers - players who guess\nthe words drawn by the lookers",
+    "MinutesHint": "How many minutes will the round last",
+    "StartHint": "The start of the game is possible only if there is a drawing",
+    "ClearAllHint": "Clear the canvas for drawing",
+    "StatsHint": "The score of all players",
+    "Tutorial": "Tutorial"
   }
 }

@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens.ImGuiWindows;
@@ -60,13 +61,28 @@ public class MenuScreen : Screen
                 ImGui.Begin(LanguageSystem.GetLocalized("Menu"), SettingsData.WindowFlags);
                 {
                     ImGui.Text($"{LanguageSystem.GetLocalized("Nickname")}:");
+                    if (SettingsData.IsHintsOn)
+                    {
+                        ImGui.SameLine();
+                        rlImGui.HelpMarker(LanguageSystem.GetLocalized("NicknameHint"));
+                    }
                     ImGui.InputText("", ref _nickname, 32);
                     if (ImGui.Button(LanguageSystem.GetLocalized("Host")))
                         ServerCreationWindow.IsVisible = true;
+                    if (SettingsData.IsHintsOn)
+                    {
+                        ImGui.SameLine();
+                        rlImGui.HelpMarker(LanguageSystem.GetLocalized("HostHint"));
+                    }
 
                     ImGui.SameLine();
                     if (ImGui.Button(LanguageSystem.GetLocalized("Connect")))
                         ConnectionWindow.IsVisible = true;
+                    if (SettingsData.IsHintsOn)
+                    {
+                        ImGui.SameLine();
+                        rlImGui.HelpMarker(LanguageSystem.GetLocalized("ConnectHint"));
+                    }
 
                     ImGui.End();
                 }

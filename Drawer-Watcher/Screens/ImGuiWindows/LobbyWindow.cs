@@ -1,5 +1,6 @@
 using System.Numerics;
 using CouscousEngine.Networking;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using ImGuiNET;
@@ -67,11 +68,21 @@ public static class LobbyWindow
                                 if (_minutes < 1) _minutes = 1;
                                 if (_minutes > 15) _minutes = 15;
                             }
+                            if (SettingsData.IsHintsOn)
+                            {
+                                ImGui.SameLine();
+                                rlImGui.HelpMarker(LanguageSystem.GetLocalized("MinutesHint"));
+                            }
 
                             if (ImGui.Button(LanguageSystem.GetLocalized("Start")))
                             {
                                 if (NetworkManager.Players.Values.FirstOrDefault(p => p.IsDrawer) != null)
                                     NetworkManager.StartGame(_minutes);
+                            }
+                            if (SettingsData.IsHintsOn)
+                            {
+                                ImGui.SameLine();
+                                rlImGui.HelpMarker(LanguageSystem.GetLocalized("StartHint"));
                             }
 
                             break;
@@ -94,6 +105,11 @@ public static class LobbyWindow
 
                     var count = drawerName == "Empty" ? 0 : 1;
                     ImGui.Text($"{LanguageSystem.GetLocalized("Drawers")} ({count})");
+                    if (SettingsData.IsHintsOn)
+                    {
+                        ImGui.SameLine();
+                        rlImGui.HelpMarker(LanguageSystem.GetLocalized("DrawersHint"));
+                    }
                     ImGui.Text(drawerName);
                     if (ImGui.Button($"{LanguageSystem.GetLocalized("Join")}##drawers"))
                     {
@@ -109,6 +125,11 @@ public static class LobbyWindow
                     ImGui.TableNextColumn();
                     ImGui.TableNextColumn();
                     ImGui.Text($"{LanguageSystem.GetLocalized("Watchers")} ({WatchersNames.Count})");
+                    if (SettingsData.IsHintsOn)
+                    {
+                        ImGui.SameLine();
+                        rlImGui.HelpMarker(LanguageSystem.GetLocalized("WatchersHint"));
+                    }
                     foreach (var (_, player) in NetworkManager.Players)
                     {
                         if (player.Nickname == "DefaultNickname") continue;

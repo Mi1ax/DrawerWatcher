@@ -1,9 +1,11 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using CouscousEngine.Core;
+using CouscousEngine.rlImGui;
 using Drawer_Watcher.Localization;
 using Drawer_Watcher.Managers;
 using Drawer_Watcher.Screens;
+using Drawer_Watcher.Screens.ImGuiWindows;
 using ImGuiNET;
 using Raylib_CsLo;
 using Riptide;
@@ -64,6 +66,11 @@ public class ToolPanel
             ImGui.SameLine();
             if (ImGui.Button(LanguageSystem.GetLocalized("ClearAll")))
                 MessageHandlers.ClearPainting();
+            if (SettingsData.IsHintsOn)
+            {
+                ImGui.SameLine();
+                rlImGui.HelpMarker(LanguageSystem.GetLocalized("ClearAllHint"));
+            }
             ImGui.Text($"{LanguageSystem.GetLocalized("CurrentSize")} {_brushesSize[_currentSize]}");
             ImGui.Text($"{LanguageSystem.GetLocalized("BrushSizes")}: ");
             ImGui.SameLine();
