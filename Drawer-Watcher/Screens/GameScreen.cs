@@ -78,13 +78,36 @@ public class GameScreen : Screen
     {
         if (!NetworkManager.IsClientConnected || NetworkManager.Players.Count == 0) return;
 
-        if (_viewportSize.X > 0.0f && _viewportSize.Y > 0.0f &&
+        if (_viewportSize is { X: > 0.0f, Y: > 0.0f } &&
             ((int)_viewportSize.X != GameData.Painting!.Value.texture.width || 
              (int)_viewportSize.Y != GameData.Painting.Value.texture.height))
         {
             _rl.UnloadRenderTexture(GameData.Painting.Value);
             GameData.Painting = Renderer.LoadRenderTexture((int)_viewportSize.X, (int)_viewportSize.Y);
             MessageHandlers.ClearPainting();
+        }
+
+        if (NetworkManager.IsWantToClear)
+        {
+            Renderer.BeginTextureMode(GameData.Painting!.Value);
+            Renderer.ClearBackground(GameData.ClearColor);
+            Renderer.EndTextureMode();
+            NetworkManager.IsWantToClear = false;
+        }
+
+        if (NetworkManager.StartPos != null)
+        {
+            Renderer.BeginTextureMode(GameData.Painting!.Value);
+            Renderer.MouseDrawing(
+                NetworkManager.StartPos.Value, NetworkManager.EndPos!.Value, 
+                NetworkManager.Thickness!.Value, NetworkManager.Color!.Value
+            );
+            Renderer.EndTextureMode();
+            
+            NetworkManager.StartPos = null;
+            NetworkManager.EndPos = null;
+            NetworkManager.Thickness = null;
+            NetworkManager.Color = null;
         }
         
         foreach (var player in NetworkManager.Players.Values)

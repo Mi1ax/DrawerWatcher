@@ -11,7 +11,7 @@ using Riptide.Utils;
 
 namespace Drawer_Watcher.Managers;
 
-public enum MessageID : ushort
+public enum MessageId : ushort
 {
     SendPainting = 1,
     ChatMessage,
@@ -59,12 +59,12 @@ public static class MessageHandlers
     
     #region Send data from Client to the Server
 
-    public static void SetDrawer(ushort clientID, bool value)
+    public static void SetDrawer(ushort clientId, bool value)
     {
         Log("(To Server) New drawer value");
-        NetworkManager.Players[clientID].SetDrawer(value);
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.DrawerStatus);
-        message.AddUShort(clientID);
+        NetworkManager.Players[clientId].SetDrawer(value);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.DrawerStatus);
+        message.AddUShort(clientId);
         message.AddBool(value);
         ClientManager.Client!.Send(message);
     }
@@ -72,54 +72,53 @@ public static class MessageHandlers
     public static void SendLobbyExit()
     {
         Log("(To Server) Exit to lobby");
-        ClientManager.Client!.Send(Message.Create(MessageSendMode.Reliable, MessageID.LobbyExit));
+        ClientManager.Client!.Send(Message.Create(MessageSendMode.Reliable, MessageId.LobbyExit));
     }
     
     public static void ClearPainting()
     {
-        Log("(To Server) Wanna clear painting");
-        var message = Message.Create(MessageSendMode.Unreliable, MessageID.AllClear);
+        Log("(To Server) Want to clear painting");
+        var message = Message.Create(MessageSendMode.Unreliable, MessageId.AllClear);
         ClientManager.Client!.Send(message);
     }
     
     public static void SendDrawingData(Vector2 start, Vector2 end, float thickness, Color color)
     {
-        // Send from Client to Server
-        var message = Message.Create(MessageSendMode.Unreliable, MessageID.SendPainting);
+        var message = Message.Create(MessageSendMode.Unreliable, MessageId.SendPainting);
         message.AddVector2(start);
         message.AddVector2(end);
         message.AddFloat(thickness);
         message.AddColor(color);
-    
+        
         ClientManager.Client!.Send(message);
     }
     
-    public static void SendMessageInChat(ushort senderID, string text)
+    public static void SendMessageInChat(ushort senderId, string text)
     {
-        var message = Message.Create(MessageSendMode.Unreliable, MessageID.ChatMessage);
-        message.AddUShort(senderID);
-        message.AddString(NetworkManager.Players[senderID].Nickname);
+        var message = Message.Create(MessageSendMode.Unreliable, MessageId.ChatMessage);
+        message.AddUShort(senderId);
+        message.AddString(NetworkManager.Players[senderId].Nickname);
         message.AddString(text);
         ClientManager.Client!.Send(message);
     }
 
     public static void SendNewWord()
     {
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.NewWord);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.NewWord);
         message.AddString(GameManager.GetRandomWord());
         ClientManager.Client!.Send(message);
     }
 
     public static void SendTime(string time)
     {
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.Timer);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.Timer);
         message.AddString(time);
         ClientManager.Client!.Send(message);
     }
     
     public static void SendTimesUp()
     {
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.TimesUp);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.TimesUp);
         ClientManager.Client!.Send(message);
     }
 
@@ -130,7 +129,7 @@ public static class MessageHandlers
     public static void SendOtherPlayersInfo(ushort toClientId)
     {
         Log($"(To Client) Send {toClientId} other players info");
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.ConnectionInfo);
         message.AddBool(GameManager.IsGameStarted);
         message.AddInt(NetworkManager.Players.Count);
         foreach (var (id, player) in NetworkManager.Players)
@@ -142,7 +141,7 @@ public static class MessageHandlers
         }
         ServerManager.Server.Send(message, toClientId);
 
-        var newPlayer = Message.Create(MessageSendMode.Reliable, MessageID.ConnectionInfo);
+        var newPlayer = Message.Create(MessageSendMode.Reliable, MessageId.ConnectionInfo);
         newPlayer.AddBool(GameManager.IsGameStarted);
         newPlayer.AddInt(1);
         newPlayer.AddUShort(toClientId);
@@ -152,43 +151,43 @@ public static class MessageHandlers
         ServerManager.Server.SendToAll(message, toClientId);
     }
     
-    [MessageHandler((ushort) MessageID.ClientInfo)]
-    private static void HandleClientInfo(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.ClientInfo)]
+    private static void HandleClientInfo(ushort fromClientId, Message message)
     {
         Log("(To all Clients) New client info");
-        var clientID = message.GetUShort();
+        var clientId = message.GetUShort();
         var nickname = message.GetString();
         if (NetworkManager.Players.Values.FirstOrDefault(p => p.Nickname == nickname) != null)
         {
-            var disconnectMessage = Message.Create(MessageSendMode.Reliable, MessageID.SameNick);
-            disconnectMessage.AddUShort((ushort)MessageID.SameNick);
-            ServerManager.Server.DisconnectClient(clientID, disconnectMessage);
+            var disconnectMessage = Message.Create(MessageSendMode.Reliable, MessageId.SameNick);
+            disconnectMessage.AddUShort((ushort)MessageId.SameNick);
+            ServerManager.Server.DisconnectClient(clientId, disconnectMessage);
         } else
             ServerManager.Server.SendToAll(message);
     }
     
-    [MessageHandler((ushort) MessageID.DrawerStatus)]
-    private static void HandleDrawerMessage(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.DrawerStatus)]
+    private static void HandleDrawerMessage(ushort fromClientId, Message message)
     {
         Log("(To all Clients) Drawer status");
-        ServerManager.Server.SendToAll(message, fromClientID);
+        ServerManager.Server.SendToAll(message, fromClientId);
     }
     
-    [MessageHandler((ushort) MessageID.LobbyExit)]
-    private static void HandleLobbyExit(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.LobbyExit)]
+    private static void HandleLobbyExit(ushort fromClientId, Message message)
     {
         Log("(To all Clients) Exit to lobby");
         foreach (var (id, player) in NetworkManager.Players)
         {
-            if (!player.IsInLobby && id != fromClientID)
+            if (!player.IsInLobby && id != fromClientId)
                 ServerManager.Server.Send(message, id);
         }
     }
     
-    [MessageHandler((ushort) MessageID.AllClear)]
-    private static void HandleAllClear(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.AllClear)]
+    private static void HandleAllClear(ushort fromClientId, Message message)
     {
-        if (!NetworkManager.Players[fromClientID].IsDrawer) return;
+        if (!NetworkManager.Players[fromClientId].IsDrawer) return;
         Log("(To all Clients) Clear painting");
         foreach (var (id, player) in NetworkManager.Players)
         {
@@ -197,8 +196,8 @@ public static class MessageHandlers
         }
     }
     
-    [MessageHandler((ushort) MessageID.SendPainting)]
-    private static void HandlePainting(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.SendPainting)]
+    private static void HandlePainting(ushort fromClientId, Message message)
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
@@ -207,14 +206,14 @@ public static class MessageHandlers
         }
     }
     
-    [MessageHandler((ushort) MessageID.StartGame)]
-    private static void HandleStartGame(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.StartGame)]
+    private static void HandleStartGame(ushort fromClientId, Message message)
     {
         ServerManager.Server.SendToAll(message);
     }
 
-    [MessageHandler((ushort) MessageID.ChatMessage)]
-    private static void HandleChatMessage(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.ChatMessage)]
+    private static void HandleChatMessage(ushort fromClientId, Message message)
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
@@ -223,28 +222,18 @@ public static class MessageHandlers
         }
     }
     
-    [MessageHandler((ushort) MessageID.Winner)]
-    private static void HandleWinner(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.Winner)]
+    private static void HandleWinner(ushort fromClientId, Message message)
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
-            if (!player.IsInLobby && id != fromClientID)
+            if (!player.IsInLobby && id != fromClientId)
                 ServerManager.Server.Send(message, id);
         }
     }
     
-    [MessageHandler((ushort) MessageID.NewWord)]
-    private static void HandleNewWord(ushort fromClientID, Message message)
-    {
-        foreach (var (id, player) in NetworkManager.Players)
-        {
-            if (!player.IsInLobby)
-                ServerManager.Server.Send(message, id);
-        }
-    }
-    
-    [MessageHandler((ushort) MessageID.Timer)]
-    private static void HandleTimer(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.NewWord)]
+    private static void HandleNewWord(ushort fromClientId, Message message)
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
@@ -253,8 +242,18 @@ public static class MessageHandlers
         }
     }
     
-    [MessageHandler((ushort) MessageID.TimesUp)]
-    private static void HandleTimesUp(ushort fromClientID, Message message)
+    [MessageHandler((ushort) MessageId.Timer)]
+    private static void HandleTimer(ushort fromClientId, Message message)
+    {
+        foreach (var (id, player) in NetworkManager.Players)
+        {
+            if (!player.IsInLobby)
+                ServerManager.Server.Send(message, id);
+        }
+    }
+    
+    [MessageHandler((ushort) MessageId.TimesUp)]
+    private static void HandleTimesUp(ushort fromClientId, Message message)
     {
         foreach (var (id, player) in NetworkManager.Players)
         {
@@ -267,7 +266,7 @@ public static class MessageHandlers
 
     #region Handle Server messages on Client Side
 
-    [MessageHandler((ushort)MessageID.ConnectionInfo)]
+    [MessageHandler((ushort)MessageId.ConnectionInfo)]
     private static void HandleConnectionInfo(Message message)
     {
         GameManager.IsGameStarted = message.GetBool();
@@ -289,73 +288,74 @@ public static class MessageHandlers
         }
     }
     
-    [MessageHandler((ushort) MessageID.ClientInfo)]
+    [MessageHandler((ushort) MessageId.ClientInfo)]
     private static void HandleNewClientInfo(Message message)
     {
-        var clientID = message.GetUShort();
+        var clientId = message.GetUShort();
         var clientNick = message.GetString();
-        Log($"(From Server) Get nick from {clientID}: {clientNick}");
-        NetworkManager.Players[clientID].Nickname = clientNick;
+        Log($"(From Server) Get nick from {clientId}: {clientNick}");
+        NetworkManager.Players[clientId].Nickname = clientNick;
     }
     
-    [MessageHandler((ushort) MessageID.DrawerStatus)]
+    [MessageHandler((ushort) MessageId.DrawerStatus)]
     private static void HandleDrawerStatus(Message message)
     {
-        var clientID = message.GetUShort();
+        var clientId = message.GetUShort();
         var value = message.GetBool();
         var msg = value ? "is drawer" : "is not a drawer";
-        Log($"(From Server) {clientID}: {msg}");
-        NetworkManager.Players[clientID].SetDrawer(value);
+        Log($"(From Server) {clientId}: {msg}");
+        NetworkManager.Players[clientId].SetDrawer(value);
     }
     
-    [MessageHandler((ushort) MessageID.AllClear)]
+    [MessageHandler((ushort) MessageId.AllClear)]
     private static void HandleAllClear(Message _)
     {
-        Renderer.BeginTextureMode(GameData.Painting!.Value);
+        NetworkManager.IsWantToClear = true;
+        /*Renderer.BeginTextureMode(GameData.Painting!.Value);
         Renderer.ClearBackground(GameData.ClearColor);
-        Renderer.EndTextureMode();
+        Renderer.EndTextureMode();*/
     }
     
-    [MessageHandler((ushort) MessageID.SendPainting)]
+    [MessageHandler((ushort) MessageId.SendPainting)]
     private static void HandlePainting(Message message)
     {
-        Renderer.BeginTextureMode(GameData.Painting!.Value);
-        var start = message.GetVector2();
-        var end = message.GetVector2();
-        var thickness = message.GetFloat();
-        var color = message.GetColor();
-        Renderer.MouseDrawing(start, end, thickness, color);
-        Renderer.EndTextureMode();
+        //Renderer.BeginTextureMode(GameData.Painting!.Value);
+        NetworkManager.StartPos = message.GetVector2();
+        NetworkManager.EndPos = message.GetVector2();
+        NetworkManager.Thickness = message.GetFloat();
+        NetworkManager.Color = message.GetColor();
+        /*Renderer.MouseDrawing(start, end, thickness, color);
+        Renderer.EndTextureMode();*/
     }
     
-    [MessageHandler((ushort) MessageID.ChatMessage)]
+    [MessageHandler((ushort) MessageId.ChatMessage)]
     private static void HandleChatMessage(Message message)
     {
-        var senderID = message.GetUShort();
+        var senderId = message.GetUShort();
         var nickname = message.GetString();
         var text = message.GetString();
         if (text == GameManager.CurrentWord)
         {
-            GameManager.Guesser = senderID;
-            var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageID.Winner);
-            winnerMessage.AddUShort(senderID);
+            GameManager.Guesser = senderId;
+            var winnerMessage = Message.Create(MessageSendMode.Reliable, MessageId.Winner);
+            winnerMessage.AddUShort(senderId);
             ClientManager.Client!.Send(winnerMessage);
         }
 
         ChatPanel.AddMessage(nickname, text);
     }
     
-    [MessageHandler((ushort) MessageID.Winner)]
+    [MessageHandler((ushort) MessageId.Winner)]
     private static void HandleWinner(Message message)
     {
-        var senderID = message.GetUShort();
-        Log($"(From Server) Winner is {senderID}");
-        GameManager.Guesser = senderID;
+        var senderId = message.GetUShort();
+        Log($"(From Server) Winner is {senderId}");
+        GameManager.Guesser = senderId;
         // TODO: Time score multiplayer
-        NetworkManager.Players[senderID].Score++;
+        NetworkManager.Players[senderId].Score++;
     }
     
-    [MessageHandler((ushort) MessageID.NewWord)]
+    [MessageHandler((ushort) MessageId.NewWord)]
     private static void HandleNewWord(Message message)
     {
         var newWord = message.GetString();
@@ -365,20 +365,20 @@ public static class MessageHandlers
         GameManager.IsRoundEnded = false;
     }
     
-    [MessageHandler((ushort) MessageID.Timer)]
+    [MessageHandler((ushort) MessageId.Timer)]
     private static void HandleTimer(Message message)
     {
         var time = message.GetString();
         GameManager.Timer.CurrentTime = time;
     }
     
-    [MessageHandler((ushort) MessageID.TimesUp)]
+    [MessageHandler((ushort) MessageId.TimesUp)]
     private static void HandleTimesUp(Message message)
     {
         GameManager.IsRoundEnded = true;
     }
     
-    [MessageHandler((ushort) MessageID.StartGame)]
+    [MessageHandler((ushort) MessageId.StartGame)]
     private static void HandleStartGame(Message message)
     {
         Log("(From Server) Starting game");
@@ -388,7 +388,7 @@ public static class MessageHandlers
         ScreenManager.NavigateTo(new GameScreen(message.GetInt()));
     }
     
-    [MessageHandler((ushort) MessageID.LobbyExit)]
+    [MessageHandler((ushort) MessageId.LobbyExit)]
     private static void HandleLobbyExit(Message message)
     {
         Log("(From Server) Exit to lobby");
@@ -404,6 +404,12 @@ public static class MessageHandlers
 public static class NetworkManager 
 {
     public static readonly Dictionary<ushort, Player> Players = new();
+ 
+    public static bool IsWantToClear;
+    public static Vector2? StartPos;
+    public static Vector2? EndPos;
+    public static float? Thickness;
+    public static Color? Color;
     
     public static bool IsHost 
     {
@@ -419,7 +425,8 @@ public static class NetworkManager
     }
 
     public static bool IsClientConnected => Client.IsConnected;
-    
+    public static bool IsServerRunning => Server.IsRunning;
+
     private static class Client 
     {
         public static bool IsConnected;
@@ -435,7 +442,7 @@ public static class NetworkManager
             object? sender, 
             EventArgs args)
         {
-            var message = Message.Create(MessageSendMode.Reliable, MessageID.ClientInfo);
+            var message = Message.Create(MessageSendMode.Reliable, MessageId.ClientInfo);
             message.AddUShort(ClientManager.Client!.Id);
             message.AddString(_clientNickname);
             ClientManager.Client.Send(message);
@@ -448,7 +455,7 @@ public static class NetworkManager
             Players.Clear();
             IsConnected = false;
             if (args.Message != null &&
-                args.Message.GetUShort() == (ushort)MessageID.SameNick)
+                args.Message.GetUShort() == (ushort)MessageId.SameNick)
                 MessageBox.Show("Error", "Player with the same nickname already exist", MessageBoxButtons.Ok,
                     result =>
                     {
@@ -509,7 +516,7 @@ public static class NetworkManager
             ServerManager.Stop();
         }
 
-        public static bool ServerIsRunning() => ServerManager.Server.IsRunning;
+        public static bool IsRunning => ServerManager.Server.IsRunning;
     }
 
     public static void Initialize()
@@ -521,7 +528,7 @@ public static class NetworkManager
     public static void StartGame(int minutes)
     {
         // Send from Client to Server
-        var message = Message.Create(MessageSendMode.Reliable, MessageID.StartGame);
+        var message = Message.Create(MessageSendMode.Reliable, MessageId.StartGame);
         message.AddInt(minutes);
         ClientManager.Client!.Send(message);
     }
@@ -530,16 +537,50 @@ public static class NetworkManager
     {
         Server.ConnectionInfo = info;
         IsHost = true;
+        if (!ServerThread.IsAlive && !ServerThread.ThreadState.HasFlag(ThreadState.Stopped)) 
+            ServerThread.Start();
+        else
+        {
+            ServerThread = new Thread(ServerUpdate);
+            ServerThread.Start();
+        }
     }
     
     public static void ConnectToServer(ConnectionInfo info, string nickname)
     {
+        if (!ClientThread.IsAlive && !ClientThread.ThreadState.HasFlag(ThreadState.Stopped)) 
+            ClientThread.Start();
+        else
+        {
+            ClientThread = new Thread(ClientUpdate);
+            ClientThread.Start();
+        }
         Client.Connect(info, nickname);
     }
 
-    public static void Update()
+    public static Thread ServerThread = new(ServerUpdate);
+    public static Thread ClientThread = new(ClientUpdate);
+    
+    private static void ServerUpdate()
     {
-        if (IsHost) ServerManager.Update();
-        ClientManager.Update();
+        while (IsServerRunning)
+        {
+            if (!IsHost) continue;
+            
+            ServerManager.Update();
+        }
+    }
+    
+    private static void ClientUpdate()
+    {
+        while (Application.Instance.IsRunning)
+        {
+            ClientManager.Update();
+        }
+    }
+
+    public static void CloseConnections()
+    {
+        ServerManager.Stop();
     }
 }

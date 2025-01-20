@@ -50,7 +50,7 @@ public class GameLayer : Layer
 
     public override void OnUpdate(float deltaTime)
     {
-        NetworkManager.Update();
+        //NetworkManager.Update();
         ScreenManager.OnUpdate(deltaTime);
     }
 
@@ -66,6 +66,11 @@ internal class Sandbox : Application
         : base("Drawer Watcher", disableWindowCloseButton: true)
     {
         PushLayer(new GameLayer());
+    }
+
+    protected override void OnExit()
+    {
+        NetworkManager.CloseConnections();
     }
 }
 

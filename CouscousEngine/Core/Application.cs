@@ -20,6 +20,8 @@ public abstract class Application : IDisposable
     private readonly LayerStack _layerStack;
     private bool _isRunning = true;
 
+    public bool IsRunning => _isRunning;
+    
     public readonly Window Window;
 
     public Size WindowSize => new (Window.Width, Window.Height);

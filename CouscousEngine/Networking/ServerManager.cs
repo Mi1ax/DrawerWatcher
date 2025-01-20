@@ -51,6 +51,13 @@ public static class ServerManager
     
     public static void Update()
     {
-        Server.Update();
+        try
+        {
+            Server.Update();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }
